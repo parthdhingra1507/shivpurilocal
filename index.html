@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shivpuri Local (shivpurilocal.in) - The City Encyclopedia</title>
+<meta name="description"
+    content="Your complete guide to Shivpuri city. Find local bus schedules, places, and more at shivpurilocal.in.">
+<link rel="canonical" href="https://shivpurilocal.in/">
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+    rel="stylesheet">
+
+<body>
+    <div class="app-container">
+        <header class="main-header">
+            <div class="logo-container">
+                <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
+                <p class="tagline">The City Encyclopedia</p>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#" class="active">Transport</a></li>
+                    <li><a href="#">Places</a></li>
+                    <li><a href="#">Food</a></li>
+                    <li><a href="#">Events</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="content-area">
+            <section class="hero-section">
+                <h2>Local Bus Schedule</h2>
+                <p>Find the best route to your destination in Shivpuri.</p>
+            </section>
+
+            <section class="bus-schedule-container">
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search for a stop or bus number...">
+                    <button id="search-btn">Search</button>
+                </div>
+
+                <div class="schedule-grid" id="schedule-grid">
+                    <!-- Bus cards will be injected here by JS -->
+                </div>
+            </section>
+        </main>
+
+        <footer class="main-footer">
+            <p>&copy; 2025 shivpurilocal.in. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
