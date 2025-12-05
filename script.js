@@ -8,7 +8,13 @@ const searchBtn = document.getElementById('search-btn');
 
 function formatTime(timestamp) {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    // User data is already in correct local time but stored as UTC timestamp
+    // We use UTC to prevent adding another +5:30 offset
+    return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'UTC'
+    });
 }
 
 function renderBuses(buses) {
@@ -18,6 +24,16 @@ function renderBuses(buses) {
         grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No buses found matching your search.</p>';
         return;
     }
+
+    // Sort: Buses FROM Shivpuri first, then others
+    buses.sort((a, b) => {
+        const aFromShivpuri = a.route_from.toLowerCase() === 'shivpuri';
+        const bFromShivpuri = b.route_from.toLowerCase() === 'shivpuri';
+
+        if (aFromShivpuri && !bFromShivpuri) return -1;
+        if (!aFromShivpuri && bFromShivpuri) return 1;
+        return 0;
+    });
 
     buses.forEach(bus => {
         const card = document.createElement('div');
