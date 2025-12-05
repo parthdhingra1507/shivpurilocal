@@ -67,6 +67,104 @@ const ITEMS_PER_PAGE = 6;
 const loadMoreContainer = document.getElementById('load-more-container');
 const loadMoreBtn = document.getElementById('load-more-btn');
 
+// Language Data
+const translations = {
+    en: {
+        tagline: "The City Encyclopedia",
+        nav_transport: "Transport",
+        nav_places: "Places",
+        nav_food: "Food",
+        nav_events: "Events",
+        hero_title: "Local Bus Schedule",
+        hero_desc: "Find the best route to your destination in Shivpuri.",
+        search_placeholder: "Search bus number or operator...",
+        search_btn: "Search",
+        filter_from: "From City",
+        filter_to: "To City",
+        filter_time: "Any Time",
+        filter_time_0_6: "Early Morning (12 AM - 6 AM)",
+        filter_time_6_12: "Morning (6 AM - 12 PM)",
+        filter_time_12_18: "Afternoon (12 PM - 6 PM)",
+        filter_time_18_24: "Evening (6 PM - 12 AM)",
+        reset_btn: "Reset",
+        load_more: "Load More Buses",
+        emergency_title: "Emergency Numbers",
+        share_btn: "Share on WhatsApp",
+        via: "via",
+        daily: "Daily",
+        footer: "© 2025 shivpurilocal.in. All rights reserved."
+    },
+    hi: {
+        tagline: "शहर का विश्वकोश",
+        nav_transport: "परिवहन",
+        nav_places: "पर्यटन",
+        nav_food: "भोजन",
+        nav_events: "कार्यक्रम",
+        hero_title: "स्थानीय बस समय सारिणी",
+        hero_desc: "शिवपुरी में अपने गंतव्य के लिए सबसे अच्छा मार्ग खोजें।",
+        search_placeholder: "बस नंबर या ऑपरेटर खोजें...",
+        search_btn: "खोजें",
+        filter_from: "कहाँ से",
+        filter_to: "कहाँ तक",
+        filter_time: "कोई भी समय",
+        filter_time_0_6: "तड़के (12 AM - 6 AM)",
+        filter_time_6_12: "सुबह (6 AM - 12 PM)",
+        filter_time_12_18: "दोपहर (12 PM - 6 PM)",
+        filter_time_18_24: "शाम (6 PM - 12 AM)",
+        reset_btn: "रीसेट",
+        load_more: "और बसें देखें",
+        emergency_title: "आपातकालीन नंबर",
+        share_btn: "व्हाट्सएप पर शेयर करें",
+        via: "द्वारा",
+        daily: "रोजाना",
+        footer: "© 2025 shivpurilocal.in. सर्वाधिकार सुरक्षित।"
+    }
+};
+
+let currentLang = localStorage.getItem('lang') || 'en';
+const langToggle = document.getElementById('lang-toggle');
+
+function updateLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    langToggle.textContent = lang === 'en' ? 'हिंदी' : 'English';
+
+    // Update static text
+    document.querySelector('.tagline').textContent = translations[lang].tagline;
+    document.querySelector('.hero-section h2').textContent = translations[lang].hero_title;
+    document.querySelector('.hero-section p').textContent = translations[lang].hero_desc;
+    document.getElementById('search-input').placeholder = translations[lang].search_placeholder;
+    document.getElementById('search-btn').textContent = translations[lang].search_btn;
+    document.getElementById('reset-btn').textContent = translations[lang].reset_btn;
+    document.getElementById('load-more-btn').textContent = translations[lang].load_more;
+    document.querySelector('.emergency-section h2').textContent = translations[lang].emergency_title;
+    document.querySelector('.main-footer p').textContent = translations[lang].footer;
+
+    // Update Nav
+    const navLinks = document.querySelectorAll('.main-nav a');
+    navLinks[0].textContent = translations[lang].nav_transport;
+    navLinks[1].textContent = translations[lang].nav_places;
+    navLinks[2].textContent = translations[lang].nav_food;
+    navLinks[3].textContent = translations[lang].nav_events;
+
+    // Update Filters (Options need to be repopulated or text updated)
+    // For simplicity, we just update the default options
+    filterFrom.options[0].textContent = translations[lang].filter_from;
+    filterTo.options[0].textContent = translations[lang].filter_to;
+    filterTime.options[0].textContent = translations[lang].filter_time;
+    filterTime.options[1].textContent = translations[lang].filter_time_0_6;
+    filterTime.options[2].textContent = translations[lang].filter_time_6_12;
+    filterTime.options[3].textContent = translations[lang].filter_time_12_18;
+    filterTime.options[4].textContent = translations[lang].filter_time_18_24;
+
+    // Re-render buses to update dynamic text
+    renderBuses(currentBuses);
+}
+
+langToggle.addEventListener('click', () => {
+    updateLanguage(currentLang === 'en' ? 'hi' : 'en');
+});
+
 function renderBuses(buses, append = false) {
     if (!append) {
         grid.innerHTML = '';
@@ -101,106 +199,7 @@ function renderBuses(buses, append = false) {
     const end = visibleCount;
     const sliceToRender = currentBuses.slice(start, end);
 
-    // Language Data
-    const translations = {
-        en: {
-            tagline: "The City Encyclopedia",
-            nav_transport: "Transport",
-            nav_places: "Places",
-            nav_food: "Food",
-            nav_events: "Events",
-            hero_title: "Local Bus Schedule",
-            hero_desc: "Find the best route to your destination in Shivpuri.",
-            search_placeholder: "Search bus number or operator...",
-            search_btn: "Search",
-            filter_from: "From City",
-            filter_to: "To City",
-            filter_time: "Any Time",
-            filter_time_0_6: "Early Morning (12 AM - 6 AM)",
-            filter_time_6_12: "Morning (6 AM - 12 PM)",
-            filter_time_12_18: "Afternoon (12 PM - 6 PM)",
-            filter_time_18_24: "Evening (6 PM - 12 AM)",
-            reset_btn: "Reset",
-            load_more: "Load More Buses",
-            emergency_title: "Emergency Numbers",
-            share_btn: "Share on WhatsApp",
-            via: "via",
-            daily: "Daily",
-            footer: "© 2025 shivpurilocal.in. All rights reserved."
-        },
-        hi: {
-            tagline: "शहर का विश्वकोश",
-            nav_transport: "परिवहन",
-            nav_places: "पर्यटन",
-            nav_food: "भोजन",
-            nav_events: "कार्यक्रम",
-            hero_title: "स्थानीय बस समय सारिणी",
-            hero_desc: "शिवपुरी में अपने गंतव्य के लिए सबसे अच्छा मार्ग खोजें।",
-            search_placeholder: "बस नंबर या ऑपरेटर खोजें...",
-            search_btn: "खोजें",
-            filter_from: "कहाँ से",
-            filter_to: "कहाँ तक",
-            filter_time: "कोई भी समय",
-            filter_time_0_6: "तड़के (12 AM - 6 AM)",
-            filter_time_6_12: "सुबह (6 AM - 12 PM)",
-            filter_time_12_18: "दोपहर (12 PM - 6 PM)",
-            filter_time_18_24: "शाम (6 PM - 12 AM)",
-            reset_btn: "रीसेट",
-            load_more: "और बसें देखें",
-            emergency_title: "आपातकालीन नंबर",
-            share_btn: "व्हाट्सएप पर शेयर करें",
-            via: "द्वारा",
-            daily: "रोजाना",
-            footer: "© 2025 shivpurilocal.in. सर्वाधिकार सुरक्षित।"
-        }
-    };
 
-    let currentLang = localStorage.getItem('lang') || 'en';
-    const langToggle = document.getElementById('lang-toggle');
-
-    function updateLanguage(lang) {
-        currentLang = lang;
-        localStorage.setItem('lang', lang);
-        langToggle.textContent = lang === 'en' ? 'हिंदी' : 'English';
-
-        // Update static text
-        document.querySelector('.tagline').textContent = translations[lang].tagline;
-        document.querySelector('.hero-section h2').textContent = translations[lang].hero_title;
-        document.querySelector('.hero-section p').textContent = translations[lang].hero_desc;
-        document.getElementById('search-input').placeholder = translations[lang].search_placeholder;
-        document.getElementById('search-btn').textContent = translations[lang].search_btn;
-        document.getElementById('reset-btn').textContent = translations[lang].reset_btn;
-        document.getElementById('load-more-btn').textContent = translations[lang].load_more;
-        document.querySelector('.emergency-section h2').textContent = translations[lang].emergency_title;
-        document.querySelector('.main-footer p').textContent = translations[lang].footer;
-
-        // Update Nav
-        const navLinks = document.querySelectorAll('.main-nav a');
-        navLinks[0].textContent = translations[lang].nav_transport;
-        navLinks[1].textContent = translations[lang].nav_places;
-        navLinks[2].textContent = translations[lang].nav_food;
-        navLinks[3].textContent = translations[lang].nav_events;
-
-        // Update Filters (Options need to be repopulated or text updated)
-        // For simplicity, we just update the default options
-        filterFrom.options[0].textContent = translations[lang].filter_from;
-        filterTo.options[0].textContent = translations[lang].filter_to;
-        filterTime.options[0].textContent = translations[lang].filter_time;
-        filterTime.options[1].textContent = translations[lang].filter_time_0_6;
-        filterTime.options[2].textContent = translations[lang].filter_time_6_12;
-        filterTime.options[3].textContent = translations[lang].filter_time_12_18;
-        filterTime.options[4].textContent = translations[lang].filter_time_18_24;
-
-        // Re-render buses to update dynamic text
-        renderBuses(currentBuses);
-    }
-
-    langToggle.addEventListener('click', () => {
-        updateLanguage(currentLang === 'en' ? 'hi' : 'en');
-    });
-
-    // Initial Load
-    updateLanguage(currentLang);
 
     sliceToRender.forEach(bus => {
         const card = document.createElement('div');
@@ -320,7 +319,7 @@ function showToast(message) {
 
 // Initial Setup
 populateDropdowns();
-renderBuses(busData);
+updateLanguage(currentLang);
 
 // Event Listeners
 searchBtn.addEventListener('click', applyFilters);
