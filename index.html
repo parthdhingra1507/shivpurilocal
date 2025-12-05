@@ -37,9 +37,29 @@
             </section>
 
             <section class="bus-schedule-container">
-                <div class="search-bar">
-                    <input type="text" id="search-input" placeholder="Search for a stop or bus number...">
-                    <button id="search-btn">Search</button>
+                <div class="filters-container">
+                    <div class="search-wrapper">
+                        <input type="text" id="search-input" placeholder="Search bus number or operator...">
+                        <button id="search-btn">Search</button>
+                    </div>
+                    <div class="filter-row">
+                        <select id="filter-from">
+                            <option value="">From City</option>
+                            <!-- Populated by JS -->
+                        </select>
+                        <select id="filter-to">
+                            <option value="">To City</option>
+                            <!-- Populated by JS -->
+                        </select>
+                        <select id="filter-time">
+                            <option value="">Any Time</option>
+                            <option value="0-6">Early Morning (12 AM - 6 AM)</option>
+                            <option value="6-12">Morning (6 AM - 12 PM)</option>
+                            <option value="12-18">Afternoon (12 PM - 6 PM)</option>
+                            <option value="18-24">Evening (6 PM - 12 AM)</option>
+                        </select>
+                        <button id="reset-btn">Reset</button>
+                    </div>
                 </div>
 
                 <div class="schedule-grid" id="schedule-grid">

@@ -5,16 +5,60 @@ const busData = [
 const grid = document.getElementById('schedule-grid');
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
+const filterFrom = document.getElementById('filter-from');
+const filterTo = document.getElementById('filter-to');
+const filterTime = document.getElementById('filter-time');
+const resetBtn = document.getElementById('reset-btn');
 
 function formatTime(timestamp) {
     const date = new Date(timestamp);
-    // User data is already in correct local time but stored as UTC timestamp
-    // We use UTC to prevent adding another +5:30 offset
     return date.toLocaleTimeString('en-US', {
-        hour: '2-digit',
+        hour: 'numeric',
         minute: '2-digit',
+        hour12: true,
         timeZone: 'UTC'
     });
+}
+
+function formatTimeString(timeStr) {
+    const [time, modifier] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':');
+    hours = parseInt(hours);
+
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+
+    let formatted = `${hours}:${minutes} ${ampm}`;
+    if (modifier) {
+        formatted += ` ${modifier}`;
+    }
+    return formatted;
+}
+
+function populateDropdowns() {
+    const fromCities = new Set(busData.map(bus => bus.route_from));
+    const toCities = new Set(busData.map(bus => bus.route_to));
+
+    fromCities.forEach(city => {
+        const option = document.createElement('option');
+        option.value = city;
+        option.textContent = city;
+        filterFrom.appendChild(option);
+    });
+
+    toCities.forEach(city => {
+        const option = document.createElement('option');
+        option.value = city;
+        option.textContent = city;
+        filterTo.appendChild(option);
+    });
+}
+
+function getHourFromTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    // Get UTC hour because our timestamps are UTC-based for this app logic
+    return date.getUTCHours();
 }
 
 function renderBuses(buses) {
@@ -25,21 +69,15 @@ function renderBuses(buses) {
         return;
     }
 
-    // Sort: Buses FROM Shivpuri first, then others
-    buses.sort((a, b) => {
-        const aFromShivpuri = a.route_from.toLowerCase() === 'shivpuri';
-        const bFromShivpuri = b.route_from.toLowerCase() === 'shivpuri';
-
-        if (aFromShivpuri && !bFromShivpuri) return -1;
-        if (!aFromShivpuri && bFromShivpuri) return 1;
-        return 0;
-    });
+    // Sort: Departure Time Ascending
+    buses.sort((a, b) => a.departure_time - b.departure_time);
 
     buses.forEach(bus => {
         const card = document.createElement('div');
         card.className = 'bus-card';
 
         const departure = formatTime(bus.departure_time);
+        const arrival = formatTimeString(bus.arrival_time);
 
         card.innerHTML = `
             <div class="bus-header">
@@ -59,7 +97,7 @@ function renderBuses(buses) {
                         <span class="via-text">via ${bus.via}</span>
                     </div>
                     <div class="route-point">
-                        <span class="time">${bus.arrival_time}</span>
+                        <span class="time">${arrival}</span>
                         <span class="city">${bus.route_to}</span>
                     </div>
                 </div>
@@ -73,14 +111,36 @@ function renderBuses(buses) {
     });
 }
 
-function filterBuses(query) {
-    const lowerQuery = query.toLowerCase();
-    const filtered = busData.filter(bus =>
-        bus.operator_name.toLowerCase().includes(lowerQuery) ||
-        bus.route_from.toLowerCase().includes(lowerQuery) ||
-        bus.route_to.toLowerCase().includes(lowerQuery) ||
-        bus.via.toLowerCase().includes(lowerQuery)
-    );
+function applyFilters() {
+    const query = searchInput.value.toLowerCase();
+    const fromVal = filterFrom.value;
+    const toVal = filterTo.value;
+    const timeVal = filterTime.value;
+
+    const filtered = busData.filter(bus => {
+        // Text Search
+        const matchesSearch =
+            bus.operator_name.toLowerCase().includes(query) ||
+            bus.route_from.toLowerCase().includes(query) ||
+            bus.route_to.toLowerCase().includes(query) ||
+            bus.via.toLowerCase().includes(query) ||
+            bus.name_plate_text.toLowerCase().includes(query);
+
+        // Dropdown Filters
+        const matchesFrom = fromVal === "" || bus.route_from === fromVal;
+        const matchesTo = toVal === "" || bus.route_to === toVal;
+
+        // Time Filter
+        let matchesTime = true;
+        if (timeVal !== "") {
+            const hour = getHourFromTimestamp(bus.departure_time);
+            const [start, end] = timeVal.split('-').map(Number);
+            matchesTime = hour >= start && hour < end;
+        }
+
+        return matchesSearch && matchesFrom && matchesTo && matchesTime;
+    });
+
     renderBuses(filtered);
 }
 
@@ -90,14 +150,9 @@ function showToast(message) {
     const toast = document.createElement('div');
     toast.className = 'toast';
     toast.textContent = message;
-
     container.appendChild(toast);
-
-    // Trigger reflow
-    toast.offsetHeight;
-
+    toast.offsetHeight; // Trigger reflow
     toast.classList.add('show');
-
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => {
@@ -106,16 +161,23 @@ function showToast(message) {
     }, 3000);
 }
 
-// Initial render
+// Initial Setup
+populateDropdowns();
 renderBuses(busData);
 
-// Event listeners
-searchBtn.addEventListener('click', () => {
-    filterBuses(searchInput.value);
-});
+// Event Listeners
+searchBtn.addEventListener('click', applyFilters);
+searchInput.addEventListener('keyup', applyFilters);
+filterFrom.addEventListener('change', applyFilters);
+filterTo.addEventListener('change', applyFilters);
+filterTime.addEventListener('change', applyFilters);
 
-searchInput.addEventListener('keyup', (e) => {
-    filterBuses(searchInput.value);
+resetBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    filterFrom.value = '';
+    filterTo.value = '';
+    filterTime.value = '';
+    applyFilters();
 });
 
 // Add toast listeners to nav links
