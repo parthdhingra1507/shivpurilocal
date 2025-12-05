@@ -16,7 +16,18 @@
 
     gtag('config', 'G-6F0WC51BKD');
 </script>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
 <link rel="stylesheet" href="style.css">
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('SW registered!', reg))
+                .catch(err => console.log('SW failed', err));
+        });
+    }
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link
@@ -74,6 +85,32 @@
 
                 <div class="schedule-grid" id="schedule-grid">
                     <!-- Bus cards will be injected here by JS -->
+                </div>
+            </section>
+
+            <section class="emergency-section" id="emergency">
+                <h2>Emergency Numbers</h2>
+                <div class="emergency-grid">
+                    <div class="emergency-card">
+                        <div class="e-icon">👮</div>
+                        <h3>Police Control</h3>
+                        <a href="tel:100">100</a>
+                    </div>
+                    <div class="emergency-card">
+                        <div class="e-icon">🚑</div>
+                        <h3>Ambulance</h3>
+                        <a href="tel:108">108</a>
+                    </div>
+                    <div class="emergency-card">
+                        <div class="e-icon">🚒</div>
+                        <h3>Fire Brigade</h3>
+                        <a href="tel:101">101</a>
+                    </div>
+                    <div class="emergency-card">
+                        <div class="e-icon">🏥</div>
+                        <h3>District Hospital</h3>
+                        <a href="tel:07492233333">07492-233333</a>
+                    </div>
                 </div>
             </section>
         </main>
