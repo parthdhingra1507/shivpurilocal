@@ -9,9 +9,9 @@
     --border-color: #e2e8f0;
     --font-heading: 'Playfair Display', serif;
     --font-body: 'Outfit', sans-serif;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 * {
@@ -77,7 +77,8 @@ body {
     transition: color 0.3s ease;
 }
 
-.main-nav a:hover, .main-nav a.active {
+.main-nav a:hover,
+.main-nav a.active {
     color: var(--primary-color);
 }
 
@@ -150,10 +151,11 @@ body {
 /* Grid */
 .schedule-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 2rem;
 }
 
+/* New Card Design */
 .bus-card {
     background-color: var(--card-bg);
     border-radius: 16px;
@@ -172,56 +174,93 @@ body {
 }
 
 .bus-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
 
-.bus-number {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 0.9rem;
-}
-
-.bus-type {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-}
-
-.route-info {
-    margin-bottom: 1.5rem;
-}
-
-.route-stop {
+.operator-info {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
 }
 
-.stop-time {
-    font-weight: 600;
-    color: var(--primary-color);
-    min-width: 60px;
-}
-
-.stop-name {
+.operator-name {
+    font-weight: 700;
+    font-size: 1.1rem;
     color: var(--text-main);
 }
 
-.arrow-icon {
+.bus-type-badge {
+    background-color: #e0e7ff;
+    color: var(--primary-dark);
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.route-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.route-point {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.route-point:last-child {
+    align-items: flex-end;
+    text-align: right;
+}
+
+.time {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.city {
+    font-size: 0.9rem;
     color: var(--text-muted);
-    margin: 0.5rem 0 0.5rem 1.5rem;
-    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.route-arrow {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.duration-line {
+    width: 100%;
+    height: 2px;
+    background-color: var(--border-color);
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+.duration-line::after {
+    content: '→';
+    position: absolute;
+    right: -5px;
+    top: -10px;
+    color: var(--border-color);
+}
+
+.via-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
 }
 
 .bus-footer {
@@ -229,8 +268,10 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border-color);
 }
 
 .status-badge {
@@ -238,8 +279,34 @@ body {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: #10b981; /* Green for active */
+    background-color: #10b981;
     margin-right: 5px;
+}
+
+/* Toast Notification */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.toast {
+    background-color: var(--text-main);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-top: 10px;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* Footer */
@@ -258,7 +325,7 @@ body {
         gap: 1rem;
         text-align: center;
     }
-    
+
     .schedule-grid {
         grid-template-columns: 1fr;
     }
