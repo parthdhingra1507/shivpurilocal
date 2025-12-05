@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://shivpurilocal.in/sitemap.xml
