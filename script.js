@@ -61,26 +61,161 @@ function getHourFromTimestamp(timestamp) {
     return date.getUTCHours();
 }
 
-function renderBuses(buses) {
-    grid.innerHTML = '';
+let currentBuses = [];
+let visibleCount = 6;
+const ITEMS_PER_PAGE = 6;
+const loadMoreContainer = document.getElementById('load-more-container');
+const loadMoreBtn = document.getElementById('load-more-btn');
+
+function renderBuses(buses, append = false) {
+    if (!append) {
+        grid.innerHTML = '';
+        visibleCount = ITEMS_PER_PAGE;
+        currentBuses = buses;
+    }
 
     if (buses.length === 0) {
         grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No buses found matching your search.</p>';
+        loadMoreContainer.style.display = 'none';
         return;
     }
 
     // Sort: Departure Time Ascending
-    buses.sort((a, b) => a.departure_time - b.departure_time);
+    // Note: If appending, we assume 'buses' is already sorted or we are rendering a slice
+    // Ideally, we sort the main array once and then slice it.
+    // For simplicity in this structure: 'currentBuses' holds the full sorted list.
 
-    buses.forEach(bus => {
+    if (!append) {
+        currentBuses.sort((a, b) => a.departure_time - b.departure_time);
+    }
+
+    const busesToShow = currentBuses.slice(0, visibleCount);
+
+    // Clear grid if not appending (already done above, but safe to ensure logic)
+    if (!append) grid.innerHTML = '';
+
+    // If appending, we only want to render the NEW items, but simplistic approach is re-render or render slice.
+    // Better approach: Render only the slice range.
+
+    const start = append ? visibleCount - ITEMS_PER_PAGE : 0;
+    const end = visibleCount;
+    const sliceToRender = currentBuses.slice(start, end);
+
+    // Language Data
+    const translations = {
+        en: {
+            tagline: "The City Encyclopedia",
+            nav_transport: "Transport",
+            nav_places: "Places",
+            nav_food: "Food",
+            nav_events: "Events",
+            hero_title: "Local Bus Schedule",
+            hero_desc: "Find the best route to your destination in Shivpuri.",
+            search_placeholder: "Search bus number or operator...",
+            search_btn: "Search",
+            filter_from: "From City",
+            filter_to: "To City",
+            filter_time: "Any Time",
+            filter_time_0_6: "Early Morning (12 AM - 6 AM)",
+            filter_time_6_12: "Morning (6 AM - 12 PM)",
+            filter_time_12_18: "Afternoon (12 PM - 6 PM)",
+            filter_time_18_24: "Evening (6 PM - 12 AM)",
+            reset_btn: "Reset",
+            load_more: "Load More Buses",
+            emergency_title: "Emergency Numbers",
+            share_btn: "Share on WhatsApp",
+            via: "via",
+            daily: "Daily",
+            footer: "© 2025 shivpurilocal.in. All rights reserved."
+        },
+        hi: {
+            tagline: "शहर का विश्वकोश",
+            nav_transport: "परिवहन",
+            nav_places: "पर्यटन",
+            nav_food: "भोजन",
+            nav_events: "कार्यक्रम",
+            hero_title: "स्थानीय बस समय सारिणी",
+            hero_desc: "शिवपुरी में अपने गंतव्य के लिए सबसे अच्छा मार्ग खोजें।",
+            search_placeholder: "बस नंबर या ऑपरेटर खोजें...",
+            search_btn: "खोजें",
+            filter_from: "कहाँ से",
+            filter_to: "कहाँ तक",
+            filter_time: "कोई भी समय",
+            filter_time_0_6: "तड़के (12 AM - 6 AM)",
+            filter_time_6_12: "सुबह (6 AM - 12 PM)",
+            filter_time_12_18: "दोपहर (12 PM - 6 PM)",
+            filter_time_18_24: "शाम (6 PM - 12 AM)",
+            reset_btn: "रीसेट",
+            load_more: "और बसें देखें",
+            emergency_title: "आपातकालीन नंबर",
+            share_btn: "व्हाट्सएप पर शेयर करें",
+            via: "द्वारा",
+            daily: "रोजाना",
+            footer: "© 2025 shivpurilocal.in. सर्वाधिकार सुरक्षित।"
+        }
+    };
+
+    let currentLang = localStorage.getItem('lang') || 'en';
+    const langToggle = document.getElementById('lang-toggle');
+
+    function updateLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('lang', lang);
+        langToggle.textContent = lang === 'en' ? 'हिंदी' : 'English';
+
+        // Update static text
+        document.querySelector('.tagline').textContent = translations[lang].tagline;
+        document.querySelector('.hero-section h2').textContent = translations[lang].hero_title;
+        document.querySelector('.hero-section p').textContent = translations[lang].hero_desc;
+        document.getElementById('search-input').placeholder = translations[lang].search_placeholder;
+        document.getElementById('search-btn').textContent = translations[lang].search_btn;
+        document.getElementById('reset-btn').textContent = translations[lang].reset_btn;
+        document.getElementById('load-more-btn').textContent = translations[lang].load_more;
+        document.querySelector('.emergency-section h2').textContent = translations[lang].emergency_title;
+        document.querySelector('.main-footer p').textContent = translations[lang].footer;
+
+        // Update Nav
+        const navLinks = document.querySelectorAll('.main-nav a');
+        navLinks[0].textContent = translations[lang].nav_transport;
+        navLinks[1].textContent = translations[lang].nav_places;
+        navLinks[2].textContent = translations[lang].nav_food;
+        navLinks[3].textContent = translations[lang].nav_events;
+
+        // Update Filters (Options need to be repopulated or text updated)
+        // For simplicity, we just update the default options
+        filterFrom.options[0].textContent = translations[lang].filter_from;
+        filterTo.options[0].textContent = translations[lang].filter_to;
+        filterTime.options[0].textContent = translations[lang].filter_time;
+        filterTime.options[1].textContent = translations[lang].filter_time_0_6;
+        filterTime.options[2].textContent = translations[lang].filter_time_6_12;
+        filterTime.options[3].textContent = translations[lang].filter_time_12_18;
+        filterTime.options[4].textContent = translations[lang].filter_time_18_24;
+
+        // Re-render buses to update dynamic text
+        renderBuses(currentBuses);
+    }
+
+    langToggle.addEventListener('click', () => {
+        updateLanguage(currentLang === 'en' ? 'hi' : 'en');
+    });
+
+    // Initial Load
+    updateLanguage(currentLang);
+
+    sliceToRender.forEach(bus => {
         const card = document.createElement('div');
         card.className = 'bus-card';
 
         const departure = formatTime(bus.departure_time);
         const arrival = formatTimeString(bus.arrival_time);
 
+        // Update dynamic text in card
+        const viaText = translations[currentLang].via;
+        const shareBtnText = translations[currentLang].share_btn;
+        const daysText = bus.days_of_operation === 'Daily' ? translations[currentLang].daily : bus.days_of_operation;
+
         // WhatsApp Message
-        const shareText = `🚌 *Bus Schedule Alert*\n\n*${bus.operator_name}*\nFrom: ${bus.route_from}\nTo: ${bus.route_to}\nTime: ${departure}\nVia: ${bus.via}\n\nCheck full schedule on: https://shivpurilocal.in`;
+        const shareText = `🚌 *Bus Schedule Alert*\n\n*${bus.operator_name}*\nFrom: ${bus.route_from}\nTo: ${bus.route_to}\nTime: ${departure}\n${translations[currentLang].via}: ${bus.via}\n\nCheck full schedule on: https://shivpurilocal.in`;
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
         card.innerHTML = `
@@ -98,7 +233,7 @@ function renderBuses(buses) {
                     </div>
                     <div class="route-arrow">
                         <span class="duration-line"></span>
-                        <span class="via-text">via ${bus.via}</span>
+                        <span class="via-text">${viaText} ${bus.via}</span>
                     </div>
                     <div class="route-point">
                         <span class="time">${arrival}</span>
@@ -108,18 +243,30 @@ function renderBuses(buses) {
             </div>
             <div class="bus-footer">
                 <span class="distance">${bus.distance_km} km</span>
-                <span class="operation-days">${bus.days_of_operation}</span>
+                <span class="operation-days">${daysText}</span>
             </div>
             <a href="${whatsappUrl}" target="_blank" class="share-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
                 </svg>
-                Share on WhatsApp
+                ${shareBtnText}
             </a>
         `;
         grid.appendChild(card);
     });
+
+    // Update Load More Button Visibility
+    if (visibleCount >= currentBuses.length) {
+        loadMoreContainer.style.display = 'none';
+    } else {
+        loadMoreContainer.style.display = 'block';
+    }
 }
+
+loadMoreBtn.addEventListener('click', () => {
+    visibleCount += ITEMS_PER_PAGE;
+    renderBuses(currentBuses, true);
+});
 
 function applyFilters() {
     const query = searchInput.value.toLowerCase();

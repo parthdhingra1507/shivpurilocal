@@ -39,8 +39,9 @@
         <header class="main-header">
             <div class="logo-container">
                 <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
-                <p class="tagline">The City Encyclopedia</p>
+                <p class="tagline" data-translate="tagline">The City Encyclopedia</p>
             </div>
+            <button id="lang-toggle" class="lang-btn">हिंदी</button>
             <nav class="main-nav">
                 <ul>
                     <li><a href="#" class="active">Transport</a></li>
@@ -85,6 +86,9 @@
 
                 <div class="schedule-grid" id="schedule-grid">
                     <!-- Bus cards will be injected here by JS -->
+                </div>
+                <div class="load-more-container" id="load-more-container" style="display: none;">
+                    <button id="load-more-btn">Load More Buses</button>
                 </div>
             </section>
 
