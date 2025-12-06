@@ -281,7 +281,7 @@ function renderPlaces(places = placesData) {
         card.className = 'place-card';
 
         const tagsHTML = place.tags.slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('');
-        const shareText = `📍 *${place.name}*\\n\\n${place.shortDescription}\\n\\nCategory: ${place.category}\\nArea: ${place.area}\\n\\nExplore more on: https://shivpurilocal.in`;
+        const shareText = `📍 *${place.name}*\n\n${place.shortDescription}\n\nCategory: ${place.category}\nArea: ${place.area}\n\nExplore more on: https://shivpurilocal.in`;
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
         card.innerHTML = `
@@ -327,7 +327,7 @@ function renderFood(food = foodData) {
         card.className = 'food-card';
 
         const tagsHTML = item.tags.slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('');
-        const shareText = `🍽️ *${item.name}*\\n\\n${item.shortDescription}\\n\\nCategory: ${item.category}\\nArea: ${item.area}\\nPrice for 2: ₹${item.approxPriceForTwo}\\n\\nExplore more on: https://shivpurilocal.in`;
+        const shareText = `🍽️ *${item.name}*\n\n${item.shortDescription}\n\nCategory: ${item.category}\nArea: ${item.area}\nPrice for 2: ₹${item.approxPriceForTwo}\n\nExplore more on: https://shivpurilocal.in`;
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
         card.innerHTML = `
