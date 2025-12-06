@@ -314,8 +314,33 @@ body {
     padding: 2rem 0;
     text-align: center;
     border-top: 1px solid var(--border-color);
+    margin-top: auto;
+}
+
+.main-footer p {
     color: var(--text-muted);
     font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.footer-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.footer-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
 }
 
 /* Responsive */
@@ -578,7 +603,39 @@ select:focus {
     color: white;
 }
 
-/* Language Toggle */
+/* Language Toggle & Install Button */
+.lang-btn,
+.install-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 0.5rem 1rem;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.lang-btn:hover,
+.install-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.install-btn {
+    background: var(--secondary-color);
+    /* Use secondary color for distinction */
+    border: none;
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+.install-btn:hover {
+    background: #eab308;
+    /* Slightly darker yellow/secondary */
+}
+
 .lang-btn {
     padding: 0.4rem 1rem;
     border: 1px solid var(--border-color);
