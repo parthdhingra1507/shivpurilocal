@@ -47,7 +47,7 @@
     <div class="app-container">
         <header class="main-header">
             <div class="logo-container">
-                <a href="index.html" style="text-decoration: none; color: inherit;">
+                <a href="/" style="text-decoration: none; color: inherit;">
                     <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
                 </a>
                 <p class="tagline">The City Encyclopedia</p>
@@ -58,40 +58,37 @@
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="index.html" class="active">Home</a></li>
-                    <li><a href="transport.html">Transport</a></li>
-                    <li><a href="places.html">Places</a></li>
-                    <li><a href="food.html">Food</a></li>
+                    <li><a href="/" class="active">Home</a></li>
+                    <li><a href="/transport">Transport</a></li>
+                    <li><a href="/places">Places</a></li>
+                    <li><a href="/food">Food</a></li>
                 </ul>
             </nav>
         </header>
 
-        <main class="content-area">
-            <section class="hero-section">
-                <h2 id="hero-title">Explore Shivpuri</h2>
-                <p id="hero-desc">Your complete guide to the city</p>
+        <main class="home-content">
+            <section class="hero">
+                <h2>Welcome to Shivpuri</h2>
+                <p>Your complete guide to local bus schedules, top places, and best food spots.</p>
             </section>
 
-            <!-- Category Selection -->
-            <section class="category-section">
-                <div class="category-grid">
-                    <a href="transport.html" class="category-card">
-                        <div class="category-icon">🚌</div>
-                        <h3>Transport</h3>
-                        <p>Bus schedules & routes</p>
-                    </a>
-                    <a href="places.html" class="category-card">
-                        <div class="category-icon">🏛️</div>
-                        <h3>Places</h3>
-                        <p>Explore attractions</p>
-                    </a>
-                    <a href="food.html" class="category-card">
-                        <div class="category-icon">🍽️</div>
-                        <h3>Food</h3>
-                        <p>Restaurants & cafes</p>
-                    </a>
-                </div>
-            </section>
+            <div class="category-grid">
+                <a href="/transport" class="category-card" id="cat-transport">
+                    <div class="cat-icon">🚌</div>
+                    <h3>Bus Schedule</h3>
+                    <p>Live timings & Routes</p>
+                </a>
+                <a href="/places" class="category-card" id="cat-places">
+                    <div class="cat-icon">📍</div>
+                    <h3>Places to Visit</h3>
+                    <p>Tourist spots & Nature</p>
+                </a>
+                <a href="/food" class="category-card" id="cat-food">
+                    <div class="cat-icon">🍽️</div>
+                    <h3>Food & Dining</h3>
+                    <p>Best Restaurants & Cafes</p>
+                </a>
+            </div>
 
             <!-- Emergency Numbers Section -->
             <section class="emergency-section">

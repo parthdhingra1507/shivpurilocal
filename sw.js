@@ -1,14 +1,15 @@
-const CACHE_NAME = 'shivpuri-local-v2';
+const CACHE_NAME = 'shivpuri-local-v3';
 const ASSETS = [
     '/',
     '/index.html',
-    '/transport.html',
-    '/places.html',
-    '/food.html',
+    '/transport',
+    '/places',
+    '/food',
     '/style.css',
     '/script.js',
     '/common.js',
-    '/manifest.json'
+    '/manifest.json',
+    '/social-preview.png'
 ];
 
 // Install Event
