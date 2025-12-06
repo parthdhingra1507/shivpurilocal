@@ -246,6 +246,18 @@ function applyFilters() {
     const toVal = filterTo.value;
     const timeVal = filterTime.value;
 
+    // Toggle Reset Button State
+    if (resetBtn) {
+        const hasFilters = fromVal !== "" || toVal !== "" || timeVal !== "";
+        if (hasFilters) {
+            resetBtn.textContent = "Reset Filters";
+            resetBtn.classList.add("reset-mode");
+        } else {
+            resetBtn.textContent = "Search Buses";
+            resetBtn.classList.remove("reset-mode");
+        }
+    }
+
     const filtered = busData.filter(bus => {
         // Dropdown Filters
         const matchesFrom = fromVal === "" || bus.route_from === fromVal;
@@ -441,10 +453,16 @@ if (isTransportPage) {
 
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            filterFrom.value = '';
-            filterTo.value = '';
-            filterTime.value = '';
-            applyFilters();
+            if (resetBtn.classList.contains('reset-mode')) {
+                filterFrom.value = '';
+                filterTo.value = '';
+                filterTime.value = '';
+                applyFilters();
+            } else {
+                // Search Mode: Scroll to buses
+                const grid = document.getElementById('schedule-grid');
+                if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         });
     }
 
