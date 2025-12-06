@@ -797,3 +797,47 @@ select:focus {
         padding: 2rem 1.5rem;
     }
 }
+
+/* Card Actions (Map & Share) */
+.card-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    /* Add spacing from content */
+}
+
+.map-btn,
+.share-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    margin-top: 0;
+    /* Reset existing margin */
+}
+
+/* Update share-btn generic style if needed, or rely on existing */
+.map-btn {
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.map-btn:hover {
+    background-color: rgba(37, 99, 235, 0.05);
+    transform: translateY(-2px);
+}
+
+/* Ensure Share btn takes half width if in flex */
+.share-btn {
+    /* Ensure it keeps its green style but fits layout */
+    border-radius: 12px;
+}
