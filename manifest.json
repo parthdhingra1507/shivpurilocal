@@ -1,7 +1,7 @@
 {
   "name": "Shivpuri Local",
   "short_name": "ShivpuriLocal",
-  "start_url": "/index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#2563eb",
