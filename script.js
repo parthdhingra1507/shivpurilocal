@@ -158,7 +158,7 @@ function updateLanguage(lang) {
     filterTime.options[4].textContent = translations[lang].filter_time_18_24;
 
     // Re-render buses to update dynamic text
-    renderBuses(currentBuses);
+    renderBuses(currentBuses.length > 0 ? currentBuses : busData);
 }
 
 langToggle.addEventListener('click', () => {
