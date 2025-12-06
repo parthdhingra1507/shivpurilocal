@@ -606,34 +606,34 @@ select:focus {
 /* Language Toggle & Install Button */
 .lang-btn,
 .install-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: white;
+    border: 1px solid var(--border-color);
     padding: 0.5rem 1rem;
-    color: white;
+    color: var(--text-main);
     border-radius: 20px;
     cursor: pointer;
     font-size: 0.9rem;
     transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
+    box-shadow: var(--shadow-sm);
 }
 
 .lang-btn:hover,
 .install-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .install-btn {
-    background: var(--secondary-color);
-    /* Use secondary color for distinction */
+    background: var(--accent-color);
+    color: white;
     border: none;
     font-weight: 600;
     margin-right: 0.5rem;
 }
 
 .install-btn:hover {
-    background: #eab308;
-    /* Slightly darker yellow/secondary */
+    background: #d97706;
+    /* Darker amber */
 }
 
 .lang-btn {
