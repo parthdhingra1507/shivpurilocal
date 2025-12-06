@@ -2,9 +2,9 @@
 <html lang="en">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shivpuri Local (shivpurilocal.in) - The City Encyclopedia</title>
+<title>Shivpuri Local - Your Complete City Guide</title>
 <meta name="description"
-    content="Your complete guide to Shivpuri city. Find local bus schedules, places, and more at shivpurilocal.in.">
+    content="Explore Shivpuri with our complete city guide. Find bus schedules, discover places, and explore the best food spots in Shivpuri.">
 <link rel="canonical" href="https://shivpurilocal.in/">
 
 <!-- Google Analytics -->
@@ -13,7 +13,6 @@
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-
     gtag('config', 'G-6F0WC51BKD');
 </script>
 <link rel="manifest" href="manifest.json">
@@ -43,14 +42,15 @@
         <header class="main-header">
             <div class="logo-container">
                 <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
-                <p class="tagline" data-translate="tagline">The City Encyclopedia</p>
+                <p class="tagline">The City Encyclopedia</p>
             </div>
             <button id="lang-toggle" class="lang-btn">हिंदी</button>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="#" data-category="transport" class="active">Transport</a></li>
-                    <li><a href="#" data-category="places">Places</a></li>
-                    <li><a href="#" data-category="food">Food</a></li>
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="transport.html">Transport</a></li>
+                    <li><a href="places.html">Places</a></li>
+                    <li><a href="food.html">Food</a></li>
                 </ul>
             </nav>
         </header>
@@ -62,82 +62,57 @@
             </section>
 
             <!-- Category Selection -->
-            <section id="category-selection" class="category-section">
+            <section class="category-section">
                 <div class="category-grid">
-                    <div class="category-card" data-category="transport">
+                    <a href="transport.html" class="category-card">
                         <div class="category-icon">🚌</div>
                         <h3>Transport</h3>
                         <p>Bus schedules & routes</p>
-                    </div>
-                    <div class="category-card" data-category="places">
+                    </a>
+                    <a href="places.html" class="category-card">
                         <div class="category-icon">🏛️</div>
                         <h3>Places</h3>
                         <p>Explore attractions</p>
-                    </div>
-                    <div class="category-card" data-category="food">
+                    </a>
+                    <a href="food.html" class="category-card">
                         <div class="category-icon">🍽️</div>
                         <h3>Food</h3>
                         <p>Restaurants & cafes</p>
-                    </div>
+                    </a>
                 </div>
             </section>
 
-            <section class="bus-schedule-container">
-                <div class="filters-container">
-                    <div class="search-wrapper">
-                        <input type="text" id="search-input" placeholder="Search bus number or operator...">
-                        <button id="search-btn">Search</button>
-                    </div>
-                    <div class="filter-row">
-                        <select id="filter-from">
-                            <option value="">From City</option>
-                            <!-- Populated by JS -->
-                        </select>
-                        <select id="filter-to">
-                            <option value="">To City</option>
-                            <!-- Populated by JS -->
-                        </select>
-                        <select id="filter-time">
-                            <option value="">Any Time</option>
-                            <option value="0-6">Early Morning (12 AM - 6 AM)</option>
-                            <option value="6-12">Morning (6 AM - 12 PM)</option>
-                            <option value="12-18">Afternoon (12 PM - 6 PM)</option>
-                            <option value="18-24">Evening (6 PM - 12 AM)</option>
-                        </select>
-                        <button id="reset-btn">Reset</button>
-                    </div>
-                </div>
-
-                <div class="schedule-grid" id="schedule-grid">
-                    <!-- Bus cards will be injected here by JS -->
-                </div>
-                <div class="load-more-container" id="load-more-container" style="display: none;">
-                    <button id="load-more-btn">Load More Buses</button>
-                </div>
-            </section>
-
-            <section class="emergency-section" id="emergency">
+            <!-- Emergency Numbers Section -->
+            <section class="emergency-section">
                 <h2>Emergency Numbers</h2>
                 <div class="emergency-grid">
                     <div class="emergency-card">
-                        <div class="e-icon">👮</div>
-                        <h3>Police Control</h3>
-                        <a href="tel:100">100</a>
+                        <span class="emergency-icon">🚓</span>
+                        <div class="emergency-info">
+                            <h3>Police</h3>
+                            <a href="tel:100" class="emergency-number">100</a>
+                        </div>
                     </div>
                     <div class="emergency-card">
-                        <div class="e-icon">🚑</div>
-                        <h3>Ambulance</h3>
-                        <a href="tel:108">108</a>
+                        <span class="emergency-icon">🚑</span>
+                        <div class="emergency-info">
+                            <h3>Ambulance</h3>
+                            <a href="tel:108" class="emergency-number">108</a>
+                        </div>
                     </div>
                     <div class="emergency-card">
-                        <div class="e-icon">🚒</div>
-                        <h3>Fire Brigade</h3>
-                        <a href="tel:101">101</a>
+                        <span class="emergency-icon">🚒</span>
+                        <div class="emergency-info">
+                            <h3>Fire</h3>
+                            <a href="tel:101" class="emergency-number">101</a>
+                        </div>
                     </div>
                     <div class="emergency-card">
-                        <div class="e-icon">🏥</div>
-                        <h3>District Hospital</h3>
-                        <a href="tel:07492233333">07492-233333</a>
+                        <span class="emergency-icon">👮</span>
+                        <div class="emergency-info">
+                            <h3>Women Helpline</h3>
+                            <a href="tel:1091" class="emergency-number">1091</a>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -147,8 +122,9 @@
             <p>&copy; 2025 shivpurilocal.in. All rights reserved.</p>
         </footer>
     </div>
+
     <div id="toast-container"></div>
-    <script src="script.js"></script>
+    <script src="common.js"></script>
 </body>
 
 </html>

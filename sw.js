@@ -1,9 +1,13 @@
-const CACHE_NAME = 'shivpuri-local-v1';
+const CACHE_NAME = 'shivpuri-local-v2';
 const ASSETS = [
     '/',
     '/index.html',
+    '/transport.html',
+    '/places.html',
+    '/food.html',
     '/style.css',
     '/script.js',
+    '/common.js',
     '/manifest.json'
 ];
 
