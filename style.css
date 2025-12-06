@@ -153,6 +153,8 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 2rem;
+    margin-bottom: 4rem;
+    /* Added spacing after grid */
 }
 
 /* New Card Design */
