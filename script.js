@@ -128,8 +128,6 @@ function updatePageLanguage(lang) {
         }
 
         // Update static buttons
-        if (searchBtn) searchBtn.textContent = translations[lang].search_btn;
-        if (searchInput) searchInput.placeholder = translations[lang].search_placeholder;
         if (resetBtn) resetBtn.textContent = translations[lang].reset_btn;
         if (loadMoreBtn) loadMoreBtn.textContent = translations[lang].load_more;
 
@@ -244,20 +242,11 @@ loadMoreBtn.addEventListener('click', () => {
 });
 
 function applyFilters() {
-    const query = searchInput.value.toLowerCase();
     const fromVal = filterFrom.value;
     const toVal = filterTo.value;
     const timeVal = filterTime.value;
 
     const filtered = busData.filter(bus => {
-        // Text Search
-        const matchesSearch =
-            bus.operator_name.toLowerCase().includes(query) ||
-            bus.route_from.toLowerCase().includes(query) ||
-            bus.route_to.toLowerCase().includes(query) ||
-            bus.via.toLowerCase().includes(query) ||
-            bus.name_plate_text.toLowerCase().includes(query);
-
         // Dropdown Filters
         const matchesFrom = fromVal === "" || bus.route_from === fromVal;
         const matchesTo = toVal === "" || bus.route_to === toVal;
@@ -270,7 +259,7 @@ function applyFilters() {
             matchesTime = hour >= start && hour < end;
         }
 
-        return matchesSearch && matchesFrom && matchesTo && matchesTime;
+        return matchesFrom && matchesTo && matchesTime;
     });
 
     renderBuses(filtered);
@@ -429,15 +418,13 @@ if (isTransportPage) {
     renderBuses(busData);
 
     // Event Listeners for Transport
-    if (searchBtn) searchBtn.addEventListener('click', applyFilters);
-    if (searchInput) searchInput.addEventListener('keyup', applyFilters);
+    // Event Listeners for Transport
     if (filterFrom) filterFrom.addEventListener('change', applyFilters);
     if (filterTo) filterTo.addEventListener('change', applyFilters);
     if (filterTime) filterTime.addEventListener('change', applyFilters);
 
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            searchInput.value = '';
             filterFrom.value = '';
             filterTo.value = '';
             filterTime.value = '';
