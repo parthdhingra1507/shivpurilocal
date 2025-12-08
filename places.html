@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Places in Shivpuri - Shivpuri Local</title>
+    <meta name="description" content="Discover the best tourist places and attractions in Shivpuri.">
+    <link rel="canonical" href="https://shivpurilocal.in/places">
+
+    <!-- Open Graph / WhatsApp -->
+    <meta property="og:title" content="Places to Visit - Shivpuri Local">
+    <meta property="og:description" content="Discover waterfalls, forts, and lakes in Shivpuri.">
+    <meta property="og:image" content="https://shivpurilocal.in/social-preview.png">
+    <meta property="og:type" content="website">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F0WC51BKD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-6F0WC51BKD');
+    </script>
+    <script src="sw-register.js"></script>
+</head>
+
+<body class="page-places">
+    <div class="app-container">
+        <header class="main-header">
+            <div class="logo-container">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
+                </a>
+                <p class="tagline">The City Encyclopedia</p>
+            </div>
+            <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+                <button id="install-btn" class="install-btn" style="display: none;">⬇️ App</button>
+                <button id="lang-toggle" class="lang-btn">हिंदी</button>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/transport">Transport</a></li>
+                    <li><a href="/places" class="active">Places</a></li>
+                    <li><a href="/food">Food</a></li>
+                    <li><a href="/news">News</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="content-area">
+            <section class="hero-section">
+                <h2 id="hero-title">Explore Places</h2>
+                <p id="hero-desc">Discover the best attractions in Shivpuri.</p>
+            </section>
+
+            <section class="places-container">
+                <!-- Reusing 'schedule-grid' ID for script compatibility or will update script -->
+                <div id="schedule-grid" class="schedule-grid">
+                    <!-- Places Cards -->
+                </div>
+                <!-- Hidden load more for compatibility if needed -->
+                <div id="load-more-container" style="display: none;"><button id="load-more-btn"></button></div>
+            </section>
+        </main>
+
+        <footer class="main-footer">
+            <p>&copy; 2025 shivpurilocal.in. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="common.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

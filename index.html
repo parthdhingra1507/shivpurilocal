@@ -2,57 +2,140 @@
 <html lang="en">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shivpuri Local (shivpurilocal.in) - The City Encyclopedia</title>
+<title>Shivpuri Local - Your Complete City Guide</title>
 <meta name="description"
-    content="Your complete guide to Shivpuri city. Find local bus schedules, places, and more at shivpurilocal.in.">
+    content="Explore Shivpuri with our complete city guide. Find bus schedules, discover places, and explore the best food spots in Shivpuri.">
 <link rel="canonical" href="https://shivpurilocal.in/">
+
+<!-- Open Graph / WhatsApp -->
+<meta property="og:title" content="Shivpuri Local - The City Guide">
+<meta property="og:description" content="Bus schedules, places, food, and more in Shivpuri.">
+<meta property="og:image" content="https://shivpurilocal.in/social-preview.png">
+<meta property="og:type" content="website">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6F0WC51BKD"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-6F0WC51BKD');
+</script>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3448/3448339.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Shivpuri Local">
 <link rel="stylesheet" href="style.css">
+<script src="sw-register.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
     rel="stylesheet">
 
-<body>
+<body class="page-home">
     <div class="app-container">
         <header class="main-header">
             <div class="logo-container">
-                <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
+                </a>
                 <p class="tagline">The City Encyclopedia</p>
+            </div>
+            <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+                <button id="install-btn" class="install-btn" style="display: none;">⬇️ App</button>
+                <button id="lang-toggle" class="lang-btn">हिंदी</button>
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="#" class="active">Transport</a></li>
-                    <li><a href="#">Places</a></li>
-                    <li><a href="#">Food</a></li>
-                    <li><a href="#">Events</a></li>
+                    <li><a href="/" class="active">Home</a></li>
+                    <li><a href="/transport">Transport</a></li>
+                    <li><a href="/places">Places</a></li>
+                    <li><a href="/food">Food</a></li>
+                    <li><a href="/news">News</a></li>
                 </ul>
             </nav>
         </header>
 
         <main class="content-area">
-            <section class="hero-section">
-                <h2>Local Bus Schedule</h2>
-                <p>Find the best route to your destination in Shivpuri.</p>
+            <section class="hero">
+                <h2>Welcome to Shivpuri</h2>
+                <p>Your complete guide to local bus schedules, top places, and best food spots.</p>
             </section>
 
-            <section class="bus-schedule-container">
-                <div class="search-bar">
-                    <input type="text" id="search-input" placeholder="Search for a stop or bus number...">
-                    <button id="search-btn">Search</button>
-                </div>
+            <div class="category-grid">
+                <a href="/transport" class="category-card" id="cat-transport">
+                    <div class="cat-icon">🚌</div>
+                    <h3>Bus Schedule</h3>
+                    <p>Live timings & Routes</p>
+                </a>
+                <a href="/places" class="category-card" id="cat-places">
+                    <div class="cat-icon">📍</div>
+                    <h3>Places to Visit</h3>
+                    <p>Tourist spots & Nature</p>
+                </a>
+                <a href="/food" class="category-card" id="cat-food">
+                    <div class="cat-icon">🍽️</div>
+                    <h3>Food & Dining</h3>
+                    <p>Best Restaurants & Cafes</p>
+                </a>
+                <a href="/news" class="category-card" id="cat-news">
+                    <div class="cat-icon">📰</div>
+                    <h3>City News</h3>
+                    <p>Latest Updates & Headlines</p>
+                </a>
+            </div>
 
-                <div class="schedule-grid" id="schedule-grid">
-                    <!-- Bus cards will be injected here by JS -->
+            <!-- Emergency Numbers Section -->
+            <section class="emergency-section">
+                <h2>Emergency Numbers</h2>
+                <div class="emergency-grid">
+                    <div class="emergency-card">
+                        <span class="emergency-icon">🚓</span>
+                        <div class="emergency-info">
+                            <h3>Police</h3>
+                            <a href="tel:100" class="emergency-number">100</a>
+                        </div>
+                    </div>
+                    <div class="emergency-card">
+                        <span class="emergency-icon">🚑</span>
+                        <div class="emergency-info">
+                            <h3>Ambulance</h3>
+                            <a href="tel:108" class="emergency-number">108</a>
+                        </div>
+                    </div>
+                    <div class="emergency-card">
+                        <span class="emergency-icon">🚒</span>
+                        <div class="emergency-info">
+                            <h3>Fire</h3>
+                            <a href="tel:101" class="emergency-number">101</a>
+                        </div>
+                    </div>
+                    <div class="emergency-card">
+                        <span class="emergency-icon">👮</span>
+                        <div class="emergency-info">
+                            <h3>Women Helpline</h3>
+                            <a href="tel:1091" class="emergency-number">1091</a>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
 
         <footer class="main-footer">
             <p>&copy; 2025 shivpurilocal.in. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="mailto:hello@shivpurilocal.in?subject=Add%20My%20Business" class="footer-link">Add Your
+                    Business</a>
+                <a href="mailto:hello@shivpurilocal.in?subject=Feedback" class="footer-link">Feedback</a>
+            </div>
         </footer>
     </div>
-    <script src="script.js"></script>
+
+    <div id="toast-container"></div>
+    <script src="common.js"></script>
 </body>
 
 </html>

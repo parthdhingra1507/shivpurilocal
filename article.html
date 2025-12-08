@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Article - Shivpuri Local</title>
+    <meta name="description" content="Read the full news story on Shivpuri Local.">
+    <link rel="canonical" href="https://shivpurilocal.in/article">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="News - Shivpuri Local">
+    <meta property="og:description" content="Local news from Shivpuri and Madhya Pradesh.">
+    <meta property="og:image" content="https://shivpurilocal.in/social-preview.png">
+    <meta property="og:type" content="article">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F0WC51BKD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-6F0WC51BKD');
+    </script>
+    <script src="sw-register.js"></script>
+
+    <style>
+        .article-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .article-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .article-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+        }
+
+        .article-body {
+            padding: 2rem;
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .article-source {
+            background: var(--light);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .article-title {
+            font-size: 1.75rem;
+            line-height: 1.3;
+            margin-bottom: 1rem;
+            color: #1a1a2e;
+        }
+
+        .article-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .article-content p {
+            margin-bottom: 1rem;
+        }
+
+        .article-actions {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .source-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .source-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #25D366;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .error-state h2 {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body class="page-news">
+    <div class="app-container">
+        <header class="main-header">
+            <div class="logo-container">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
+                </a>
+                <p class="tagline">The City Encyclopedia</p>
+            </div>
+            <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+                <button id="install-btn" class="install-btn" style="display: none;">⬇️ App</button>
+                <button id="lang-toggle" class="lang-btn">हिंदी</button>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/transport">Transport</a></li>
+                    <li><a href="/places">Places</a></li>
+                    <li><a href="/food">Food</a></li>
+                    <li><a href="/news" class="active">News</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="content-area">
+            <div class="article-container">
+                <a href="news.html" class="back-link">← Back to News</a>
+
+                <div id="article-card" class="article-card">
+                    <!-- Content loaded by JS -->
+                    <div class="article-body">
+                        <p>Loading article...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="main-footer">
+            <p>&copy; 2025 shivpurilocal.in. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const cardEl = document.getElementById('article-card');
+            const urlParams = new URLSearchParams(window.location.search);
+            const articleId = urlParams.get('id');
+
+            let article = null;
+
+            // Strategy 1: Fetch from Backend (Preferred)
+            if (articleId) {
+                try {
+                    // Auto-detect URL
+                    const API_URL =
+                        window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+                            ? 'http://localhost:3000/api'
+                            : 'https://shivpurilocal-backend.onrender.com/api';
+
+                    const res = await fetch(`${API_URL}/article/${articleId}`);
+                    if (res.ok) {
+                        article = await res.json();
+                    }
+                } catch (e) {
+                    console.error('API fetch failed', e);
+                }
+            }
+
+            // Strategy 2: Fallback to localStorage
+            if (!article) {
+                const articleJson = localStorage.getItem('selectedArticle');
+                if (articleJson) {
+                    article = JSON.parse(articleJson);
+                }
+            }
+
+            if (!article) {
+                cardEl.innerHTML = `
+                    <div class="error-state">
+                        <h2>❌ Article Not Found</h2>
+                        <p>No article data available. Please go back and select a news item.</p>
+                        <a href="news.html" class="source-btn" style="margin-top:1rem;">← Back to News</a>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const article = JSON.parse(articleJson);
+
+                // Update page title
+                document.title = (article.title || 'News') + ' - Shivpuri Local';
+
+                // Build HTML
+                let html = '';
+
+                // Image (if exists)
+                if (article.image) {
+                    html += `<img src="${article.image}" alt="News Image" class="article-image" onerror="this.style.display='none'">`;
+                }
+
+                html += `<div class="article-body">`;
+
+                // Meta
+                html += `<div class="article-meta">
+                    <span class="article-source">${article.source || 'News'}</span>
+                    <span>${article.publishedAt ? new Date(article.publishedAt).toLocaleString() : ''}</span>
+                </div>`;
+
+                // Title
+                html += `<h1 class="article-title">${article.title || 'News Article'}</h1>`;
+
+                // Content
+                const content = article.content || article.description || 'No content available.';
+                html += `<div class="article-content">${content}</div>`;
+
+                // Actions
+                const whatsappText = `📰 ${article.title}\n\n${article.url}\n\nvia shivpurilocal.in`;
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
+
+                html += `<div class="article-actions">
+                    <a href="${article.url || '#'}" target="_blank" rel="noopener" class="source-btn">
+                        Read Full Story at Source ↗
+                    </a>
+                    <a href="${whatsappUrl}" target="_blank" rel="noopener" class="share-btn">
+                        Share on WhatsApp
+                    </a>
+                </div>`;
+
+                html += `</div>`;
+
+                cardEl.innerHTML = html;
+
+            } catch (e) {
+                console.error('Error parsing article:', e);
+                cardEl.innerHTML = `
+                    <div class="error-state">
+                        <h2>⚠️ Error Loading Article</h2>
+                        <p>Something went wrong. Please try again.</p>
+                        <a href="news.html" class="source-btn" style="margin-top:1rem;">← Back to News</a>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>

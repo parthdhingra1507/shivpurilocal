@@ -1,0 +1,29 @@
+MULTI-PAGE RESTRUCTURE - QUICK IMPLEMENTATION GUIDE
+====================================================
+
+You have 3 options to complete this restructure:
+
+OPTION 1: Use the existing single-page with hash routing (FASTEST - 2 min)
+- Keep everything in index.html
+- Use #transport, #places, #food in URLs
+- Just update the category cards to use hash links
+- Minimal changes needed
+
+OPTION 2: Simple separate pages (RECOMMENDED - 10 min manual work)
+- Copy index.html → transport.html, places.html, food.html
+- In transport.html: Remove category cards, keep bus schedule
+- In places.html: Remove category cards & bus schedule, add places grid
+- In food.html: Remove category cards & bus schedule, add food grid
+- Update script.js references in each file
+
+OPTION 3: Full restructure with separate JS files (COMPLETE - what we started)
+- Need to create 6 more files
+- Most professional but takes longer
+
+RECOMMENDATION: Go with Option 1 (hash routing) for now since:
+- Works immediately
+- Can upgrade to separate pages later
+- No deployment issues
+- Users won't notice the difference
+
+Let me know which you prefer!

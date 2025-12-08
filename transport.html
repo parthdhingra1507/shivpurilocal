@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transport - Shivpuri Local</title>
+    <meta name="description" content="Bus schedules, routes, and transport options in Shivpuri.">
+    <link rel="canonical" href="https://shivpurilocal.in/transport">
+
+    <!-- Open Graph / WhatsApp -->
+    <meta property="og:title" content="Shivpuri Bus Schedule - Shivpuri Local">
+    <meta property="og:description" content="Find the best bus route to your destination in Shivpuri.">
+    <meta property="og:image" content="https://shivpurilocal.in/social-preview.png">
+    <meta property="og:type" content="website">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F0WC51BKD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-6F0WC51BKD');
+    </script>
+    <script src="sw-register.js"></script>
+</head>
+
+<body class="page-transport">
+    <div class="app-container">
+        <header class="main-header">
+            <div class="logo-container">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
+                </a>
+                <p class="tagline">The City Encyclopedia</p>
+            </div>
+            <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+                <button id="install-btn" class="install-btn" style="display: none;">⬇️ App</button>
+                <button id="lang-toggle" class="lang-btn">हिंदी</button>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/transport" class="active">Transport</a></li>
+                    <li><a href="/places">Places</a></li>
+                    <li><a href="/food">Food</a></li>
+                    <li><a href="/news">News</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="content-area">
+            <section class="hero-section">
+                <h2 id="hero-title">Local Bus Schedule</h2>
+                <p id="hero-desc">Find the best route to your destination in Shivpuri.</p>
+            </section>
+
+            <!-- Filters -->
+            <section class="search-filter-bar">
+                <div class="filters-container">
+                    <div class="filter-row">
+                        <select id="filter-from">
+                            <option value="">From City</option>
+                        </select>
+                        <select id="filter-to">
+                            <option value="">To City</option>
+                        </select>
+                        <select id="filter-time">
+                            <option value="">Any Time</option>
+                            <option value="0-6">Early Morning (12 AM - 6 AM)</option>
+                            <option value="6-12">Morning (6 AM - 12 PM)</option>
+                            <option value="12-18">Afternoon (12 PM - 6 PM)</option>
+                            <option value="18-24">Evening (6 PM - 12 AM)</option>
+                        </select>
+                    </div>
+                    <button id="reset-btn">Search Buses</button>
+                </div>
+            </section>
+
+            <section class="bus-schedule-container">
+                <div id="schedule-grid" class="schedule-grid">
+                    <!-- Cards will be populated here -->
+                </div>
+                <div id="load-more-container" class="load-more-container">
+                    <button id="load-more-btn" class="secondary-btn">Load More Buses</button>
+                </div>
+            </section>
+
+            <!-- Emergency Section (Transport specific) -->
+            <section class="emergency-section">
+                <h2>Emergency Numbers</h2>
+                <div class="emergency-grid">
+                    <div class="emergency-card">
+                        <span class="emergency-icon">🚓</span>
+                        <div class="emergency-info">
+                            <h3>Police</h3>
+                            <a href="tel:100" class="emergency-number">100</a>
+                        </div>
+                    </div>
+                    <div class="emergency-card">
+                        <span class="emergency-icon">🚑</span>
+                        <div class="emergency-info">
+                            <h3>Ambulance</h3>
+                            <a href="tel:108" class="emergency-number">108</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="main-footer">
+            <p>&copy; 2025 shivpurilocal.in. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Use common script.js but logic will adapt -->
+    <script src="common.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

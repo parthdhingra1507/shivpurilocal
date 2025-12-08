@@ -1,0 +1,17 @@
+{
+    "rewrites": [
+        {
+            "source": "/transport",
+            "destination": "/transport.html"
+        },
+        {
+            "source": "/places",
+            "destination": "/places.html"
+        },
+        {
+            "source": "/food",
+            "destination": "/food.html"
+        }
+    ],
+    "cleanUrls": true
+}

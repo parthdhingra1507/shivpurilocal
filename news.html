@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shivpuri News - Latest Updates | Shivpuri Local</title>
+<meta name="description"
+    content="Get the latest news and updates from Shivpuri, Madhya Pradesh. Stay informed about local events, developments, and happenings.">
+<link rel="canonical" href="https://shivpurilocal.in/news">
+
+<!-- Open Graph / WhatsApp -->
+<meta property="og:title" content="Shivpuri News - Latest Updates">
+<meta property="og:description" content="Stay updated with latest news from Shivpuri, MP.">
+<meta property="og:image" content="https://shivpurilocal.in/social-preview.png">
+<meta property="og:type" content="website">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6F0WC51BKD"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-6F0WC51BKD');
+</script>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3448/3448339.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Shivpuri Local">
+<link rel="stylesheet" href="style.css">
+<script src="sw-register.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+    rel="stylesheet">
+
+<body class="page-news">
+    <div class="app-container">
+        <header class="main-header">
+            <div class="logo-container">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
+                </a>
+                <p class="tagline">The City Encyclopedia</p>
+            </div>
+            <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+                <button id="install-btn" class="install-btn" style="display: none;">⬇️ App</button>
+                <button id="lang-toggle" class="lang-btn">हिंदी</button>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/transport">Transport</a></li>
+                    <li><a href="/places">Places</a></li>
+                    <li><a href="/food">Food</a></li>
+                    <li><a href="/news" class="active">News</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="content-area">
+            <section class="hero">
+                <h2 id="hero-title">📰 City News</h2>
+                <p id="hero-desc">Latest headlines from Shivpuri & Madhya Pradesh</p>
+            </section>
+
+            <section class="news-container">
+                <div id="news-grid" class="news-grid">
+                    <!-- News cards will be populated here -->
+                    <div class="news-loading">
+                        <p>📰 Loading latest news...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Article Modal -->
+        <div id="article-modal" class="article-modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeArticleModal()">&times;</button>
+                <div class="modal-header">
+                    <span id="modal-source" class="modal-source"></span>
+                    <span id="modal-time" class="modal-time"></span>
+                </div>
+                <h2 id="modal-title" class="modal-title"></h2>
+                <p id="modal-desc" class="modal-desc"></p>
+                <div class="modal-actions">
+                    <a id="modal-share" href="#" target="_blank" rel="noopener" class="news-share-btn modal-share-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
+                        </svg>
+                        Share on WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <footer class="main-footer">
+            <p>&copy; 2025 shivpurilocal.in. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="https://wa.me/917880045440?text=Hi%2C%20I%20want%20to%20list%20my%20business%20on%20shivpurilocal.in"
+                    target="_blank" class="footer-link">List Your Business</a>
+                <a href="https://wa.me/917880045440?text=Hi%2C%20I%20have%20feedback%20about%20shivpurilocal.in"
+                    target="_blank" class="footer-link">Send Feedback</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        const isNewsPage = true;
+
+        // GNews API Configuration - Using 3 queries for more articles
+        const GNEWS_API_KEY = 'c0f5d443f40740ce824fd1ee3e3b3ed8';
+        const NEWS_QUERIES = [
+            'India OR Madhya Pradesh OR Shivpuri',
+            'MP news OR Gwalior OR Bhopal',
+            'breaking news India latest'
+        ];
+        const NEWS_REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes as requested
+
+        let currentNewsData = [];
+        let lastFetchTime = null;
+
+        // Cache configuration
+        const NEWS_CACHE_KEY = 'shivpuri_news_cache';
+        const NEWS_CACHE_VERSION = 'v4-multi'; // Updated for multi-query
+        const NEWS_CACHE_EXPIRY = 30 * 60 * 1000; // 30 minutes
+
+        // Load cached news
+        function loadCachedNews() {
+            try {
+                const cached = localStorage.getItem(NEWS_CACHE_KEY);
+                if (cached) {
+                    const { data, timestamp, version } = JSON.parse(cached);
+                    const age = Date.now() - timestamp;
+                    if (age < NEWS_CACHE_EXPIRY && data.length > 0 && version === NEWS_CACHE_VERSION) {
+                        console.log('📦 Loading cached news');
+                        return data;
+                    } else if (version !== NEWS_CACHE_VERSION) {
+                        console.log('🔄 Cache version outdated, fetching new news');
+                    }
+                }
+            } catch (e) {
+                console.log('Cache read error:', e);
+            }
+            return null;
+        }
+
+        // Save news to cache
+        function saveNewsToCache(data) {
+            try {
+                localStorage.setItem(NEWS_CACHE_KEY, JSON.stringify({
+                    data: data,
+                    timestamp: Date.now(),
+                    version: NEWS_CACHE_VERSION
+                }));
+                console.log('💾 News cached');
+            } catch (e) {
+                console.log('Cache write error:', e);
+            }
+        }
+
+        // Calculate relative time
+        function getRelativeTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMins / 60);
+            const diffDays = Math.floor(diffHours / 24);
+
+            const isHi = currentLang === 'hi';
+
+            if (diffMins < 60) {
+                return isHi ? `${diffMins} मिनट पहले` : `${diffMins} minutes ago`;
+            } else if (diffHours < 24) {
+                return isHi ? `${diffHours} घंटे पहले` : `${diffHours} hours ago`;
+            } else {
+                return isHi ? `${diffDays} दिन पहले` : `${diffDays} days ago`;
+            }
+        }
+
+        // Deduplicate by title
+        function deduplicateNews(articles) {
+            const seen = new Set();
+            return articles.filter(article => {
+                const titleKey = article.title.toLowerCase().trim();
+                if (seen.has(titleKey)) return false;
+                seen.add(titleKey);
+                return true;
+            });
+        }
+
+        function renderNews() {
+            const grid = document.getElementById('news-grid');
+            const isHi = currentLang === 'hi';
+
+            grid.innerHTML = '';
+
+            if (currentNewsData.length === 0) {
+                const noNewsText = isHi ? 'कोई समाचार नहीं मिला' : 'No news found';
+                grid.innerHTML = `<div class="news-loading"><p>📰 ${noNewsText}</p></div>`;
+                return;
+            }
+
+            currentNewsData.forEach(news => {
+                const card = document.createElement('div');
+                card.className = 'news-card';
+
+                // title_en/description_en were removed from fetcher, now language is handled at source
+                const title = news.title;
+                const desc = news.description;
+
+                const time = news.publishedAt ? getRelativeTime(news.publishedAt) : '';
+                const readMore = isHi ? 'मूल खबर पढ़ें' : 'Read Full Story'; // clearer label
+                const shareText = isHi ? 'शेयर करें' : 'Share';
+
+                // WhatsApp share URL
+                const whatsappText = `📰 *${title}*\n\n${desc}\n\n🔗 ${news.url}\n\nvia shivpurilocal.in`;
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
+
+                card.innerHTML = `
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <span class="news-source">${news.source}</span>
+                            <span class="news-time">${time}</span>
+                        </div>
+                        <h3 class="news-title">${title}</h3>
+                        <p class="news-desc">${desc}</p>
+                        <div class="news-actions">
+                            <a href="${news.url}" target="_blank" rel="noopener" class="news-link" style="text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                                ${readMore} ↗
+                            </a>
+                            <a href="${whatsappUrl}" target="_blank" rel="noopener" class="news-share-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                                </svg>
+                                ${shareText}
+                            </a>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            // Add last updated indicator
+            if (lastFetchTime) {
+                const updateInfo = document.createElement('div');
+                updateInfo.className = 'news-update-info';
+                const updateText = isHi ?
+                    `आखिरी अपडेट: ${lastFetchTime.toLocaleTimeString('hi-IN')}` :
+                    `Last updated: ${lastFetchTime.toLocaleTimeString('en-IN')}`;
+                updateInfo.innerHTML = `<p>🔄 ${updateText}</p>`;
+                grid.appendChild(updateInfo);
+            }
+        }
+
+        // Update language function
+        function updatePageLanguage(lang) {
+            const heroTitle = document.getElementById('hero-title');
+            const heroDesc = document.getElementById('hero-desc');
+
+            if (heroTitle) heroTitle.textContent = lang === 'hi' ? '📰 शहर समाचार' : '📰 City News';
+            if (heroDesc) heroDesc.textContent = lang === 'hi' ? 'शिवपुरी और मध्य प्रदेश की ताज़ा खबरें' : 'Latest headlines from Shivpuri & Madhya Pradesh';
+
+            renderNews();
+        }
+
+        // Initialize
+        let renderedTitles = new Set(); // Track rendered articles to avoid duplicates
+        let isFirstLoad = true;
+
+        // Multi-Source RSS Configuration
+        const RSS_TO_JSON_API = 'https://api.rss2json.com/v1/api.json?rss_url=';
+
+        const FEEDS = {
+            en: [
+                // PRIORITY 1: Shivpuri - Multiple search variations to guarantee content
+                { url: 'https://news.google.com/rss/search?q=Shivpuri&hl=en-IN&gl=IN&ceid=IN:en', name: 'Shivpuri', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=Shivpuri+MP&hl=en-IN&gl=IN&ceid=IN:en', name: 'Shivpuri', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=Shivpuri+news&hl=en-IN&gl=IN&ceid=IN:en', name: 'Shivpuri', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=Shivpuri+police&hl=en-IN&gl=IN&ceid=IN:en', name: 'Shivpuri', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=Shivpuri+accident&hl=en-IN&gl=IN&ceid=IN:en', name: 'Shivpuri', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=Shivpuri+crime&hl=en-IN&gl=IN&ceid=IN:en', name: 'Shivpuri', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=Shivpuri+collector&hl=en-IN&gl=IN&ceid=IN:en', name: 'Shivpuri', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=Shivpuri+hospital&hl=en-IN&gl=IN&ceid=IN:en', name: 'Shivpuri', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=site:jagran.com+Shivpuri&hl=en-IN&gl=IN&ceid=IN:en', name: 'Shivpuri', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=site:bhaskar.com+Shivpuri&hl=en-IN&gl=IN&ceid=IN:en', name: 'Shivpuri', priority: 1 },
+
+                // PRIORITY 2: Nearby Cities
+                { url: 'https://news.google.com/rss/search?q=Gwalior&hl=en-IN&gl=IN&ceid=IN:en', name: 'Gwalior', priority: 2 },
+                { url: 'https://news.google.com/rss/search?q=Bhopal&hl=en-IN&gl=IN&ceid=IN:en', name: 'Bhopal', priority: 2 },
+
+                // PRIORITY 3: MP State
+                { url: 'https://news.google.com/rss/search?q=Madhya+Pradesh&hl=en-IN&gl=IN&ceid=IN:en', name: 'MP', priority: 3 },
+                { url: 'https://timesofindia.indiatimes.com/rssfeeds/2965003.cms', name: 'MP', priority: 3 }
+            ],
+            hi: [
+                // PRIORITY 1: शिवपुरी - Multiple variations
+                { url: 'https://news.google.com/rss/search?q=%E0%A4%B6%E0%A4%BF%E0%A4%B5%E0%A4%AA%E0%A5%81%E0%A4%B0%E0%A5%80&hl=hi&gl=IN&ceid=IN:hi', name: 'शिवपुरी', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=Shivpuri&hl=hi&gl=IN&ceid=IN:hi', name: 'शिवपुरी', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=%E0%A4%B6%E0%A4%BF%E0%A4%B5%E0%A4%AA%E0%A5%81%E0%A4%B0%E0%A5%80+%E0%A4%B8%E0%A4%AE%E0%A4%BE%E0%A4%9A%E0%A4%BE%E0%A4%B0&hl=hi&gl=IN&ceid=IN:hi', name: 'शिवपुरी', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=%E0%A4%B6%E0%A4%BF%E0%A4%B5%E0%A4%AA%E0%A5%81%E0%A4%B0%E0%A5%80+%E0%A4%AA%E0%A5%81%E0%A4%B2%E0%A4%BF%E0%A4%B8&hl=hi&gl=IN&ceid=IN:hi', name: 'शिवपुरी', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=%E0%A4%B6%E0%A4%BF%E0%A4%B5%E0%A4%AA%E0%A5%81%E0%A4%B0%E0%A5%80+%E0%A4%B9%E0%A4%BE%E0%A4%A6%E0%A4%B8%E0%A4%BE&hl=hi&gl=IN&ceid=IN:hi', name: 'शिवपुरी', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=site:jagran.com+%E0%A4%B6%E0%A4%BF%E0%A4%B5%E0%A4%AA%E0%A5%81%E0%A4%B0%E0%A5%80&hl=hi&gl=IN&ceid=IN:hi', name: 'शिवपुरी', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=site:bhaskar.com+%E0%A4%B6%E0%A4%BF%E0%A4%B5%E0%A4%AA%E0%A5%81%E0%A4%B0%E0%A5%80&hl=hi&gl=IN&ceid=IN:hi', name: 'शिवपुरी', priority: 1 },
+                { url: 'https://news.google.com/rss/search?q=site:patrika.com+%E0%A4%B6%E0%A4%BF%E0%A4%B5%E0%A4%AA%E0%A5%81%E0%A4%B0%E0%A5%80&hl=hi&gl=IN&ceid=IN:hi', name: 'शिवपुरी', priority: 1 },
+
+                // PRIORITY 2: Nearby Cities
+                { url: 'https://news.google.com/rss/search?q=%E0%A4%97%E0%A5%8D%E0%A4%B5%E0%A4%BE%E0%A4%B2%E0%A4%BF%E0%A4%AF%E0%A4%B0&hl=hi&gl=IN&ceid=IN:hi', name: 'ग्वालियर', priority: 2 },
+                { url: 'https://news.google.com/rss/search?q=%E0%A4%AD%E0%A5%8B%E0%A4%AA%E0%A4%BE%E0%A4%B2&hl=hi&gl=IN&ceid=IN:hi', name: 'भोपाल', priority: 2 },
+
+                // PRIORITY 3: MP State
+                { url: 'https://news.google.com/rss/search?q=%E0%A4%AE%E0%A4%A7%E0%A5%8D%E0%A4%AF+%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A6%E0%A5%87%E0%A4%B6&hl=hi&gl=IN&ceid=IN:hi', name: 'मध्य प्रदेश', priority: 3 }
+            ]
+        };
+
+        // FORCE HEADLINE FIX
+        setTimeout(() => updatePageLanguage(currentLang), 100);
+
+        window.updatePageLanguage = function (lang) {
+            const h2 = document.getElementById('hero-title');
+            const p = document.getElementById('hero-desc');
+            if (lang === 'hi') {
+                if (h2) h2.textContent = '📰 शहर समाचार';
+                if (p) p.textContent = 'शिवपुरी और मध्य प्रदेश की ताज़ा खबरें';
+            } else {
+                if (h2) h2.textContent = '📰 City News';
+                if (p) p.textContent = 'Latest headlines from Shivpuri & Madhya Pradesh';
+            }
+            console.log('Language switch -> fetching news');
+
+            // Clear current grid and cache references on language switch
+            document.getElementById('news-grid').innerHTML = '';
+            renderedTitles.clear();
+            currentNewsData = [];
+            fetchNews();
+        };
+
+        function isRefreshTime() {
+            const hour = new Date().getHours();
+            return hour >= 6 && hour <= 23;
+        }
+
+        // VIEW ARTICLE (Internal Link Logic)
+        window.viewArticle = function (index) {
+            const article = currentNewsData[index];
+            if (article && article.id) {
+                // Pass ID to article page
+                window.location.href = `article.html?id=${article.id}`;
+            } else if (article) {
+                // Fallback for non-ID articles (shouldn't happen with backend)
+                localStorage.setItem('selectedArticle', JSON.stringify(article));
+                window.location.href = 'article.html';
+            }
+        };
+
+        async function fetchRSS(url, sourceName) {
+            try {
+                // Short timeout for snappiness - 3 seconds max
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+                const response = await fetch(`${RSS_TO_JSON_API}${encodeURIComponent(url)}`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                const data = await response.json();
+
+                if (data.status === 'ok' && data.items.length > 0) {
+                    return data.items.map(item => {
+                        // Image extraction
+                        let image = null;
+                        if (item.enclosure && item.enclosure.link) image = item.enclosure.link;
+                        else {
+                            const imgMatch = item.description.match(/<img[^>]+src="([^">]+)"/);
+                            if (imgMatch) image = imgMatch[1];
+                        }
+
+                        // Parse Description
+                        let rawDesc = item.description || item.content || '';
+                        let cleanDesc = rawDesc
+                            .replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gm, "")
+                            .replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gm, "")
+                            .replace(/<a\b[^>]*>.*?<\/a>/g, "")
+                            .replace(/<img[^>]*>/g, "")
+                            .replace(/<p>\s*<\/p>/g, '').trim();
+
+                        if (!cleanDesc || cleanDesc.length < 10) cleanDesc = "Click to read full story.";
+                        if (cleanDesc.length > 500) cleanDesc = cleanDesc.substring(0, 500) + '...';
+
+                        // SMART API URL DETECTION
+                        const API_URL =
+                            window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+                                ? 'http://localhost:3000/api' // Local Development
+                                : 'https://shivpurilocal-backend.onrender.com/api'; // Cloud Production (Placeholder - update after deploy)
+
+                        // Fetch from our local node/python server
+                        async function fetchNews() {
+                            const grid = document.getElementById('news-grid');
+                            const isHi = currentLang === 'hi';
+
+                            if (grid.children.length === 0) {
+                                grid.innerHTML = `<div id="news-loader" class="news-loading">
+                    <div style="height:20px; width:20px; border:2px solid #ddd; border-top-color:var(--primary); border-radius:50%; animation:spin 1s infinite linear; margin:0 auto 10px;"></div>
+                    <p>${isHi ? 'खबरें लोड हो रही हैं... (सर्वर से)' : 'Loading news from server...'}</p>
+                </div>`;
+                            }
+
+                            try {
+                                // Timeout logic - 30s for Render Cold Start
+                                const controller = new AbortController();
+                                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+                                // Fetch from our backend with language param
+                                const response = await fetch(`${API_URL}/news?lang=${currentLang}`, {
+                                    signal: controller.signal,
+                                    headers: { 'Accept': 'application/json' }
+                                });
+                                clearTimeout(timeoutId);
+
+                                if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+
+                                const articles = await response.json();
+
+                                // Clear loader
+                                const loader = document.getElementById('news-loader');
+                                if (loader) loader.remove();
+
+                                if (!articles || articles.length === 0) {
+                                    grid.innerHTML = `<div class="error-state">
+                        <p>${isHi ? 'सर्वर जाग रहा है, कृपया पुनः लोड करें।' : 'Server returned empty format. Please reload.'}</p>
+                        <button onclick="location.reload()" style="margin-top:1rem; padding:0.5rem 1rem; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;">
+                             ${isHi ? '🔄 पुनः लोड करें' : '🔄 Reload'}
+                        </button>
+                    </div>`;
+                                    return;
+                                }
+
+                                // Render articles from DB
+                                // Backend already sorts by priority
+                                currentNewsData = articles;
+                                renderedTitles.clear();
+
+                                renderBatch(articles);
+
+                            } catch (e) {
+                                console.error('Fetch error:', e);
+                                const loader = document.getElementById('news-loader');
+                                if (loader) {
+                                    let errorMsg = isHi ? 'बैकएंड सर्वर चालू नहीं है।' : 'Backend server is not running or unreachable.';
+                                    if (e.name === 'AbortError') errorMsg = isHi ? 'सर्वर बहुत धीमा है (Timeout)।' : 'Server timed out (5s).';
+
+                                    loader.innerHTML = `<div class="error-state">
+                        <h3>⚠️ Connection Failed</h3>
+                        <p>${errorMsg}</p>
+                        <p style="font-size:0.8rem; color:#666;">Target: <code>${API_URL}</code></p>
+                        <p style="font-size:0.75rem; color:#888;">Ensure <code>python3 backend/app.py</code> is running.</p>
+                        <button onclick="location.reload()" style="margin-top:1rem; padding:0.5rem 1rem; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;">
+                             ${isHi ? '🔄 पुनः लोड करें' : '🔄 Reload'}
+                        </button>
+                    </div>`;
+                                }
+                            }
+                        }
+
+                        function renderBatch(articles) {
+                            const grid = document.getElementById('news-grid');
+                            const isHi = currentLang === 'hi';
+
+                            articles.forEach(news => {
+                                const card = document.createElement('div');
+                                card.className = 'news-card';
+                                card.style.animation = 'fadeIn 0.5s ease';
+
+                                const title = news.title || '';
+                                const desc = news.description || '';
+                                const time = news.publishedAt ? getRelativeTime(news.publishedAt) : '';
+                                const readMore = isHi ? 'पूरी खबर पढ़ें' : 'Read More';
+                                const shareText = isHi ? 'शेयर करें' : 'Share';
+
+                                // WhatsApp share URL
+                                const whatsappText = `📰 *${title}*\n\n${desc}\n\n🔗 ${news.url}\n\nvia shivpurilocal.in`;
+                                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
+
+                                // Index for viewArticle
+                                const index = currentNewsData.indexOf(news);
+
+                                // Image HTML if available
+                                const imageHtml = news.image ?
+                                    `<img src="${news.image}" alt="News" style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:0.75rem;" onerror="this.style.display='none'">` : '';
+
+                                card.innerHTML = `
+                    <div class="news-content" style="padding:1rem;">
+                        <span class="news-time" style="font-size:0.8rem; color:#888; display:block; margin-bottom:0.5rem;">🕐 ${time}</span>
+                        ${imageHtml}
+                        <h3 class="news-title" style="margin:0 0 0.75rem 0; font-size:1.1rem; line-height:1.4;">${title}</h3>
+                        <p class="news-desc" style="margin:0 0 1rem 0; font-size:0.9rem; line-height:1.5; color:#555;">${desc.substring(0, 150)}${desc.length > 150 ? '...' : ''}</p>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                            <button onclick="viewArticle(${index})" style="background:var(--primary); color:white; border:none; padding:0.5rem 1rem; border-radius:50px; cursor:pointer; font-size:0.85rem;">
+                                ${readMore} →
+                            </button>
+                            <a href="${whatsappUrl}" target="_blank" rel="noopener" style="display:inline-block; background:#25D366; color:white; padding:0.5rem 1rem; border-radius:50px; text-decoration:none; font-size:0.85rem;">
+                                ${shareText} ➦
+                            </a>
+                        </div>
+                    </div>
+                 `;
+                                grid.appendChild(card);
+                            });
+                        }
+
+                        // Auto-refresh logic
+                        setInterval(() => {
+                            if (isRefreshTime()) {
+                                // For auto-refresh, maybe just quiet update? 
+                                // Creating chaos with progressive loading on interval is risky.
+                                // Just keep it simple: restart.
+                                renderedTitles.clear();
+                                document.getElementById('news-grid').innerHTML = '';
+                                currentNewsData = [];
+                                fetchNews();
+                            }
+                        }, NEWS_REFRESH_INTERVAL);
+
+                        // Initial Load (if not doing language switch immediately)
+                        // Wait minorly for lang
+                        // (Handled by setTimeout above)
+
+                        fetchNews(); // Initial load
+    </script>
+</body>
+
+</html>
