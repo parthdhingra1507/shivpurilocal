@@ -1,4 +1,4 @@
-const CACHE_VERSION = '20250108-2200'; // Backend Integration
+const CACHE_VERSION = '20250108-2358'; // Force Update
 const CACHE_NAME = `shivpuri-local-${CACHE_VERSION}`;
 // 👆 Just update the timestamp above when deploying (format: YYYYMMDD-HHMM)
 const ASSETS = [
@@ -58,6 +58,11 @@ self.addEventListener('message', (event) => {
 
 // Fetch Event
 self.addEventListener('fetch', (event) => {
+    // 1. NETWORK ONLY for API requests (Never cache news)
+    if (event.request.url.includes('/api/')) {
+        return; // Fallback to browser default (Network)
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
