@@ -442,23 +442,15 @@ body {
 }
 
 .place-area,
-.food-meta {
+.food-area,
+.food-price {
     font-size: 0.85rem;
     color: var(--gray-600);
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    /* Ensure it wraps if text is too long */
     gap: 0.5rem;
     margin-bottom: 0.25rem;
-}
-
-.meta-divider {
-    width: 3px;
-    height: 3px;
-    background-color: var(--gray-400);
-    border-radius: 50%;
-    display: inline-block;
+    font-weight: 500;
 }
 
 .place-desc,

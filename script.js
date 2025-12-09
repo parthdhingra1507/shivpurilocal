@@ -430,11 +430,8 @@ function renderFood(food = foodData) {
             <div class="food-content">
                 <span class="food-cat">${category}</span>
                 <h3 class="food-name">${name}</h3>
-                <div class="food-meta">
-                    <span class="food-area">📍 ${area}</span>
-                    <span class="meta-divider"></span>
-                    <span class="food-price">₹${item.approxPriceForTwo} for two</span>
-                </div>
+                <p class="food-area">📍 ${area}</p>
+                <p class="food-price">💳 ₹${item.approxPriceForTwo} for two</p>
                 <p class="food-desc">${desc}</p>
 
                 <div class="food-tags">
