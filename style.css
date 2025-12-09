@@ -1374,6 +1374,47 @@ button.news-link:hover {
     margin-bottom: 1.5rem;
 }
 
+.news-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+    color: var(--gray-900);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-content {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--gray-600);
+    margin-bottom: auto;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-source-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.news-source {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gray-500);
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+}
+
 .article-actions {
     margin-top: 3rem;
     padding-top: 2rem;
