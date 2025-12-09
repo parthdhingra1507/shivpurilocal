@@ -7,6 +7,14 @@ import os
 app = Flask(__name__, root_path=os.path.dirname(os.path.abspath(__file__)))
 CORS(app)
 
+@app.route('/')
+def home():
+    # Try to serve index.html if it exists (for static deployments alongside backend)
+    try:
+        return app.send_static_file('index.html')
+    except:
+        return jsonify({'status': 'Shivpuri Local Backend Running', 'endpoints': ['/api/news', '/api/article/<id>']})
+
 @app.route('/api/news', methods=['GET'])
 def get_news():
     lang = request.args.get('lang', 'en')

@@ -69,7 +69,8 @@
                 <div id="news-grid" class="news-grid">
                     <!-- News cards will be populated here -->
                     <div class="news-loading">
-                        <p>📰 Loading latest news...</p>
+                        <p>🔄 Connecting to News Server...</p>
+                        <p style="font-size:0.8rem; color:#666;">(This may take 30s on first load)</p>
                     </div>
                 </div>
             </section>
@@ -346,153 +347,117 @@
             return hour >= 6 && hour <= 23;
         }
 
-        // VIEW ARTICLE (Internal Link Logic)
+        // VIEW ARTICLE
         window.viewArticle = function (index) {
             const article = currentNewsData[index];
-            if (article && article.id) {
-                // Pass ID to article page
-                window.location.href = `article.html?id=${article.id}`;
-            } else if (article) {
-                // Fallback for non-ID articles (shouldn't happen with backend)
+            if (article) {
                 localStorage.setItem('selectedArticle', JSON.stringify(article));
                 window.location.href = 'article.html';
             }
         };
 
-        async function fetchRSS(url, sourceName) {
+        // Hybrid Fetch: Backend -> Fallback to RSS
+        const RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
+        const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : 'https://shivpurilocal-backend.onrender.com/api';
+
+        async function fetchNews() {
+            const grid = document.getElementById('news-grid');
+            const isHi = currentLang === 'hi';
+            grid.innerHTML = `<div class="news-loading"><p>📰 ${isHi ? 'खबरें लोड हो रही हैं...' : 'Loading news...'}</p><p style="font-size:0.8rem; color:#666;">(Connecting to server...)</p></div>`;
+
+            let allNews = [];
+            let source = 'Backend';
+
+            // 1. Try Backend API
             try {
-                // Short timeout for snappiness - 3 seconds max
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout for backend
 
-                const response = await fetch(`${RSS_TO_JSON_API}${encodeURIComponent(url)}`, { signal: controller.signal });
+                const res = await fetch(`${API_URL}/news?lang=${currentLang}`, { signal: controller.signal });
                 clearTimeout(timeoutId);
-                const data = await response.json();
 
-                if (data.status === 'ok' && data.items.length > 0) {
-                    return data.items.map(item => {
-                        // Image extraction
-                        let image = null;
-                        if (item.enclosure && item.enclosure.link) image = item.enclosure.link;
-                        else {
-                            const imgMatch = item.description.match(/<img[^>]+src="([^">]+)"/);
-                            if (imgMatch) image = imgMatch[1];
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        allNews = data;
+                        console.log('Loaded news from Backend');
+                    }
+                }
+            } catch (e) {
+                console.warn('Backend unavailable, switching to RSS fallback:', e);
+            }
+
+            // 2. Fallback to RSS if Backend returned nothing
+            if (allNews.length === 0) {
+                source = 'RSS';
+                console.log('Fetching from RSS fallback...');
+                const feeds = [
+                    'https://news.google.com/rss/search?q=Shivpuri+MP&hl=hi-IN&gl=IN&ceid=IN:hi',
+                    'https://news.google.com/rss/search?q=Gwalior&hl=hi-IN&gl=IN&ceid=IN:hi',
+                    'https://news.google.com/rss/search?q=Madhya+Pradesh&hl=hi-IN&gl=IN&ceid=IN:hi'
+                ];
+
+                for (const feed of feeds) {
+                    try {
+                        const res = await fetch(`${RSS_PROXY}${encodeURIComponent(feed)}`);
+                        const data = await res.json();
+                        if (data.status === 'ok' && data.items) {
+                            allNews = allNews.concat(data.items.map(item => ({
+                                title: item.title || '',
+                                description: (item.description || '').replace(/<[^>]*>/g, '').substring(0, 200),
+                                content: item.description, // Store ample description for article view
+                                url: item.link || '#',
+                                publishedAt: item.pubDate,
+                                source: 'Google News',
+                                image: item.enclosure?.link || null
+                            })));
                         }
+                    } catch (e) { console.log('RSS Feed error:', e); }
+                }
+            }
 
-                        // Parse Description
-                        let rawDesc = item.description || item.content || '';
-                        let cleanDesc = rawDesc
-                            .replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gm, "")
-                            .replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gm, "")
-                            .replace(/<a\b[^>]*>.*?<\/a>/g, "")
-                            .replace(/<img[^>]*>/g, "")
-                            .replace(/<p>\s*<\/p>/g, '').trim();
+            // Dedupe
+            const seen = new Set();
+            allNews = allNews.filter(n => {
+                if (!n.title || seen.has(n.title)) return false;
+                seen.add(n.title);
+                return true;
+            });
 
-                        if (!cleanDesc || cleanDesc.length < 10) cleanDesc = "Click to read full story.";
-                        if (cleanDesc.length > 500) cleanDesc = cleanDesc.substring(0, 500) + '...';
+            // Sort by date (newest first)
+            allNews.sort((a, b) => new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0));
+            currentNewsData = allNews.slice(0, 20);
 
-                        // SMART API URL DETECTION
-                        const API_URL =
-                            window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
-                                ? 'http://localhost:3000/api' // Local Development
-                                : 'https://shivpurilocal-backend.onrender.com/api'; // Cloud Production (Placeholder - update after deploy)
+            if (currentNewsData.length === 0) {
+                grid.innerHTML = `<div class="error-state"><p>${isHi ? 'कोई खबर नहीं मिली' : 'No news found.'}</p><button onclick="fetchNews()">🔄 Retry</button></div>`;
+                return;
+            }
 
-                        // Fetch from our local node/python server
-                        async function fetchNews() {
-                            const grid = document.getElementById('news-grid');
-                            const isHi = currentLang === 'hi';
+            grid.innerHTML = '';
+            renderBatch(currentNewsData);
+        }
 
-                            if (grid.children.length === 0) {
-                                grid.innerHTML = `<div id="news-loader" class="news-loading">
-                    <div style="height:20px; width:20px; border:2px solid #ddd; border-top-color:var(--primary); border-radius:50%; animation:spin 1s infinite linear; margin:0 auto 10px;"></div>
-                    <p>${isHi ? 'खबरें लोड हो रही हैं... (सर्वर से)' : 'Loading news from server...'}</p>
-                </div>`;
-                            }
+        // Render news cards
+        function renderBatch(articles) {
+            const grid = document.getElementById('news-grid');
+            const isHi = currentLang === 'hi';
 
-                            try {
-                                // Timeout logic - 30s for Render Cold Start
-                                const controller = new AbortController();
-                                const timeoutId = setTimeout(() => controller.abort(), 30000);
+            articles.forEach((news, index) => {
+                const card = document.createElement('div');
+                card.className = 'news-card';
 
-                                // Fetch from our backend with language param
-                                const response = await fetch(`${API_URL}/news?lang=${currentLang}`, {
-                                    signal: controller.signal,
-                                    headers: { 'Accept': 'application/json' }
-                                });
-                                clearTimeout(timeoutId);
+                const title = news.title || '';
+                const desc = news.description || '';
+                const time = news.publishedAt ? getRelativeTime(news.publishedAt) : '';
+                const readMore = isHi ? 'पूरी खबर पढ़ें' : 'Read More';
+                const shareText = isHi ? 'शेयर करें' : 'Share';
 
-                                if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+                const whatsappText = `📰 *${title}*\n\n${desc}\n\n🔗 ${news.url}\n\nvia shivpurilocal.in`;
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
 
-                                const articles = await response.json();
+                const imageHtml = news.image ? `<img src="${news.image}" alt="News" style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:0.75rem;" onerror="this.style.display='none'">` : '';
 
-                                // Clear loader
-                                const loader = document.getElementById('news-loader');
-                                if (loader) loader.remove();
-
-                                if (!articles || articles.length === 0) {
-                                    grid.innerHTML = `<div class="error-state">
-                        <p>${isHi ? 'सर्वर जाग रहा है, कृपया पुनः लोड करें।' : 'Server returned empty format. Please reload.'}</p>
-                        <button onclick="location.reload()" style="margin-top:1rem; padding:0.5rem 1rem; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;">
-                             ${isHi ? '🔄 पुनः लोड करें' : '🔄 Reload'}
-                        </button>
-                    </div>`;
-                                    return;
-                                }
-
-                                // Render articles from DB
-                                // Backend already sorts by priority
-                                currentNewsData = articles;
-                                renderedTitles.clear();
-
-                                renderBatch(articles);
-
-                            } catch (e) {
-                                console.error('Fetch error:', e);
-                                const loader = document.getElementById('news-loader');
-                                if (loader) {
-                                    let errorMsg = isHi ? 'बैकएंड सर्वर चालू नहीं है।' : 'Backend server is not running or unreachable.';
-                                    if (e.name === 'AbortError') errorMsg = isHi ? 'सर्वर बहुत धीमा है (Timeout)।' : 'Server timed out (5s).';
-
-                                    loader.innerHTML = `<div class="error-state">
-                        <h3>⚠️ Connection Failed</h3>
-                        <p>${errorMsg}</p>
-                        <p style="font-size:0.8rem; color:#666;">Target: <code>${API_URL}</code></p>
-                        <p style="font-size:0.75rem; color:#888;">Ensure <code>python3 backend/app.py</code> is running.</p>
-                        <button onclick="location.reload()" style="margin-top:1rem; padding:0.5rem 1rem; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;">
-                             ${isHi ? '🔄 पुनः लोड करें' : '🔄 Reload'}
-                        </button>
-                    </div>`;
-                                }
-                            }
-                        }
-
-                        function renderBatch(articles) {
-                            const grid = document.getElementById('news-grid');
-                            const isHi = currentLang === 'hi';
-
-                            articles.forEach(news => {
-                                const card = document.createElement('div');
-                                card.className = 'news-card';
-                                card.style.animation = 'fadeIn 0.5s ease';
-
-                                const title = news.title || '';
-                                const desc = news.description || '';
-                                const time = news.publishedAt ? getRelativeTime(news.publishedAt) : '';
-                                const readMore = isHi ? 'पूरी खबर पढ़ें' : 'Read More';
-                                const shareText = isHi ? 'शेयर करें' : 'Share';
-
-                                // WhatsApp share URL
-                                const whatsappText = `📰 *${title}*\n\n${desc}\n\n🔗 ${news.url}\n\nvia shivpurilocal.in`;
-                                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
-
-                                // Index for viewArticle
-                                const index = currentNewsData.indexOf(news);
-
-                                // Image HTML if available
-                                const imageHtml = news.image ?
-                                    `<img src="${news.image}" alt="News" style="width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:0.75rem;" onerror="this.style.display='none'">` : '';
-
-                                card.innerHTML = `
+                card.innerHTML = `
                     <div class="news-content" style="padding:1rem;">
                         <span class="news-time" style="font-size:0.8rem; color:#888; display:block; margin-bottom:0.5rem;">🕐 ${time}</span>
                         ${imageHtml}
@@ -507,29 +472,23 @@
                             </a>
                         </div>
                     </div>
-                 `;
-                                grid.appendChild(card);
-                            });
-                        }
+                `;
+                grid.appendChild(card);
+            });
+        }
 
-                        // Auto-refresh logic
-                        setInterval(() => {
-                            if (isRefreshTime()) {
-                                // For auto-refresh, maybe just quiet update? 
-                                // Creating chaos with progressive loading on interval is risky.
-                                // Just keep it simple: restart.
-                                renderedTitles.clear();
-                                document.getElementById('news-grid').innerHTML = '';
-                                currentNewsData = [];
-                                fetchNews();
-                            }
-                        }, NEWS_REFRESH_INTERVAL);
+        // Auto-refresh every 30 minutes
+        setInterval(() => {
+            if (isRefreshTime()) {
+                renderedTitles.clear();
+                document.getElementById('news-grid').innerHTML = '';
+                currentNewsData = [];
+                fetchNews();
+            }
+        }, NEWS_REFRESH_INTERVAL);
 
-                        // Initial Load (if not doing language switch immediately)
-                        // Wait minorly for lang
-                        // (Handled by setTimeout above)
-
-                        fetchNews(); // Initial load
+        // Initial load
+        fetchNews();
     </script>
 </body>
 

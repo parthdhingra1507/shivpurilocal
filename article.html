@@ -228,20 +228,29 @@
                 }
             }
 
-            if (!article) {
+            const t = translations[currentLang];
+
+            // 1. Update Back Link Text
+            const backLink = document.querySelector('.back-link');
+            if (backLink) backLink.textContent = t.back_to_news;
+
+            // 2. Validate Article Data
+            if (!article || !article.title) {
+                // If article is missing or invalid, showing error and clearing possibly corrupt data
+                console.warn('Invalid article data found.');
+                localStorage.removeItem('selectedArticle'); // Clear bad data
+
                 cardEl.innerHTML = `
                     <div class="error-state">
-                        <h2>❌ Article Not Found</h2>
-                        <p>No article data available. Please go back and select a news item.</p>
-                        <a href="news.html" class="source-btn" style="margin-top:1rem;">← Back to News</a>
+                        <h2>${t.article_not_found}</h2>
+                        <p>${t.article_error_desc}</p>
+                        <a href="news.html" class="source-btn" style="margin-top:1rem;">${t.back_to_news}</a>
                     </div>
                 `;
                 return;
             }
 
             try {
-                const article = JSON.parse(articleJson);
-
                 // Update page title
                 document.title = (article.title || 'News') + ' - Shivpuri Local';
 
@@ -262,7 +271,7 @@
                 </div>`;
 
                 // Title
-                html += `<h1 class="article-title">${article.title || 'News Article'}</h1>`;
+                html += `<h1 class="article-title">${article.title}</h1>`;
 
                 // Content
                 const content = article.content || article.description || 'No content available.';
@@ -274,24 +283,40 @@
 
                 html += `<div class="article-actions">
                     <a href="${article.url || '#'}" target="_blank" rel="noopener" class="source-btn">
-                        Read Full Story at Source ↗
+                        ${t.open_source}
                     </a>
                     <a href="${whatsappUrl}" target="_blank" rel="noopener" class="share-btn">
-                        Share on WhatsApp
+                        ${t.share_btn}
                     </a>
                 </div>`;
+
+                // Embed source in iframe
+                if (article.url) {
+                    html += `<div class="iframe-container" style="margin-top:1.5rem;">
+                        <p style="margin-bottom:0.5rem; color:#666; font-size:0.9rem;">${t.full_article_source}</p>
+                        <iframe 
+                            src="${article.url}" 
+                            style="width:100%; height:600px; border:1px solid #ddd; border-radius:8px;"
+                            sandbox="allow-scripts allow-same-origin"
+                            loading="lazy"
+                            onerror="this.style.display='none'"
+                        ></iframe>
+                        <p style="margin-top:0.5rem; color:#888; font-size:0.8rem;">If content doesn't load, <a href="${article.url}" target="_blank">${t.click_here_source}</a>.</p>
+                    </div>`;
+                }
 
                 html += `</div>`;
 
                 cardEl.innerHTML = html;
 
             } catch (e) {
-                console.error('Error parsing article:', e);
+                console.error('Error rendering article:', e);
+                localStorage.removeItem('selectedArticle'); // Clear bad data
                 cardEl.innerHTML = `
                     <div class="error-state">
-                        <h2>⚠️ Error Loading Article</h2>
-                        <p>Something went wrong. Please try again.</p>
-                        <a href="news.html" class="source-btn" style="margin-top:1rem;">← Back to News</a>
+                        <h2>${t.article_error}</h2>
+                        <p>${t.article_error_desc}</p>
+                        <a href="news.html" class="source-btn" style="margin-top:1rem;">${t.back_to_news}</a>
                     </div>
                 `;
             }

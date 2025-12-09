@@ -47,7 +47,14 @@ const translations = {
         map_btn: "Map",
         nav_news: "News",
         hero_news_title: "City News",
-        hero_news_desc: "Latest headlines from Shivpuri & Madhya Pradesh"
+        hero_news_desc: "Latest headlines from Shivpuri & Madhya Pradesh",
+        back_to_news: "← Back to News",
+        open_source: "Open Original Source ↗",
+        full_article_source: "📄 Full Article from Source:",
+        article_not_found: "❌ Article Not Found",
+        article_error: "⚠️ Error Loading Article",
+        article_error_desc: "Something went wrong. Please try again.",
+        click_here_source: "click here to read at source"
     },
     hi: {
         tagline: "शहर का विश्वकोश",
@@ -94,7 +101,14 @@ const translations = {
         map_btn: "मानचित्र",
         nav_news: "समाचार",
         hero_news_title: "शहर समाचार",
-        hero_news_desc: "शिवपुरी और मध्य प्रदेश की ताज़ा खबरें"
+        hero_news_desc: "शिवपुरी और मध्य प्रदेश की ताज़ा खबरें",
+        back_to_news: "← समाचार पर वापस जाएं",
+        open_source: "मूल खबर पढ़ें ↗",
+        full_article_source: "📄 पूरी खबर स्रोत से:",
+        article_not_found: "❌ खबर नहीं मिली",
+        article_error: "⚠️ खबर लोड करने में त्रुटि",
+        article_error_desc: "कुछ गलत हो गया। कृपया पुन: प्रयास करें।",
+        click_here_source: "स्रोत पर पढ़ने के लिए यहाँ क्लिक करें"
     }
 };
 
