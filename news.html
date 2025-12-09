@@ -473,12 +473,16 @@
                 // Clean HTML tags and extra chars
                 let cleanContent = rawContent.replace(/<[^>]*>/g, '').replace(/\[\+\d+ chars\]/g, '').trim();
 
-                // If description is same as title or too short, hide it
-                const isSameAsTitle = cleanContent.toLowerCase().replace(/[^\w\s]/g, '') === title.toLowerCase().replace(/[^\w\s]/g, '');
-                const isTooShort = cleanContent.length < 50;
+                // Strict check: valid description must be longer than title and not contain title
+                const cleanDesc = cleanContent.toLowerCase().replace(/[^\w\s]/g, '');
+                const cleanTitle = title.toLowerCase().replace(/[^\w\s]/g, '');
 
-                // Only show description if different and meaningful
-                const showDescription = !isSameAsTitle && !isTooShort;
+                const isSame = cleanDesc === cleanTitle;
+                const isContained = cleanDesc.includes(cleanTitle) || cleanTitle.includes(cleanDesc);
+                const isTooShort = cleanContent.length < 20; // Lower threshold but stricter content check
+
+                // Only show description if it adds value
+                const showDescription = !isSame && !isContained && !isTooShort;
 
                 const time = news.publishedAt ? getRelativeTime(news.publishedAt) : '';
                 const source = news.source || 'News';
