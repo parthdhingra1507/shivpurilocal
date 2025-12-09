@@ -274,7 +274,7 @@ function renderBuses(buses, append = false) {
 
         // Update dynamic text in card
         // WhatsApp Message
-        const shareText = `🚌 *Bus Schedule Alert*\n\n*${bus.operator_name}*\nFrom: ${from}\nTo: ${to}\nTime: ${departure}\n${isHi ? "द्वारा" : "Via"}: ${via}\n\nCheck full schedule on: https://shivpurilocal.in`;
+        const shareText = `🚌 *Bus Schedule Alert*\n\n*${bus.operator_name}*\nFrom: ${from}\nTo: ${to}\nTime: ${departure}\n${isHi ? "द्वारा" : "Via"}: ${via}\n\nCheck full schedule on: https://shivpurilocal.in/transport`;
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
         card.innerHTML = `
@@ -315,13 +315,6 @@ function renderBuses(buses, append = false) {
         `;
         grid.appendChild(card);
     });
-
-    // Update Load More Button Visibility
-    if (visibleCount >= currentBuses.length) {
-        loadMoreContainer.style.display = 'none';
-    } else {
-        loadMoreContainer.style.display = 'block';
-    }
 }
 
 function applyFilters() {
@@ -383,7 +376,7 @@ function renderPlaces(places = placesData) {
         const card = document.createElement('div');
         card.className = 'place-card';
 
-        const shareText = `📍 *${name}*\n\n${desc}\n\nCategory: ${category}\nArea: ${area}\n\nExplore more on: https://shivpurilocal.in`;
+        const shareText = `📍 *${name}*\n\n${desc}\n\nCategory: ${category}\nArea: ${area}\n\nExplore more on: https://shivpurilocal.in/places`;
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
         card.innerHTML = `
@@ -430,7 +423,7 @@ function renderFood(food = foodData) {
         const card = document.createElement('div');
         card.className = 'food-card';
 
-        const shareText = `🍽️ *${name}*\n\n${desc}\n\nCategory: ${category}\nArea: ${area}\nPrice for 2: ₹${item.approxPriceForTwo}\n\nExplore more on: https://shivpurilocal.in`;
+        const shareText = `🍽️ *${name}*\n\n${desc}\n\nCategory: ${category}\nArea: ${area}\nPrice for 2: ₹${item.approxPriceForTwo}\n\nExplore more on: https://shivpurilocal.in/food`;
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
         card.innerHTML = `
