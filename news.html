@@ -387,32 +387,38 @@
                 console.warn('Backend unavailable, switching to RSS fallback:', e);
             }
 
-            // 2. Fallback to RSS if Backend returned nothing
+            // 2. Fallback to GNews API (Better content than RSS)
             if (allNews.length === 0) {
-                source = 'RSS';
-                console.log('Fetching from RSS fallback...');
-                const feeds = [
-                    'https://news.google.com/rss/search?q=Shivpuri+MP&hl=hi-IN&gl=IN&ceid=IN:hi',
-                    'https://news.google.com/rss/search?q=Gwalior&hl=hi-IN&gl=IN&ceid=IN:hi',
-                    'https://news.google.com/rss/search?q=Madhya+Pradesh&hl=hi-IN&gl=IN&ceid=IN:hi'
+                source = 'GNews';
+                console.log('Fetching from GNews API...');
+                const GNEWS_KEY = 'c0f5d443f40740ce824fd1ee3e3b3ed8'; // User's key
+                const queries = [
+                    'Shivpuri Madhya Pradesh',
+                    'Gwalior News',
+                    'Madhya Pradesh'
                 ];
 
-                for (const feed of feeds) {
+                for (const q of queries) {
                     try {
-                        const res = await fetch(`${RSS_PROXY}${encodeURIComponent(feed)}`);
+                        const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(q)}&lang=${currentLang === 'hi' ? 'hi' : 'en'}&country=in&max=10&apikey=${GNEWS_KEY}`;
+                        const res = await fetch(url);
                         const data = await res.json();
-                        if (data.status === 'ok' && data.items) {
-                            allNews = allNews.concat(data.items.map(item => ({
-                                title: item.title || '',
-                                description: (item.description || '').replace(/<[^>]*>/g, '').substring(0, 200),
-                                content: item.description, // Store ample description for article view
-                                url: item.link || '#',
-                                publishedAt: item.pubDate,
-                                source: 'Google News',
-                                image: item.enclosure?.link || null
+
+                        if (data.articles) {
+                            allNews = allNews.concat(data.articles.map(item => ({
+                                title: item.title,
+                                description: item.description, // GNews gives good summaries
+                                content: item.content,         // Full content snippet
+                                url: item.url,
+                                publishedAt: item.publishedAt,
+                                source: item.source.name,
+                                image: item.image
                             })));
                         }
-                    } catch (e) { console.log('RSS Feed error:', e); }
+                    } catch (e) { console.log('GNews error:', e); }
+
+                    // Respect API rate limits (1 request per second typically safe for free tier)
+                    await new Promise(r => setTimeout(r, 500));
                 }
             }
 
