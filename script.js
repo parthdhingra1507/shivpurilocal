@@ -394,7 +394,7 @@ function renderPlaces(places = placesData) {
                 <p class="place-desc">${desc}</p>
                 
                 <div class="place-tags">
-                    ${place.tags.slice(0, 3).map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                    ${place.tags.slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('')}
                 </div>
 
                 <div class="card-actions">
@@ -444,7 +444,7 @@ function renderFood(food = foodData) {
                 <p class="food-desc">${desc}</p>
 
                 <div class="food-tags">
-                    ${item.tags.slice(0, 3).map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                    ${item.tags.slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('')}
                 </div>
 
                 <div class="card-actions">

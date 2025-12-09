@@ -121,14 +121,16 @@ body {
 .logo {
     font-family: var(--font-sans);
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--gray-900);
     margin: 0;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.75px;
 }
 
 .logo .highlight {
-    color: var(--gray-600);
+    font-weight: 400;
+    color: var(--gray-500);
+    letter-spacing: -0.25px;
 }
 
 .tagline {
