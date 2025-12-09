@@ -124,13 +124,14 @@ body {
     font-weight: 800;
     color: var(--gray-900);
     margin: 0;
-    letter-spacing: -0.75px;
+    letter-spacing: -0.5px;
 }
 
 .logo .highlight {
-    font-weight: 400;
-    color: var(--gray-500);
-    letter-spacing: -0.25px;
+    font-weight: 800;
+    color: #ef4444;
+    /* Brand Red/Orange */
+    letter-spacing: -0.5px;
 }
 
 .tagline {
