@@ -3,11 +3,10 @@
    =================================== */
 
 :root {
-    /* Clean, Muted Color Palette */
+    /* Pure Neutral Color Palette */
     --primary: #1a1a1a;
     --primary-soft: #333333;
-    --accent: #0066CC;
-    --accent-soft: #E8F0FE;
+
 
     /* Neutral Colors */
     --white: #FFFFFF;
@@ -83,7 +82,7 @@ body {
 }
 
 .app-container {
-    max-width: 1100px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 0 1.5rem;
 }
@@ -105,7 +104,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1100px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 0 1.5rem;
 }
@@ -126,7 +125,7 @@ body {
 }
 
 .logo .highlight {
-    color: var(--accent);
+    color: var(--gray-600);
 }
 
 .tagline {
