@@ -6,6 +6,46 @@ from datetime import datetime, timedelta
 import threading
 import schedule
 from db import save_article, init_db
+from openai import OpenAI
+import os
+
+# ---------------------------------------------------------
+# OPENAI CONFIGURATION
+# ---------------------------------------------------------
+# Please replace with your actual OpenAI API Key
+OPENAI_API_KEY = "sk-..." 
+client = None
+
+if OPENAI_API_KEY and OPENAI_API_KEY != "sk-...":
+    try:
+        client = OpenAI(api_key=OPENAI_API_KEY)
+    except:
+        print("OpenAI Init Failed")
+
+def process_with_ai(title, description):
+    """
+    Uses OpenAI to standardize the news article.
+    Returns (cleaned_title, cleaned_desc, standardized_tag)
+    """
+    if not client:
+        return title, description, "LATEST NEWS"
+        
+    try:
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a news editor for 'Shivpuri Local'. Output JSON only: {title, summary, tag}. Tags must be one of: CITY NEWS, NATIONAL, POLITICS, CRIME, BUSINESS. Keep summary under 200 chars."},
+                {"role": "user", "content": f"Title: {title}\nDesc: {description}"}
+            ]
+        )
+        # Simple parsing (in production use json mode)
+        import json
+        content = completion.choices[0].message.content.replace("```json", "").replace("```", "")
+        data = json.loads(content)
+        return data.get('title', title), data.get('summary', description), data.get('tag', 'LATEST NEWS').upper()
+    except Exception as e:
+        print(f"AI Processing Failed: {e}")
+        return title, description, "LATEST NEWS"
 
 # Feed Configuration
 FEEDS = {
@@ -77,11 +117,19 @@ def fetch_feed_data():
                     except:
                         pub_date = datetime.now()
 
-                    # Basic data needed even if scraping fails
+                    # Basic data 
+                    raw_title = entry.title
+                    raw_desc = entry.summary if 'summary' in entry else ''
+                    
+                    # AI PROCESSING
+                    # We process BEFORE saving to DB
+                    ai_title, ai_desc, ai_tag = process_with_ai(raw_title, raw_desc)
+                    # If AI fails (no key), ai_tag is 'LATEST NEWS'
+
                     article_data = {
-                        'title': entry.title,
-                        'description': entry.summary if 'summary' in entry else '',
-                        'source': feed_config['name'],
+                        'title': ai_title,
+                        'description': ai_desc,
+                        'source': ai_tag, # Use the AI normalized tag
                         'publishedAt': pub_date,
                         'priority': feed_config['priority'],
                         'language': lang,
