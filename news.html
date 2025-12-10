@@ -356,6 +356,16 @@
         const RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
         const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : 'https://shivpurilocal-backend.onrender.com/api';
 
+        // Standardize Source Tags
+        function normalizeSource(rawSource) {
+            const s = rawSource.toLowerCase();
+            if (s.includes('google') || s.includes('news')) return 'NEWS UPDATE';
+            if (s.includes('shivpuri') || s.includes('mp') || s.includes('local')) return 'CITY NEWS';
+            if (s.includes('times') || s.includes('hindu') || s.includes('ndtv')) return 'NATIONAL';
+            if (s.includes('patrika') || s.includes('bhaskar')) return 'HINDI NEWS';
+            return 'LATEST NEWS';
+        }
+
         async function fetchNews() {
             const grid = document.getElementById('news-grid');
             const isHi = currentLang === 'hi';
@@ -365,31 +375,12 @@
             let allNews = [];
             let loadedFrom = '';
 
-            // STRATEGY 1: Backend API (Trusted, Scraped Content)
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-                const res = await fetch(`${API_URL}/news?lang=${currentLang}`, { signal: controller.signal });
-                clearTimeout(timeoutId);
-
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.length > 0) {
-                        allNews = data;
-                        loadedFrom = 'Backend';
-                    }
-                }
-            } catch (e) {
-                console.warn('Backend unavailable:', e);
-            }
-
-            // STRATEGY 2: GNews API (Clean JSON, Good Quality)
+            // STRATEGY 1: GNews API (FASTEST & CLEANEST)
             if (allNews.length === 0) {
                 const GNEWS_KEY = 'c0f5d443f40740ce824fd1ee3e3b3ed8';
                 const query = isHi ? 'Shivpuri Madhya Pradesh' : 'Shivpuri Madhya Pradesh';
                 try {
-                    console.log('Fetching GNews...');
+                    console.log('Fetching GNews (Fast)...');
                     const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=${currentLang}&country=in&max=10&apikey=${GNEWS_KEY}`;
                     const res = await fetch(url);
                     const data = await res.json();
@@ -410,10 +401,31 @@
                 }
             }
 
-            // STRATEGY 3: Latest RSS Fallback (Guaranteed Content)
+            // STRATEGY 2: Backend API (Trusted, Scraped Content)
             if (allNews.length === 0) {
-                console.log('Using Ultimate RSS Fallback...');
-                const rssQuery = isHi ? '%E0%A4%B6%E0%A4%BF%E0%A4%B5%E0%A4%AA%E0%A5%81%E0%A4%B0%E0%A5%80' : 'Shivpuri%20Madhya%20Pradesh';
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                    const res = await fetch(`${API_URL}/news?lang=${currentLang}`, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && data.length > 0) {
+                            allNews = data;
+                            loadedFrom = 'Backend';
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Backend unavailable:', e);
+                }
+            }
+
+            // STRATEGY 3: Google RSS (Reliable Fallback)
+            if (allNews.length === 0) {
+                console.log('Using RSS Fallback...');
+                const rssQuery = isHi ? '%E0%A4%B6%E0%A4%BF%E0%A4%B5%E0%A4%AA%E0%A4%BF%E0%A4%B0%E0%A5%80' : 'Shivpuri%20Madhya%20Pradesh';
                 const rssUrl = `https://news.google.com/rss/search?q=${rssQuery}&hl=${currentLang === 'hi' ? 'hi' : 'en-IN'}&gl=IN&ceid=IN:${currentLang === 'hi' ? 'hi' : 'en'}`;
                 const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
 
@@ -424,11 +436,11 @@
                     if (data.items) {
                         allNews = data.items.map(item => ({
                             title: item.title,
-                            description: '', // RSS descriptions are often messy HTML
+                            description: '',
                             url: item.link,
                             publishedAt: item.pubDate,
                             source: item.author || 'Google News',
-                            image: item.enclosure?.link // Try to get image from thumbnail
+                            image: item.enclosure?.link
                         }));
                         loadedFrom = 'RSS Feed';
                     }
@@ -472,7 +484,7 @@
                 const showDescription = !isSame && !isContained && !isTooShort;
 
                 const time = news.publishedAt ? getRelativeTime(news.publishedAt) : '';
-                const source = news.source || 'News';
+                const source = normalizeSource(news.source || '');
                 const sourceLabel = isHi ? 'स्रोत' : 'Source';
 
                 const whatsappText = `📰 *${title}*\n\n🔗 ${news.url}\n\nvia shivpurilocal.in`;
