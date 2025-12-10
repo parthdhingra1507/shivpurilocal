@@ -362,15 +362,16 @@
         async function fetchNews() {
             const grid = document.getElementById('news-grid');
             const isHi = currentLang === 'hi';
-            grid.innerHTML = `<div class="news-loading"><p>📰 ${isHi ? 'खबरें लोड हो रही हैं...' : 'Loading news...'}</p><p style="font-size:0.8rem; color:#666;">(Connecting to server...)</p></div>`;
+            const loadingText = isHi ? 'खबरें लोड हो रही हैं...' : 'Loading news...';
+            grid.innerHTML = `<div class="news-loading"><div class="loading-spinner"></div><p>${loadingText}</p></div>`;
 
             let allNews = [];
-            let source = 'Backend';
+            let loadedFrom = '';
 
-            // 1. Try Backend API
+            // 1. Try Backend API (Hosted)
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout for backend
+                const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s strict timeout
 
                 const res = await fetch(`${API_URL}/news?lang=${currentLang}`, { signal: controller.signal });
                 clearTimeout(timeoutId);
@@ -379,85 +380,48 @@
                     const data = await res.json();
                     if (data && data.length > 0) {
                         allNews = data;
-                        console.log('Loaded news from Backend');
+                        loadedFrom = 'Backend';
                     }
                 }
             } catch (e) {
-                console.warn('Backend unavailable, switching to RSS fallback:', e);
+                console.warn('Backend unavailable:', e);
             }
 
-            // 2. Fallback to GNews API (Better content than RSS)
+            // 2. Client-Side Fallback (GNews) if Backend empty/failed
             if (allNews.length === 0) {
-                source = 'GNews';
-                console.log('Fetching from GNews API...');
+                console.log('Using Client-Side Fallback (GNews)...');
                 const GNEWS_KEY = 'c0f5d443f40740ce824fd1ee3e3b3ed8';
-                const queries = ['Shivpuri', 'Gwalior', 'Madhya Pradesh'];
+                // Optimized single query for Shivpuri + MP context
+                const query = isHi ? 'शिवपुरी मध्य प्रदेश समाचार' : 'Shivpuri Madhya Pradesh News';
 
-                for (const q of queries) {
-                    try {
-                        const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(q)}&lang=${currentLang === 'hi' ? 'hi' : 'en'}&country=in&max=10&apikey=${GNEWS_KEY}`;
-                        const res = await fetch(url);
-                        const data = await res.json();
-
-                        if (data.articles) {
-                            allNews = allNews.concat(data.articles.map(item => ({
-                                title: item.title,
-                                description: item.description,
-                                content: item.content,
-                                url: item.url,
-                                publishedAt: item.publishedAt,
-                                source: item.source?.name || 'News',
-                                image: item.image
-                            })));
-                        }
-                    } catch (e) { console.log('GNews error:', e); }
-                    await new Promise(r => setTimeout(r, 300));
-                }
-            }
-
-            // 3. Additional source: NewsData.io (Free tier: 200 req/day)
-            if (allNews.length < 10) {
-                console.log('Fetching from NewsData.io...');
-                const NEWSDATA_KEY = 'pub_6226816e3d1f70faec2c893b2e4dbb2f5b4af'; // Free tier key
                 try {
-                    const url = `https://newsdata.io/api/1/news?apikey=${NEWSDATA_KEY}&q=Madhya%20Pradesh&country=in&language=${currentLang === 'hi' ? 'hi' : 'en'}`;
+                    const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=${currentLang}&country=in&max=15&apikey=${GNEWS_KEY}`;
                     const res = await fetch(url);
                     const data = await res.json();
 
-                    if (data.results) {
-                        allNews = allNews.concat(data.results.map(item => ({
-                            title: item.title,
-                            description: item.description || '',
-                            content: item.content || item.description || '',
-                            url: item.link,
-                            publishedAt: item.pubDate,
-                            source: item.source_name || item.source_id || 'News',
-                            image: item.image_url
-                        })));
+                    if (data.articles) {
+                        allNews = data.articles.map(article => ({
+                            title: article.title,
+                            description: article.description || article.content,
+                            url: article.url,
+                            publishedAt: article.publishedAt,
+                            source: article.source.name,
+                            image: article.image
+                        }));
+                        loadedFrom = 'GNews Client';
                     }
-                } catch (e) { console.log('NewsData error:', e); }
+                } catch (e) {
+                    console.error('Frontend GNews fallback failed:', e);
+                }
             }
 
-            // Dedupe
-            const seen = new Set();
-            allNews = allNews.filter(n => {
-                if (!n.title || seen.has(n.title)) return false;
-                seen.add(n.title);
-                return true;
-            });
-
-            // Sort by date (newest first)
-            allNews.sort((a, b) => new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0));
-            currentNewsData = allNews.slice(0, 25);
-
-            if (currentNewsData.length === 0) {
-                grid.innerHTML = `<div class="error-state"><p>${isHi ? 'कोई खबर नहीं मिली' : 'No news found.'}</p><button onclick="fetchNews()">🔄 Retry</button></div>`;
-                return;
-            }
-
-            grid.innerHTML = '';
-            renderBatch(currentNewsData);
+            console.log(`Loaded ${allNews.length} articles from ${loadedFrom}`);
+            currentNewsData = deduplicateNews(allNews);
+            renderNews();
         }
+
+
+
 
         // Premium News Card Renderer
         function renderBatch(articles) {
