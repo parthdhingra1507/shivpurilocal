@@ -365,10 +365,10 @@
             let allNews = [];
             let loadedFrom = '';
 
-            // 1. Try Backend API (Hosted)
+            // STRATEGY 1: Backend API (Trusted, Scraped Content)
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s strict timeout
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
 
                 const res = await fetch(`${API_URL}/news?lang=${currentLang}`, { signal: controller.signal });
                 clearTimeout(timeoutId);
@@ -384,31 +384,56 @@
                 console.warn('Backend unavailable:', e);
             }
 
-            // 2. Client-Side Fallback (GNews) if Backend empty/failed
+            // STRATEGY 2: GNews API (Clean JSON, Good Quality)
             if (allNews.length === 0) {
-                console.log('Using Client-Side Fallback (GNews)...');
                 const GNEWS_KEY = 'c0f5d443f40740ce824fd1ee3e3b3ed8';
-                // Optimized single query for Shivpuri + MP context
-                const query = isHi ? 'शिवपुरी मध्य प्रदेश समाचार' : 'Shivpuri Madhya Pradesh News';
-
+                const query = isHi ? 'Shivpuri Madhya Pradesh' : 'Shivpuri Madhya Pradesh';
                 try {
-                    const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=${currentLang}&country=in&max=15&apikey=${GNEWS_KEY}`;
+                    console.log('Fetching GNews...');
+                    const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=${currentLang}&country=in&max=10&apikey=${GNEWS_KEY}`;
                     const res = await fetch(url);
                     const data = await res.json();
 
                     if (data.articles) {
                         allNews = data.articles.map(article => ({
                             title: article.title,
-                            description: article.description || article.content,
+                            description: article.description,
                             url: article.url,
                             publishedAt: article.publishedAt,
                             source: article.source.name,
                             image: article.image
                         }));
-                        loadedFrom = 'GNews Client';
+                        loadedFrom = 'GNews API';
                     }
                 } catch (e) {
-                    console.error('Frontend GNews fallback failed:', e);
+                    console.error('GNews failed:', e);
+                }
+            }
+
+            // STRATEGY 3: Latest RSS Fallback (Guaranteed Content)
+            if (allNews.length === 0) {
+                console.log('Using Ultimate RSS Fallback...');
+                const rssQuery = isHi ? '%E0%A4%B6%E0%A4%BF%E0%A4%B5%E0%A4%AA%E0%A5%81%E0%A4%B0%E0%A5%80' : 'Shivpuri%20Madhya%20Pradesh';
+                const rssUrl = `https://news.google.com/rss/search?q=${rssQuery}&hl=${currentLang === 'hi' ? 'hi' : 'en-IN'}&gl=IN&ceid=IN:${currentLang === 'hi' ? 'hi' : 'en'}`;
+                const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+                try {
+                    const res = await fetch(proxyUrl);
+                    const data = await res.json();
+
+                    if (data.items) {
+                        allNews = data.items.map(item => ({
+                            title: item.title,
+                            description: '', // RSS descriptions are often messy HTML
+                            url: item.link,
+                            publishedAt: item.pubDate,
+                            source: item.author || 'Google News',
+                            image: item.enclosure?.link // Try to get image from thumbnail
+                        }));
+                        loadedFrom = 'RSS Feed';
+                    }
+                } catch (e) {
+                    console.error('RSS Fallback failed:', e);
                 }
             }
 
