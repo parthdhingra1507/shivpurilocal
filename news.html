@@ -139,7 +139,9 @@
 
     <script src="common.js?v=1.7"></script>
     <script>
-        const API_URL = '/api/news';
+        const API_URL = window.location.hostname === 'localhost'
+            ? '/api/news'
+            : 'https://shivpurilocal-api.onrender.com/api/news';
 
         function getTime(dateStr) {
             if (!dateStr) return '';
