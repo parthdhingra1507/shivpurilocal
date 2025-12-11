@@ -313,7 +313,7 @@ function renderBuses(buses, append = false) {
                     <span class="value">${days}</span>
                 </div>
             </div>
-            <a href="${whatsappUrl}" target="_blank" class="share-btn">Share</a>
+            <a href="${whatsappUrl}" target="_blank" class="share-btn">${isHi ? "साझा करें" : "Share"}</a>
         `;
         grid.appendChild(card);
     });
@@ -328,10 +328,10 @@ function applyFilters() {
     if (resetBtn) {
         const hasFilters = fromVal !== "" || toVal !== "" || timeVal !== "";
         if (hasFilters) {
-            resetBtn.textContent = "Reset Filters";
+            resetBtn.textContent = isHi ? "रीसेट" : "Reset Filters"; // Simple toggle logic handled here or updatePageLanguage
             resetBtn.classList.add("reset-mode");
         } else {
-            resetBtn.textContent = "Search Buses";
+            resetBtn.textContent = isHi ? "खोजें" : "Search Buses"; // Fallback mostly, but dynamic update handles main text
             resetBtn.classList.remove("reset-mode");
         }
     }
@@ -393,8 +393,8 @@ function renderPlaces(places = placesData) {
                 </div>
 
                 <div class="card-actions">
-                    <a href="${whatsappUrl}" target="_blank" class="share-btn">Share</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' Shivpuri')}" target="_blank" class="map-btn">Map</a>
+                    <a href="${whatsappUrl}" target="_blank" class="share-btn">${isHi ? "साझा करें" : "Share"}</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' Shivpuri')}" target="_blank" class="map-btn">${isHi ? "मानचित्र" : "Map"}</a>
                 </div>
             </div>
         `;
@@ -441,8 +441,8 @@ function renderFood(food = foodData) {
                 </div>
 
                 <div class="card-actions">
-                    <a href="${whatsappUrl}" target="_blank" class="share-btn">Share</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' Shivpuri')}" target="_blank" class="map-btn">Map</a>
+                    <a href="${whatsappUrl}" target="_blank" class="share-btn">${isHi ? "साझा करें" : "Share"}</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' Shivpuri')}" target="_blank" class="map-btn">${isHi ? "मानचित्र" : "Map"}</a>
                 </div>
             </div>
         `;
