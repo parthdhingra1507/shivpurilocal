@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shivpuri News - Latest Updates | Shivpuri Local</title>
-<meta name="description" content="Get the latest news and updates from Shivpuri, Madhya Pradesh.">
-<link rel="canonical" href="https://shivpurilocal.in/news">
 
-<!-- Open Graph -->
-<meta property="og:title" content="Shivpuri News - Latest Updates">
-<meta property="og:description" content="Stay updated with latest news from Shivpuri, MP.">
-<meta property="og:image" content="https://shivpurilocal.in/social-preview.png">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shivpuri News - Latest Updates | Shivpuri Local</title>
+    <meta name="description" content="Get the latest news and updates from Shivpuri, Madhya Pradesh.">
+    <link rel="canonical" href="https://shivpurilocal.in/news">
+    <meta property="og:title" content="Shivpuri News - Latest Updates">
+    <meta property="og:description" content="Stay updated with latest news from Shivpuri, MP.">
+    <meta property="og:image" content="https://shivpurilocal.in/social-preview.png">
 
-<!-- Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6F0WC51BKD"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-6F0WC51BKD');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F0WC51BKD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-6F0WC51BKD');
+    </script>
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
-<link rel="stylesheet" href="style.css?v=1.4">
-<script src="sw-register.js?v=1.4"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="stylesheet" href="style.css?v=1.5">
+    <script src="sw-register.js?v=1.5"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
 
 <body class="page-news">
     <div class="app-container">
@@ -59,9 +59,7 @@
             </section>
 
             <section class="news-container">
-                <div id="news-grid" class="news-grid">
-                    <!-- News loads here -->
-                </div>
+                <div id="news-grid" class="news-grid"></div>
             </section>
         </main>
 
@@ -73,82 +71,91 @@
         </footer>
     </div>
 
-    <script src="common.js?v=1.4"></script>
+    <script src="common.js?v=1.5"></script>
     <script>
-        // ===== FAST NEWS LOADING (No API Key Needed) =====
-        const RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
-        const CACHE_KEY = 'shivpuri_news_v2';
+        // ===== RELIABLE NEWS - Multiple Sources =====
 
-        // RSS Feeds (Free, no API key)
-        const FEEDS = {
-            en: [
-                'https://news.google.com/rss/search?q=Shivpuri+Madhya+Pradesh&hl=en-IN&gl=IN&ceid=IN:en',
-                'https://news.google.com/rss/search?q=Gwalior+MP&hl=en-IN&gl=IN&ceid=IN:en'
-            ],
-            hi: [
-                'https://news.google.com/rss/search?q=शिवपुरी&hl=hi&gl=IN&ceid=IN:hi',
-                'https://news.google.com/rss/search?q=मध्यप्रदेश&hl=hi&gl=IN&ceid=IN:hi'
-            ]
+        // Use AllOrigins as CORS proxy (free, reliable)
+        const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+
+        // Google News RSS feeds - always have fresh content
+        const NEWS_FEEDS = {
+            en: 'https://news.google.com/rss/search?q=Madhya+Pradesh+OR+Shivpuri+OR+Gwalior&hl=en-IN&gl=IN&ceid=IN:en',
+            hi: 'https://news.google.com/rss/search?q=मध्यप्रदेश+OR+शिवपुरी+OR+ग्वालियर&hl=hi&gl=IN&ceid=IN:hi'
         };
 
-        // Get relative time
         function getRelativeTime(dateStr) {
+            if (!dateStr) return '';
             const date = new Date(dateStr);
             const now = new Date();
             const diff = Math.floor((now - date) / 1000);
             const isHi = currentLang === 'hi';
 
+            if (diff < 0) return isHi ? 'अभी' : 'Just now';
             if (diff < 60) return isHi ? 'अभी' : 'Just now';
-            if (diff < 3600) return `${Math.floor(diff / 60)} ${isHi ? 'मिनट पहले' : 'min ago'}`;
-            if (diff < 86400) return `${Math.floor(diff / 3600)} ${isHi ? 'घंटे पहले' : 'h ago'}`;
-            return `${Math.floor(diff / 86400)} ${isHi ? 'दिन पहले' : 'd ago'}`;
+            if (diff < 3600) return `${Math.floor(diff / 60)} ${isHi ? 'मि॰' : 'm'}`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} ${isHi ? 'घं॰' : 'h'}`;
+            return `${Math.floor(diff / 86400)} ${isHi ? 'दि॰' : 'd'}`;
         }
 
-        // Simple tag
         function getTag(title) {
             const t = (title || '').toLowerCase();
             if (t.includes('shivpuri') || t.includes('शिवपुरी')) return 'SHIVPURI';
             if (t.includes('gwalior') || t.includes('ग्वालियर')) return 'GWALIOR';
-            if (t.includes('mp') || t.includes('मध्यप्रदेश')) return 'MP NEWS';
-            return 'NEWS';
+            if (t.includes('bhopal') || t.includes('भोपाल')) return 'BHOPAL';
+            return 'MP NEWS';
         }
 
-        // Render news
+        function parseRSS(xmlText) {
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(xmlText, 'text/xml');
+            const items = xml.querySelectorAll('item');
+            const articles = [];
+
+            items.forEach(item => {
+                const title = item.querySelector('title')?.textContent || '';
+                const link = item.querySelector('link')?.textContent || '';
+                const pubDate = item.querySelector('pubDate')?.textContent || '';
+                const source = item.querySelector('source')?.textContent || '';
+
+                // Only include if published within last 48 hours
+                const pubTime = new Date(pubDate);
+                const hoursDiff = (Date.now() - pubTime) / (1000 * 60 * 60);
+
+                if (hoursDiff <= 48 && title) {
+                    articles.push({ title, link, pubDate, source });
+                }
+            });
+
+            return articles;
+        }
+
         function renderNews(articles) {
             const grid = document.getElementById('news-grid');
             const isHi = currentLang === 'hi';
 
             if (!articles || articles.length === 0) {
                 grid.innerHTML = `<p style="text-align:center; color:#666; padding:2rem;">
-                    ${isHi ? 'कोई खबर नहीं मिली' : 'No news found'}
+                    ${isHi ? 'कोई ताज़ा खबर नहीं मिली' : 'No recent news found'}
                 </p>`;
                 return;
             }
 
             grid.innerHTML = '';
+            const shareText = isHi ? 'साझा करें' : 'Share';
+            const readText = isHi ? 'पढ़ें' : 'Read';
 
-            // Remove duplicates by title
-            const seen = new Set();
-            const unique = articles.filter(a => {
-                const key = a.title?.substring(0, 50);
-                if (seen.has(key)) return false;
-                seen.add(key);
-                return true;
-            });
-
-            unique.slice(0, 20).forEach(news => {
+            articles.forEach(news => {
                 const card = document.createElement('article');
                 card.className = 'news-card';
 
-                const title = news.title || '';
-                const time = news.pubDate ? getRelativeTime(news.pubDate) : '';
+                const title = news.title.replace(/ - .*$/, ''); // Remove source suffix
+                const time = getRelativeTime(news.pubDate);
                 const tag = getTag(title);
-                const shareBtn = isHi ? 'साझा करें' : 'Share';
-                const readBtn = isHi ? 'पढ़ें' : 'Read';
-                const url = news.link || '#';
+                const url = news.link;
 
-                const whatsappText = `📰 *${title}*\n\n🔗 ${url}\n\nvia shivpurilocal.in`;
-                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
+                const whatsappMsg = `📰 *${title}*\n\n🔗 ${url}\n\nvia shivpurilocal.in`;
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMsg)}`;
 
                 card.innerHTML = `
                     <div class="news-body">
@@ -158,84 +165,52 @@
                         </div>
                         <h3 class="news-title">${title}</h3>
                         <div class="card-actions">
-                            <a href="${whatsappUrl}" target="_blank" class="share-btn">${shareBtn}</a>
-                            <a href="${url}" target="_blank" class="map-btn">${readBtn} ↗</a>
+                            <a href="${whatsappUrl}" target="_blank" class="share-btn">${shareText}</a>
+                            <a href="${url}" target="_blank" class="map-btn">${readText} ↗</a>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
-
-            // Cache it
-            localStorage.setItem(CACHE_KEY, JSON.stringify({
-                data: unique.slice(0, 20),
-                lang: currentLang,
-                timestamp: Date.now()
-            }));
         }
 
-        // Fetch from RSS
-        async function fetchFromRSS(feedUrl) {
-            try {
-                const res = await fetch(RSS_PROXY + encodeURIComponent(feedUrl));
-                const data = await res.json();
-                if (data.status === 'ok' && data.items) {
-                    return data.items;
-                }
-            } catch (e) {
-                console.log('RSS fetch failed:', feedUrl);
-            }
-            return [];
-        }
-
-        // Main fetch
         async function fetchNews() {
             const grid = document.getElementById('news-grid');
             const isHi = currentLang === 'hi';
 
-            // Show cached first
-            const cached = localStorage.getItem(CACHE_KEY);
-            if (cached) {
-                try {
-                    const { data, lang, timestamp } = JSON.parse(cached);
-                    if (lang === currentLang && Date.now() - timestamp < 30 * 60 * 1000) {
-                        renderNews(data);
-                        return; // Use cache, don't fetch
-                    }
-                } catch (e) { }
-            }
-
-            // Show loading
             grid.innerHTML = `<div style="text-align:center; padding:2rem;">
                 <div class="loading-spinner"></div>
-                <p>${isHi ? 'खबरें लोड हो रही हैं...' : 'Loading news...'}</p>
+                <p>${isHi ? 'ताज़ा खबरें लोड हो रही हैं...' : 'Loading latest news...'}</p>
             </div>`;
 
-            // Fetch from RSS feeds
-            const feeds = FEEDS[currentLang] || FEEDS.en;
-            const allArticles = [];
+            try {
+                const feedUrl = NEWS_FEEDS[currentLang] || NEWS_FEEDS.en;
+                const response = await fetch(CORS_PROXY + encodeURIComponent(feedUrl));
+                const xmlText = await response.text();
+                const articles = parseRSS(xmlText);
 
-            for (const feed of feeds) {
-                const articles = await fetchFromRSS(feed);
-                allArticles.push(...articles);
-            }
-
-            if (allArticles.length > 0) {
-                renderNews(allArticles);
-            } else {
+                if (articles.length > 0) {
+                    renderNews(articles);
+                } else {
+                    throw new Error('No articles found');
+                }
+            } catch (error) {
+                console.error('News fetch error:', error);
                 grid.innerHTML = `<p style="text-align:center; color:#666; padding:2rem;">
-                    ${isHi ? 'खबरें लोड नहीं हो सकीं' : 'Could not load news'}
+                    ${isHi ? 'खबरें लोड नहीं हो सकीं। कृपया पुनः प्रयास करें।' : 'Could not load news. Please try again.'}
+                    <br><br>
+                    <button onclick="fetchNews()" style="padding:0.5rem 1rem; background:#2563eb; color:white; border:none; border-radius:4px; cursor:pointer;">
+                        ${isHi ? 'पुनः प्रयास करें' : 'Retry'}
+                    </button>
                 </p>`;
             }
         }
 
-        // Language handler
         function updatePageLanguage(lang) {
-            localStorage.removeItem(CACHE_KEY); // Clear cache on lang change
             fetchNews();
         }
 
-        // Load immediately
+        // Load on page ready
         fetchNews();
     </script>
 </body>
