@@ -24,18 +24,23 @@ if GOOGLE_API_KEY and GOOGLE_API_KEY != "AIza...":
 
 def process_with_ai(title, description):
     """
-    Uses Google Gemini to standardize the news article.
-    Returns (cleaned_title, cleaned_desc, standardized_tag)
+    Uses Google Gemini to standardize and translate the news article.
+    Returns dict with standardized fields.
     """
     if not GOOGLE_API_KEY or GOOGLE_API_KEY == "AIza...":
-        return title, description, "LATEST NEWS"
+        # Fallback if no AI
+        return {
+            "title_en": title, "title_hi": title, 
+            "desc_en": description, "desc_hi": description, 
+            "tag": "LATEST NEWS"
+        }
         
     try:
         model = genai.GenerativeModel('gemini-1.5-flash')
         
         prompt = f"""
-        You are a news editor for 'Shivpuri Local'. 
-        Task: standardize this article.
+        You are a smart news editor for 'Shivpuri Local'.
+        Task: Translate and standardize this article into BOTH English and Hindi.
         
         Input:
         Title: {title}
@@ -43,8 +48,10 @@ def process_with_ai(title, description):
         
         Output JSON only: 
         {{
-            "title": "Cleaned Hindi/English title", 
-            "summary": "Short summary under 200 chars", 
+            "title_en": "English Headline",
+            "title_hi": "Hindi Headline", 
+            "summary_en": "Short English summary",
+            "summary_hi": "Short Hindi summary",
             "tag": "ONE_OF: SHIVPURI, GWALIOR, MP NEWS, NATIONAL, BUSINESS, EDUCATION"
         }}
         """
@@ -53,11 +60,21 @@ def process_with_ai(title, description):
         text = response.text.replace('```json', '').replace('```', '').strip()
         data = json.loads(text)
         
-        return data.get('title', title), data.get('summary', description), data.get('tag', 'LATEST NEWS').upper()
+        return {
+            "title_en": data.get('title_en', title),
+            "title_hi": data.get('title_hi', title),
+            "desc_en": data.get('summary_en', description),
+            "desc_hi": data.get('summary_hi', description),
+            "tag": data.get('tag', 'LATEST NEWS').upper()
+        }
         
     except Exception as e:
         print(f"AI Processing Failed: {e}")
-        return title, description, "LATEST NEWS"
+        return {
+            "title_en": title, "title_hi": title, 
+            "desc_en": description, "desc_hi": description, 
+            "tag": "LATEST NEWS"
+        }
 
 # Feed Configuration
 FEEDS = {
@@ -116,15 +133,17 @@ def scrape_full_content(url):
 def fetch_feed_data():
     print(f"🔄 Fetching news at {datetime.now()}")
     
+    # We iterate over feeds, but we treat them as generic sources now, 
+    # since we generate both languages for every item.
     for lang in ['en', 'hi']:
         for feed_config in FEEDS[lang]:
             try:
                 feed = feedparser.parse(feed_config['url'])
                 for entry in feed.entries:
-                    # Check if recent enough (24h)
+                    # Check if recent enough (12h Strict)
                     try:
                         pub_date = datetime(*entry.published_parsed[:6])
-                        if (datetime.now() - pub_date) > timedelta(hours=24):
+                        if (datetime.now() - pub_date) > timedelta(hours=12):
                             continue
                     except:
                         pub_date = datetime.now()
@@ -134,17 +153,18 @@ def fetch_feed_data():
                     raw_desc = entry.summary if 'summary' in entry else ''
                     
                     # AI PROCESSING
-                    # We process BEFORE saving to DB
-                    ai_title, ai_desc, ai_tag = process_with_ai(raw_title, raw_desc)
-                    # If AI fails (no key), ai_tag is 'LATEST NEWS'
+                    ai_data = process_with_ai(raw_title, raw_desc)
+                    # Returns {title_en, title_hi, desc_en, desc_hi, tag}
 
                     article_data = {
-                        'title': ai_title,
-                        'description': ai_desc,
-                        'source': ai_tag, # Use the AI normalized tag
+                        'title_en': ai_data['title_en'],
+                        'title_hi': ai_data['title_hi'],
+                        'description_en': ai_data['desc_en'],
+                        'description_hi': ai_data['desc_hi'],
+                        'source': ai_data['tag'], 
                         'publishedAt': pub_date,
                         'priority': feed_config['priority'],
-                        'language': lang,
+                        'category': 'news', # generic category
                         'url': entry.link
                     }
                     
