@@ -6,43 +6,55 @@ from datetime import datetime, timedelta
 import threading
 import schedule
 from db import save_article, init_db
-from openai import OpenAI
+import google.generativeai as genai
 import os
+import json
 
 # ---------------------------------------------------------
-# OPENAI CONFIGURATION
+# GEMINI CONFIGURATION
 # ---------------------------------------------------------
-# Please replace with your actual OpenAI API Key
-OPENAI_API_KEY = "sk-..." 
-client = None
+# Please replace with your actual Google API Key
+GOOGLE_API_KEY = "AIza..." 
 
-if OPENAI_API_KEY and OPENAI_API_KEY != "sk-...":
+if GOOGLE_API_KEY and GOOGLE_API_KEY != "AIza...":
     try:
-        client = OpenAI(api_key=OPENAI_API_KEY)
+        genai.configure(api_key=GOOGLE_API_KEY)
     except:
-        print("OpenAI Init Failed")
+        print("Gemini Init Failed")
 
 def process_with_ai(title, description):
     """
-    Uses OpenAI to standardize the news article.
+    Uses Google Gemini to standardize the news article.
     Returns (cleaned_title, cleaned_desc, standardized_tag)
     """
-    if not client:
+    if not GOOGLE_API_KEY or GOOGLE_API_KEY == "AIza...":
         return title, description, "LATEST NEWS"
         
     try:
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a news editor for 'Shivpuri Local'. Output JSON only: {title, summary, tag}. Tags must be one of: CITY NEWS, NATIONAL, POLITICS, CRIME, BUSINESS. Keep summary under 200 chars."},
-                {"role": "user", "content": f"Title: {title}\nDesc: {description}"}
-            ]
-        )
-        # Simple parsing (in production use json mode)
-        import json
-        content = completion.choices[0].message.content.replace("```json", "").replace("```", "")
-        data = json.loads(content)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        prompt = f"""
+        You are a news editor for 'Shivpuri Local'. 
+        Task: standardize this article.
+        
+        Input:
+        Title: {title}
+        Desc: {description}
+        
+        Output JSON only: 
+        {{
+            "title": "Cleaned Hindi/English title", 
+            "summary": "Short summary under 200 chars", 
+            "tag": "ONE_OF: CITY NEWS, NATIONAL, POLITICS, CRIME, BUSINESS"
+        }}
+        """
+        
+        response = model.generate_content(prompt)
+        text = response.text.replace('```json', '').replace('```', '').strip()
+        data = json.loads(text)
+        
         return data.get('title', title), data.get('summary', description), data.get('tag', 'LATEST NEWS').upper()
+        
     except Exception as e:
         print(f"AI Processing Failed: {e}")
         return title, description, "LATEST NEWS"
