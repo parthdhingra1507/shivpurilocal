@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shivpuri News | Shivpuri Local</title>
     <meta name="description" content="Latest news from Shivpuri, MP">
-    <link rel="stylesheet" href="style.css?v=1.6">
-    <script src="sw-register.js?v=1.6"></script>
+    <link rel="stylesheet" href="style.css?v=1.7">
+    <script src="sw-register.js?v=1.7"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         .news-grid {
@@ -20,14 +20,14 @@
             background: white;
             border-radius: 12px;
             padding: 1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .news-meta {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 0.5rem;
-            font-size: 0.75rem;
         }
 
         .news-source {
@@ -35,17 +35,20 @@
             color: white;
             padding: 2px 8px;
             border-radius: 4px;
+            font-size: 0.7rem;
             font-weight: 600;
         }
 
         .news-time {
-            color: #666;
+            color: #888;
+            font-size: 0.75rem;
         }
 
         .news-title {
-            font-size: 1rem;
+            font-size: 0.95rem;
             line-height: 1.4;
             margin: 0 0 1rem 0;
+            font-weight: 500;
         }
 
         .card-actions {
@@ -53,37 +56,37 @@
             gap: 0.5rem;
         }
 
-        .share-btn,
-        .map-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.85rem;
-        }
-
         .share-btn {
             background: #25D366;
             color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
         }
 
         .map-btn {
             background: #f3f4f6;
             color: #333;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.8rem;
             margin-left: auto;
         }
 
-        .loading-container {
+        .loading {
             text-align: center;
             padding: 3rem;
         }
 
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f3f4f6;
+            width: 36px;
+            height: 36px;
+            border: 3px solid #f0f0f0;
             border-top: 3px solid #2563eb;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
             margin: 0 auto 1rem;
         }
 
@@ -124,7 +127,7 @@
                 <p id="hero-desc">Latest headlines from Shivpuri & MP</p>
             </section>
 
-            <section class="news-container">
+            <section>
                 <div id="news-grid" class="news-grid"></div>
             </section>
         </main>
@@ -134,98 +137,61 @@
         </footer>
     </div>
 
-    <script src="common.js?v=1.6"></script>
+    <script src="common.js?v=1.7"></script>
     <script>
-        // Fast proxies to try
-        const PROXIES = [
-            'https://corsproxy.io/?',
-            'https://api.codetabs.com/v1/proxy?quest='
-        ];
-
-        const FEED_URL = currentLang === 'hi'
-            ? 'https://news.google.com/rss/search?q=मध्यप्रदेश&hl=hi&gl=IN&ceid=IN:hi'
-            : 'https://news.google.com/rss/search?q=Madhya+Pradesh&hl=en-IN&gl=IN&ceid=IN:en';
+        const API_URL = '/api/news';
 
         function getTime(dateStr) {
             if (!dateStr) return '';
             const diff = Math.floor((Date.now() - new Date(dateStr)) / 60000);
-            if (diff < 60) return diff + 'm';
-            if (diff < 1440) return Math.floor(diff / 60) + 'h';
-            return Math.floor(diff / 1440) + 'd';
-        }
-
-        function getTag(title) {
-            const t = title.toLowerCase();
-            if (t.includes('shivpuri') || t.includes('शिवपुरी')) return 'SHIVPURI';
-            if (t.includes('gwalior') || t.includes('ग्वालियर')) return 'GWALIOR';
-            if (t.includes('bhopal') || t.includes('भोपाल')) return 'BHOPAL';
-            return 'MP NEWS';
+            const isHi = currentLang === 'hi';
+            if (diff < 1) return isHi ? 'अभी' : 'now';
+            if (diff < 60) return diff + (isHi ? ' मि॰' : 'm');
+            if (diff < 1440) return Math.floor(diff / 60) + (isHi ? ' घं॰' : 'h');
+            return Math.floor(diff / 1440) + (isHi ? ' दि॰' : 'd');
         }
 
         function render(articles) {
             const grid = document.getElementById('news-grid');
             const isHi = currentLang === 'hi';
 
-            if (!articles.length) {
-                grid.innerHTML = `<p style="text-align:center;padding:2rem;color:#666;">${isHi ? 'खबरें लोड नहीं हो सकीं' : 'Could not load news'}</p>`;
+            if (!articles || !articles.length) {
+                grid.innerHTML = `<p style="text-align:center;padding:2rem;color:#666;">${isHi ? 'खबरें उपलब्ध नहीं हैं' : 'No news available'}</p>`;
                 return;
             }
 
-            grid.innerHTML = articles.slice(0, 15).map(n => {
-                const title = n.title.replace(/ - .*$/, '');
-                const wa = `https://wa.me/?text=${encodeURIComponent('📰 ' + title + '\n\n' + n.link + '\n\nvia shivpurilocal.in')}`;
+            grid.innerHTML = articles.map(n => {
+                const wa = `https://wa.me/?text=${encodeURIComponent('📰 ' + n.title + '\n\n' + n.url + '\n\nvia shivpurilocal.in')}`;
+                const source = n.source || (isHi ? 'समाचार' : 'News');
                 return `
                     <article class="news-card">
                         <div class="news-meta">
-                            <span class="news-source">${getTag(title)}</span>
-                            <span class="news-time">${getTime(n.pubDate)}</span>
+                            <span class="news-source">${source}</span>
+                            <span class="news-time">${getTime(n.publishedAt)}</span>
                         </div>
-                        <h3 class="news-title">${title}</h3>
+                        <h3 class="news-title">${n.title}</h3>
                         <div class="card-actions">
                             <a href="${wa}" target="_blank" class="share-btn">${isHi ? 'साझा करें' : 'Share'}</a>
-                            <a href="${n.link}" target="_blank" class="map-btn">${isHi ? 'पढ़ें' : 'Read'} ↗</a>
+                            <a href="${n.url}" target="_blank" class="map-btn">${isHi ? 'पढ़ें' : 'Read'} ↗</a>
                         </div>
                     </article>
                 `;
             }).join('');
         }
 
-        async function tryFetch(url) {
-            for (const proxy of PROXIES) {
-                try {
-                    const res = await fetch(proxy + encodeURIComponent(url), { timeout: 5000 });
-                    if (res.ok) return await res.text();
-                } catch (e) { console.log('Proxy failed:', proxy); }
-            }
-            return null;
-        }
-
         async function fetchNews() {
             const grid = document.getElementById('news-grid');
             const isHi = currentLang === 'hi';
 
-            grid.innerHTML = `<div class="loading-container"><div class="spinner"></div><p>${isHi ? 'खबरें लोड हो रही हैं...' : 'Loading news...'}</p></div>`;
+            grid.innerHTML = `<div class="loading"><div class="spinner"></div><p>${isHi ? 'खबरें लोड हो रही हैं...' : 'Loading news...'}</p></div>`;
 
-            const xml = await tryFetch(FEED_URL);
-
-            if (xml) {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(xml, 'text/xml');
-                const items = [...doc.querySelectorAll('item')].map(item => ({
-                    title: item.querySelector('title')?.textContent || '',
-                    link: item.querySelector('link')?.textContent || '',
-                    pubDate: item.querySelector('pubDate')?.textContent || ''
-                })).filter(n => n.title && (Date.now() - new Date(n.pubDate)) < 172800000); // 48 hours
-
-                render(items);
-            } else {
-                // Fallback: Show curated MP news links
-                const fallback = [
-                    { title: 'Madhya Pradesh Live Updates - Check Latest News', link: 'https://www.google.com/search?q=madhya+pradesh+news+today&tbm=nws', pubDate: new Date().toISOString() },
-                    { title: 'Shivpuri District News & Updates', link: 'https://www.google.com/search?q=shivpuri+news+today&tbm=nws', pubDate: new Date().toISOString() },
-                    { title: 'Gwalior Chambal Region Headlines', link: 'https://www.google.com/search?q=gwalior+news+today&tbm=nws', pubDate: new Date().toISOString() }
-                ];
-                render(fallback);
+            try {
+                const res = await fetch(`${API_URL}?lang=${currentLang}`);
+                const data = await res.json();
+                render(data.articles || []);
+            } catch (e) {
+                console.error('Fetch error:', e);
+                grid.innerHTML = `<p style="text-align:center;padding:2rem;color:#666;">${isHi ? 'सर्वर से कनेक्ट नहीं हो सका' : 'Could not connect to server'}</p>`;
             }
         }
 
