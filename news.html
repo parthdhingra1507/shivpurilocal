@@ -4,98 +4,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shivpuri News | Shivpuri Local</title>
-    <meta name="description" content="Latest news from Shivpuri, MP">
-    <link rel="stylesheet" href="style.css?v=1.7">
-    <script src="sw-register.js?v=1.7"></script>
+    <title>Shivpuri News - Latest Updates | Shivpuri Local</title>
+    <meta name="description" content="Get the latest news and updates from Shivpuri, Madhya Pradesh.">
+    <link rel="canonical" href="https://shivpurilocal.in/news">
+
+    <meta property="og:title" content="Shivpuri News - Latest Updates">
+    <meta property="og:description" content="Stay updated with latest news from Shivpuri, MP.">
+    <meta property="og:image" content="https://shivpurilocal.in/social-preview.png">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F0WC51BKD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-6F0WC51BKD');
+    </script>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3448/3448339.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Shivpuri Local">
+    <link rel="stylesheet" href="style.css?v=1.8">
+    <script src="sw-register.js?v=1.8"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        .news-grid {
-            display: grid;
-            gap: 1rem;
-            padding: 1rem;
-        }
-
-        .news-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-
-        .news-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .news-source {
-            background: #2563eb;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-
-        .news-time {
-            color: #888;
-            font-size: 0.75rem;
-        }
-
-        .news-title {
-            font-size: 0.95rem;
-            line-height: 1.4;
-            margin: 0 0 1rem 0;
-            font-weight: 500;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .share-btn {
-            background: #25D366;
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.8rem;
-        }
-
-        .map-btn {
-            background: #f3f4f6;
-            color: #333;
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.8rem;
-            margin-left: auto;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 3rem;
-        }
-
-        .spinner {
-            width: 36px;
-            height: 36px;
-            border: 3px solid #f0f0f0;
-            border-top: 3px solid #2563eb;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
 </head>
 
 <body class="page-news">
@@ -107,7 +42,8 @@
                 </a>
                 <p class="tagline">The City Encyclopedia</p>
             </div>
-            <div class="header-actions">
+            <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+                <button id="install-btn" class="install-btn" style="display: none;">⬇️ App</button>
                 <button id="lang-toggle" class="lang-btn">हिंदी</button>
             </div>
             <nav class="main-nav">
@@ -123,81 +59,125 @@
 
         <main class="content-area">
             <section class="hero">
-                <h2 id="hero-title">📰 City News</h2>
-                <p id="hero-desc">Latest headlines from Shivpuri & MP</p>
+                <h2 id="hero-title">City News</h2>
+                <p id="hero-desc">Latest headlines from Shivpuri & Madhya Pradesh</p>
             </section>
 
-            <section>
-                <div id="news-grid" class="news-grid"></div>
+            <section class="news-container">
+                <div id="news-grid" class="news-grid">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Loading news...</p>
+                    </div>
+                </div>
             </section>
         </main>
 
         <footer class="main-footer">
-            <p>© 2025 shivpurilocal.in</p>
+            <p>© 2025 shivpurilocal.in. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="mailto:hello@shivpurilocal.in?subject=Feedback" class="footer-link">Feedback</a>
+            </div>
         </footer>
     </div>
 
-    <script src="common.js?v=1.7"></script>
+    <div id="toast-container"></div>
+    <script src="common.js?v=1.8"></script>
     <script>
         const API_URL = window.location.hostname === 'localhost'
             ? '/api/news'
             : 'https://shivpurilocal-backend.onrender.com/api/news';
 
-        function getTime(dateStr) {
+        function getRelativeTime(dateStr) {
             if (!dateStr) return '';
-            const diff = Math.floor((Date.now() - new Date(dateStr)) / 60000);
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
             const isHi = currentLang === 'hi';
-            if (diff < 1) return isHi ? 'अभी' : 'now';
-            if (diff < 60) return diff + (isHi ? ' मि॰' : 'm');
-            if (diff < 1440) return Math.floor(diff / 60) + (isHi ? ' घं॰' : 'h');
-            return Math.floor(diff / 1440) + (isHi ? ' दि॰' : 'd');
+
+            if (diff < 60) return isHi ? 'अभी' : 'Just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)} ${isHi ? 'मिनट पहले' : 'min ago'}`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} ${isHi ? 'घंटे पहले' : 'hours ago'}`;
+            return `${Math.floor(diff / 86400)} ${isHi ? 'दिन पहले' : 'days ago'}`;
         }
 
-        function render(articles) {
+        function renderNews(articles) {
             const grid = document.getElementById('news-grid');
             const isHi = currentLang === 'hi';
 
-            if (!articles || !articles.length) {
-                grid.innerHTML = `<p style="text-align:center;padding:2rem;color:#666;">${isHi ? 'खबरें उपलब्ध नहीं हैं' : 'No news available'}</p>`;
+            if (!articles || articles.length === 0) {
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">
+                    ${isHi ? 'कोई खबर नहीं मिली' : 'No news found'}
+                </p>`;
                 return;
             }
 
-            grid.innerHTML = articles.map(n => {
-                const wa = `https://wa.me/?text=${encodeURIComponent('📰 ' + n.title + '\n\n' + n.url + '\n\nvia shivpurilocal.in')}`;
-                const source = n.source || (isHi ? 'समाचार' : 'News');
-                return `
-                    <article class="news-card">
+            grid.innerHTML = '';
+
+            articles.forEach(news => {
+                const card = document.createElement('article');
+                card.className = 'news-card';
+
+                const title = news.title || '';
+                const time = getRelativeTime(news.publishedAt);
+                const source = news.source || (isHi ? 'समाचार' : 'News');
+                const url = news.url || '#';
+
+                const shareText = isHi ? 'साझा करें' : 'Share';
+                const readText = isHi ? 'पढ़ें' : 'Read';
+
+                const whatsappMsg = `📰 *${title}*\n\n🔗 ${url}\n\nvia shivpurilocal.in`;
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMsg)}`;
+
+                card.innerHTML = `
+                    <div class="news-body">
                         <div class="news-meta">
                             <span class="news-source">${source}</span>
-                            <span class="news-time">${getTime(n.publishedAt)}</span>
+                            <span class="news-time">${time}</span>
                         </div>
-                        <h3 class="news-title">${n.title}</h3>
+                        <h3 class="news-title">${title}</h3>
                         <div class="card-actions">
-                            <a href="${wa}" target="_blank" class="share-btn">${isHi ? 'साझा करें' : 'Share'}</a>
-                            <a href="${n.url}" target="_blank" class="map-btn">${isHi ? 'पढ़ें' : 'Read'} ↗</a>
+                            <a href="${whatsappUrl}" target="_blank" rel="noopener" class="share-btn">${shareText}</a>
+                            <a href="${url}" target="_blank" rel="noopener" class="map-btn">${readText} ↗</a>
                         </div>
-                    </article>
+                    </div>
                 `;
-            }).join('');
+                grid.appendChild(card);
+            });
         }
 
         async function fetchNews() {
             const grid = document.getElementById('news-grid');
             const isHi = currentLang === 'hi';
 
-            grid.innerHTML = `<div class="loading"><div class="spinner"></div><p>${isHi ? 'खबरें लोड हो रही हैं...' : 'Loading news...'}</p></div>`;
+            grid.innerHTML = `<div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>${isHi ? 'खबरें लोड हो रही हैं...' : 'Loading news...'}</p>
+            </div>`;
 
             try {
                 const res = await fetch(`${API_URL}?lang=${currentLang}`);
+                if (!res.ok) throw new Error('API error');
                 const data = await res.json();
-                render(data.articles || []);
+                renderNews(data.articles || []);
             } catch (e) {
-                console.error('Fetch error:', e);
-                grid.innerHTML = `<p style="text-align:center;padding:2rem;color:#666;">${isHi ? 'सर्वर से कनेक्ट नहीं हो सका' : 'Could not connect to server'}</p>`;
+                console.error('News fetch error:', e);
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 2rem;">
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                        ${isHi ? 'खबरें लोड नहीं हो सकीं' : 'Could not load news'}
+                    </p>
+                    <button onclick="fetchNews()" style="padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer;">
+                        ${isHi ? 'पुनः प्रयास करें' : 'Retry'}
+                    </button>
+                </div>`;
             }
         }
 
-        function updatePageLanguage() { fetchNews(); }
+        function updatePageLanguage(lang) {
+            fetchNews();
+        }
+
+        // Initial load
         fetchNews();
     </script>
 </body>
