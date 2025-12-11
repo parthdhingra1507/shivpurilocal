@@ -184,18 +184,20 @@ const loadMoreContainer = document.getElementById('load-more-container');
 const loadMoreBtn = document.getElementById('load-more-btn');
 
 // --- PAGE UPDATES FOR LANGUAGE ---
+// --- PAGE UPDATES FOR LANGUAGE ---
 function updatePageLanguage(lang) {
     // Re-render content if dynamic
     if (typeof isTransportPage !== 'undefined' && isTransportPage) {
         // Update Filters
-        if (filterFrom && filterFrom.options.length > 0) filterFrom.options[0].textContent = translations[lang].filter_from;
-        if (filterTo && filterTo.options.length > 0) filterTo.options[0].textContent = translations[lang].filter_to;
+        if (filterFrom && filterFrom.options.length > 0) filterFrom.options[0].text = translations[lang].filter_from;
+        if (filterTo && filterTo.options.length > 0) filterTo.options[0].text = translations[lang].filter_to;
+
         if (filterTime && filterTime.options.length > 0) {
-            filterTime.options[0].textContent = translations[lang].filter_time;
-            filterTime.options[1].textContent = translations[lang].filter_time_0_6;
-            filterTime.options[2].textContent = translations[lang].filter_time_6_12;
-            filterTime.options[3].textContent = translations[lang].filter_time_12_18;
-            filterTime.options[4].textContent = translations[lang].filter_time_18_24;
+            filterTime.options[0].text = translations[lang].filter_time;
+            filterTime.options[1].text = translations[lang].filter_time_0_6;
+            filterTime.options[2].text = translations[lang].filter_time_6_12;
+            filterTime.options[3].text = translations[lang].filter_time_12_18;
+            filterTime.options[4].text = translations[lang].filter_time_18_24;
         }
 
         // Update static buttons

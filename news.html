@@ -428,7 +428,9 @@
 
                 const time = news.publishedAt ? getRelativeTime(news.publishedAt) : '';
                 const source = normalizeSource(news.source || '');
-                const sourceLabel = isHi ? 'स्रोत' : 'Source';
+
+                const shareText = isHi ? 'साझा करें' : 'Share';
+                const readText = isHi ? 'पूरी खबर पढ़ें' : 'Read Full Story';
 
                 const whatsappText = `📰 *${title}*\n\n🔗 ${news.url}\n\nvia shivpurilocal.in`;
                 const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
@@ -452,8 +454,8 @@
                             <h3 class="news-title">${title}</h3>
                         </div>
                         <div class="card-actions" style="margin-top: auto;">
-                            <a href="${whatsappUrl}" target="_blank" rel="noopener" class="share-btn">Share</a>
-                            <a href="${news.url}" target="_blank" rel="noopener" class="map-btn" style="margin-left: auto;">Read →</a>
+                            <a href="${whatsappUrl}" target="_blank" rel="noopener" class="share-btn">${shareText}</a>
+                            <a href="${news.url}" target="_blank" rel="noopener" class="map-btn" style="margin-left: auto;">${readText} ↗</a>
                         </div>
                     </div>
                 `;

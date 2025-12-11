@@ -45,7 +45,7 @@ def process_with_ai(title, description):
         {{
             "title": "Cleaned Hindi/English title", 
             "summary": "Short summary under 200 chars", 
-            "tag": "ONE_OF: CITY NEWS, NATIONAL, POLITICS, CRIME, BUSINESS"
+            "tag": "ONE_OF: SHIVPURI, GWALIOR, MP NEWS, NATIONAL, BUSINESS, EDUCATION"
         }}
         """
         

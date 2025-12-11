@@ -72,8 +72,11 @@ def get_recent_articles(limit=50, lang='en', category=None):
     conn = get_db_connection()
     c = conn.cursor()
     
-    query = "SELECT * FROM articles WHERE language = ? "
-    params = [lang]
+    # Calculate 24-hour cutoff
+    cutoff_time = datetime.datetime.now() - datetime.timedelta(hours=24)
+    
+    query = "SELECT * FROM articles WHERE language = ? AND published_at >= ?"
+    params = [lang, cutoff_time]
     
     if category:
         query += " AND category = ?"
