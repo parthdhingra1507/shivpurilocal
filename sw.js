@@ -1,4 +1,4 @@
-const CACHE_VERSION = '20250108-2358'; // Force Update
+const CACHE_VERSION = '20251211-1533'; // Force Update
 const CACHE_NAME = `shivpuri-local-${CACHE_VERSION}`;
 // 👆 Just update the timestamp above when deploying (format: YYYYMMDD-HHMM)
 const ASSETS = [
