@@ -75,48 +75,45 @@
 
     <script src="common.js?v=1.4"></script>
     <script>
-        // ===== ULTRA-FAST NEWS LOADING =====
-        // Direct GNews API - No backend dependency
-        const GNEWS_KEY = 'c0f5d443f40740ce824fd1ee3e3b3ed8';
-        const CACHE_KEY = 'shivpuri_news_cache';
-        const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+        // ===== FAST NEWS LOADING (No API Key Needed) =====
+        const RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
+        const CACHE_KEY = 'shivpuri_news_v2';
 
-        // Show cached news INSTANTLY while fetching fresh
-        function showCachedNews() {
-            const cached = localStorage.getItem(CACHE_KEY);
-            if (cached) {
-                try {
-                    const { data, timestamp } = JSON.parse(cached);
-                    if (Date.now() - timestamp < CACHE_DURATION * 6) { // 1 hour max
-                        renderNews(data);
-                        return true;
-                    }
-                } catch (e) { }
-            }
-            return false;
-        }
+        // RSS Feeds (Free, no API key)
+        const FEEDS = {
+            en: [
+                'https://news.google.com/rss/search?q=Shivpuri+Madhya+Pradesh&hl=en-IN&gl=IN&ceid=IN:en',
+                'https://news.google.com/rss/search?q=Gwalior+MP&hl=en-IN&gl=IN&ceid=IN:en'
+            ],
+            hi: [
+                'https://news.google.com/rss/search?q=शिवपुरी&hl=hi&gl=IN&ceid=IN:hi',
+                'https://news.google.com/rss/search?q=मध्यप्रदेश&hl=hi&gl=IN&ceid=IN:hi'
+            ]
+        };
 
         // Get relative time
         function getRelativeTime(dateStr) {
             const date = new Date(dateStr);
             const now = new Date();
             const diff = Math.floor((now - date) / 1000);
+            const isHi = currentLang === 'hi';
 
-            if (diff < 60) return 'Just now';
-            if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
-            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-            return `${Math.floor(diff / 86400)}d ago`;
+            if (diff < 60) return isHi ? 'अभी' : 'Just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)} ${isHi ? 'मिनट पहले' : 'min ago'}`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} ${isHi ? 'घंटे पहले' : 'h ago'}`;
+            return `${Math.floor(diff / 86400)} ${isHi ? 'दिन पहले' : 'd ago'}`;
         }
 
-        // Simple source tag
-        function getTag(source) {
-            const s = (source || '').toLowerCase();
-            if (s.includes('patrika') || s.includes('bhaskar')) return 'HINDI NEWS';
-            if (s.includes('times') || s.includes('hindu')) return 'NATIONAL';
-            return 'SHIVPURI';
+        // Simple tag
+        function getTag(title) {
+            const t = (title || '').toLowerCase();
+            if (t.includes('shivpuri') || t.includes('शिवपुरी')) return 'SHIVPURI';
+            if (t.includes('gwalior') || t.includes('ग्वालियर')) return 'GWALIOR';
+            if (t.includes('mp') || t.includes('मध्यप्रदेश')) return 'MP NEWS';
+            return 'NEWS';
         }
 
-        // Render news cards
+        // Render news
         function renderNews(articles) {
             const grid = document.getElementById('news-grid');
             const isHi = currentLang === 'hi';
@@ -130,27 +127,30 @@
 
             grid.innerHTML = '';
 
-            articles.forEach(news => {
+            // Remove duplicates by title
+            const seen = new Set();
+            const unique = articles.filter(a => {
+                const key = a.title?.substring(0, 50);
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+
+            unique.slice(0, 20).forEach(news => {
                 const card = document.createElement('article');
                 card.className = 'news-card';
 
                 const title = news.title || '';
-                const time = news.publishedAt ? getRelativeTime(news.publishedAt) : '';
-                const tag = getTag(news.source?.name || news.source || '');
+                const time = news.pubDate ? getRelativeTime(news.pubDate) : '';
+                const tag = getTag(title);
                 const shareBtn = isHi ? 'साझा करें' : 'Share';
                 const readBtn = isHi ? 'पढ़ें' : 'Read';
+                const url = news.link || '#';
 
-                const whatsappText = `📰 *${title}*\n\n🔗 ${news.url}\n\nvia shivpurilocal.in`;
+                const whatsappText = `📰 *${title}*\n\n🔗 ${url}\n\nvia shivpurilocal.in`;
                 const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
 
-                const imgHtml = news.image ? `
-                    <div class="news-image-wrapper">
-                        <img src="${news.image}" alt="" class="news-image" 
-                             onerror="this.parentElement.style.display='none'" loading="lazy">
-                    </div>` : '';
-
                 card.innerHTML = `
-                    ${imgHtml}
                     <div class="news-body">
                         <div class="news-meta">
                             <span class="news-source">${tag}</span>
@@ -159,70 +159,83 @@
                         <h3 class="news-title">${title}</h3>
                         <div class="card-actions">
                             <a href="${whatsappUrl}" target="_blank" class="share-btn">${shareBtn}</a>
-                            <a href="${news.url}" target="_blank" class="map-btn">${readBtn} ↗</a>
+                            <a href="${url}" target="_blank" class="map-btn">${readBtn} ↗</a>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
+
+            // Cache it
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+                data: unique.slice(0, 20),
+                lang: currentLang,
+                timestamp: Date.now()
+            }));
         }
 
-        // Fetch fresh news
+        // Fetch from RSS
+        async function fetchFromRSS(feedUrl) {
+            try {
+                const res = await fetch(RSS_PROXY + encodeURIComponent(feedUrl));
+                const data = await res.json();
+                if (data.status === 'ok' && data.items) {
+                    return data.items;
+                }
+            } catch (e) {
+                console.log('RSS fetch failed:', feedUrl);
+            }
+            return [];
+        }
+
+        // Main fetch
         async function fetchNews() {
             const grid = document.getElementById('news-grid');
             const isHi = currentLang === 'hi';
 
-            // Show loading only if no cache
-            if (!showCachedNews()) {
-                grid.innerHTML = `<div style="text-align:center; padding:2rem;">
-                    <div class="loading-spinner"></div>
-                    <p>${isHi ? 'खबरें लोड हो रही हैं...' : 'Loading news...'}</p>
-                </div>`;
-            }
-
-            try {
-                // Fetch from GNews directly (fast!)
-                const query = isHi ? 'शिवपुरी OR मध्यप्रदेश' : 'Shivpuri OR "Madhya Pradesh"';
-                const lang = isHi ? 'hi' : 'en';
-                const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=${lang}&country=in&max=20&apikey=${GNEWS_KEY}`;
-
-                const res = await fetch(url);
-                const data = await res.json();
-
-                if (data.articles && data.articles.length > 0) {
-                    // Cache it
-                    localStorage.setItem(CACHE_KEY, JSON.stringify({
-                        data: data.articles,
-                        timestamp: Date.now()
-                    }));
-                    renderNews(data.articles);
-                } else {
-                    // Fallback: Show generic MP news
-                    const fallbackUrl = `https://gnews.io/api/v4/top-headlines?category=general&lang=${lang}&country=in&max=15&apikey=${GNEWS_KEY}`;
-                    const fallbackRes = await fetch(fallbackUrl);
-                    const fallbackData = await fallbackRes.json();
-
-                    if (fallbackData.articles) {
-                        renderNews(fallbackData.articles);
+            // Show cached first
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) {
+                try {
+                    const { data, lang, timestamp } = JSON.parse(cached);
+                    if (lang === currentLang && Date.now() - timestamp < 30 * 60 * 1000) {
+                        renderNews(data);
+                        return; // Use cache, don't fetch
                     }
-                }
-            } catch (e) {
-                console.error('News fetch failed:', e);
-                // If no cache shown, show error
-                if (!localStorage.getItem(CACHE_KEY)) {
-                    grid.innerHTML = `<p style="text-align:center; color:#666; padding:2rem;">
-                        ${isHi ? 'खबरें लोड नहीं हो सकी। बाद में प्रयास करें।' : 'Could not load news. Try later.'}
-                    </p>`;
-                }
+                } catch (e) { }
+            }
+
+            // Show loading
+            grid.innerHTML = `<div style="text-align:center; padding:2rem;">
+                <div class="loading-spinner"></div>
+                <p>${isHi ? 'खबरें लोड हो रही हैं...' : 'Loading news...'}</p>
+            </div>`;
+
+            // Fetch from RSS feeds
+            const feeds = FEEDS[currentLang] || FEEDS.en;
+            const allArticles = [];
+
+            for (const feed of feeds) {
+                const articles = await fetchFromRSS(feed);
+                allArticles.push(...articles);
+            }
+
+            if (allArticles.length > 0) {
+                renderNews(allArticles);
+            } else {
+                grid.innerHTML = `<p style="text-align:center; color:#666; padding:2rem;">
+                    ${isHi ? 'खबरें लोड नहीं हो सकीं' : 'Could not load news'}
+                </p>`;
             }
         }
 
-        // Language change handler
+        // Language handler
         function updatePageLanguage(lang) {
-            fetchNews(); // Re-fetch with new language
+            localStorage.removeItem(CACHE_KEY); // Clear cache on lang change
+            fetchNews();
         }
 
-        // Initial load - INSTANT!
+        // Load immediately
         fetchNews();
     </script>
 </body>
