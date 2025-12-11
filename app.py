@@ -1,41 +1,45 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
-from db import get_recent_articles, get_article_by_id, init_db
-from scraper import run_background_scraper
-
 import os
-app = Flask(__name__, root_path=os.path.dirname(os.path.abspath(__file__)))
+
+app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
+# Serve static files
 @app.route('/')
 def home():
-    # Try to serve index.html if it exists (for static deployments alongside backend)
-    try:
-        return app.send_static_file('index.html')
-    except:
-        return jsonify({'status': 'Shivpuri Local Backend Running', 'endpoints': ['/api/news', '/api/article/<id>']})
+    return send_from_directory('.', 'index.html')
 
-@app.route('/api/news', methods=['GET'])
-def get_news():
-    lang = request.args.get('lang', 'en')
-    articles = get_recent_articles(limit=50, lang=lang)
-    return jsonify(articles)
+@app.route('/transport')
+def transport():
+    return send_from_directory('.', 'transport.html')
 
-@app.route('/api/article/<int:article_id>', methods=['GET'])
-def get_article(article_id):
-    article = get_article_by_id(article_id)
-    if article:
-        return jsonify(article)
-    return jsonify({'error': 'Not found'}), 404
+@app.route('/places')
+def places():
+    return send_from_directory('.', 'places.html')
 
-@app.route('/health', methods=['GET'])
+@app.route('/food')
+def food():
+    return send_from_directory('.', 'food.html')
+
+@app.route('/news')
+def news():
+    return send_from_directory('.', 'news.html')
+
+@app.route('/article')
+def article():
+    return send_from_directory('.', 'article.html')
+
+# Health check
+@app.route('/health')
 def health():
     return jsonify({'status': 'ok'})
 
+# Static files
+@app.route('/<path:path>')
+def static_files(path):
+    return send_from_directory('.', path)
+
 if __name__ == '__main__':
-    # Initialize DB and start scraper thread
-    print("Starting server...")
-    run_background_scraper()
-    
-    # Run server
+    print("🚀 Shivpuri Local Server Running on http://localhost:3000")
     app.run(port=3000, host='0.0.0.0')
