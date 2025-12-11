@@ -41,6 +41,9 @@ def process_with_ai(title, description):
         prompt = f"""
         You are a smart news editor for 'Shivpuri Local'.
         Task: Translate and standardize this article into BOTH English and Hindi.
+        CRITICAL: 
+        1. 'title_en' and 'summary_en' MUST be in English.
+        2. 'title_hi' and 'summary_hi' MUST be in Hindi.
         
         Input:
         Title: {title}
