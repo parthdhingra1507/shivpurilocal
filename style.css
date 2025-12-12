@@ -511,17 +511,17 @@ body {
     text-decoration: none;
     transition: all 0.2s ease;
     background: transparent !important;
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-400);
     padding: 0.5rem 1rem;
     border-radius: var(--radius-md);
-    color: var(--gray-600);
+    color: var(--gray-800) !important;
 }
 
 .share-btn:hover,
 .map-btn:hover {
     background: transparent !important;
-    border-color: var(--gray-400);
-    color: var(--gray-900);
+    border-color: var(--gray-600);
+    color: var(--gray-900) !important;
     transform: none;
     box-shadow: none;
 }
@@ -544,9 +544,9 @@ body {
 
 #search-btn {
     padding: 0.75rem 1.5rem;
-    background: var(--gray-200);
-    color: var(--gray-900);
-    border: 1px solid var(--gray-300);
+    background: var(--gray-800);
+    color: var(--white);
+    border: 1px solid var(--gray-800);
     border-radius: var(--radius-md);
     font-weight: 600;
     font-size: 0.95rem;
@@ -556,8 +556,8 @@ body {
 }
 
 #search-btn:hover {
-    background: var(--white);
-    color: var(--gray-900);
+    background: var(--gray-900);
+    color: var(--white);
     transform: none;
     box-shadow: none;
 }
