@@ -28,6 +28,8 @@ FEEDS = {
     ]
 }
 
+import email.utils
+
 def parse_rss(xml_text):
     """Parse RSS XML and return articles"""
     articles = []
@@ -40,18 +42,22 @@ def parse_rss(xml_text):
             source = item.find('source')
             
             if title is not None and link is not None:
-                # Parse date
+                # Parse date robustly using email.utils
                 pub_time = None
                 if pubDate is not None and pubDate.text:
                     try:
-                        pub_time = datetime.strptime(pubDate.text, '%a, %d %b %Y %H:%M:%S %Z')
+                        # Returns a timezone-aware datetime
+                        pub_time = email.utils.parsedate_to_datetime(pubDate.text)
                     except:
                         pub_time = datetime.now()
                 
-                # Only include if within 48 hours
-                if pub_time and (datetime.now() - pub_time) < timedelta(hours=48):
+                # Filter old news (older than 48 hours)
+                # Ensure current time is also timezone aware for comparison if needed
+                now = datetime.now(pub_time.tzinfo) if pub_time and pub_time.tzinfo else datetime.now()
+                
+                if pub_time and (now - pub_time) < timedelta(hours=48):
                     articles.append({
-                        'title': title.text.split(' - ')[0] if title.text else '',  # Remove source suffix
+                        'title': title.text.split(' - ')[0] if title.text else '',
                         'url': link.text,
                         'publishedAt': pub_time.isoformat() if pub_time else None,
                         'source': source.text if source is not None else 'News'
