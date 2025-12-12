@@ -101,12 +101,35 @@ def refresh_cache():
             print(f"❌ Cache refresh failed: {e}")
         time.sleep(600)  # Refresh every 10 minutes
 
+def ensure_news_loaded(lang):
+    """Ensure news is loaded for language (lazy fetch)"""
+    if not news_cache.get(lang):
+        print(f"⚠️ Cache empty for {lang}, fetching synchronously...")
+        news_cache[lang] = fetch_news_for_lang(lang)
+        news_cache['last_fetch'] = datetime.now().isoformat()
+
+# Start background refresher on module load (runs in Gunicorn)
+# We use a simple daemon thread. In Gunicorn with multiple workers, 
+# each worker will have its own cache and thread. This is acceptable for this scale.
+if not threading.main_thread().name == 'MainThread': 
+    # Just a check to avoid running during some imports if needed, 
+    # generally fine to just run:
+    pass
+
+# Always start the background thread
+bg_thread = threading.Thread(target=refresh_cache, daemon=True)
+bg_thread.start()
+
 # API Routes
 @app.route('/api/news')
 def get_news():
     from flask import request
     lang = request.args.get('lang', 'en')
-    articles = news_cache.get(lang, news_cache.get('en', []))
+    
+    # Lazy load if empty (fixes "No news" on first load)
+    ensure_news_loaded(lang)
+    
+    articles = news_cache.get(lang, [])
     return jsonify({
         'articles': articles,
         'count': len(articles),
@@ -143,16 +166,5 @@ def static_files(path):
     return send_from_directory('.', path)
 
 if __name__ == '__main__':
-    # Start background refresh thread
-    thread = threading.Thread(target=refresh_cache, daemon=True)
-    thread.start()
-    
-    # Initial fetch (blocking, so we have data on first request)
-    print("📰 Initial news fetch...")
-    news_cache['en'] = fetch_news_for_lang('en')
-    news_cache['hi'] = fetch_news_for_lang('hi')
-    news_cache['last_fetch'] = datetime.now().isoformat()
-    print(f"✅ Ready with {len(news_cache['en'])} EN, {len(news_cache['hi'])} HI articles")
-    
     print("🚀 Server running on http://localhost:3000")
     app.run(port=3000, host='0.0.0.0')
