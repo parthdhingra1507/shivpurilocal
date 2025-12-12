@@ -126,7 +126,7 @@
                 const shareText = isHi ? 'साझा करें' : 'Share';
                 const readText = isHi ? 'पढ़ें' : 'Read';
 
-                const whatsappMsg = `📰 *${title}*\n\n🔗 ${url}\n\nvia shivpurilocal.in`;
+                const whatsappMsg = `📰 *${title}*\n\n🔗 ${url}\n\nvia shivpurilocal.in?lang=${currentLang}`;
                 const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMsg)}`;
 
                 card.innerHTML = `

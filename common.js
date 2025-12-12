@@ -112,6 +112,12 @@ const translations = {
     }
 };
 
+const urlParams = new URLSearchParams(window.location.search);
+const langParam = urlParams.get('lang');
+if (langParam && (langParam === 'en' || langParam === 'hi')) {
+    localStorage.setItem('lang', langParam);
+}
+
 let currentLang = localStorage.getItem('lang') || 'en';
 const langToggle = document.getElementById('lang-toggle');
 
