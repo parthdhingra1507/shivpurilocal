@@ -87,7 +87,20 @@ const NewsApp = {
                         <h3 class="article-modal-title"></h3>
                         <button class="article-close-btn" onclick="NewsApp.closeArticle()">✕</button>
                     </div>
+                    <div class="article-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading article...</p>
+                    </div>
                     <iframe class="article-iframe" frameborder="0" allowfullscreen></iframe>
+                    <div class="article-blocked" style="display: none;">
+                        <div style="text-align: center; padding: 40px;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
+                            <h3 style="margin-bottom: 12px;">Cannot Display Article</h3>
+                            <p style="color: var(--gray-600); margin-bottom: 24px;">
+                                This website doesn't allow embedding. Opening in new tab...
+                            </p>
+                        </div>
+                    </div>
                 </div>
             `;
             document.body.appendChild(modal);
@@ -96,11 +109,43 @@ const NewsApp = {
         // Update modal content
         const iframe = modal.querySelector('.article-iframe');
         const modalTitle = modal.querySelector('.article-modal-title');
+        const loading = modal.querySelector('.article-loading');
+        const blocked = modal.querySelector('.article-blocked');
 
         modalTitle.textContent = title;
+
+        // Reset states
+        loading.style.display = 'flex';
+        iframe.style.display = 'none';
+        blocked.style.display = 'none';
+
+        // Try to load in iframe
         iframe.src = url;
         modal.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Prevent background scroll
+        document.body.style.overflow = 'hidden';
+
+        // Detect if iframe is blocked
+        let iframeLoaded = false;
+
+        iframe.onload = () => {
+            iframeLoaded = true;
+            loading.style.display = 'none';
+            iframe.style.display = 'block';
+        };
+
+        // If iframe doesn't load in 3 seconds, assume it's blocked
+        setTimeout(() => {
+            if (!iframeLoaded) {
+                loading.style.display = 'none';
+                blocked.style.display = 'flex';
+
+                // Open in new tab after 2 seconds
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                    NewsApp.closeArticle();
+                }, 2000);
+            }
+        }, 3000);
     },
 
     closeArticle() {
