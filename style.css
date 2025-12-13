@@ -1489,6 +1489,17 @@ html.dark-mode #load-more-btn {
     border-color: white;
 }
 
+html.dark-mode #reset-btn {
+    background: #262626;
+    color: white;
+    border-color: #404040;
+}
+
+html.dark-mode #reset-btn:hover {
+    background: #404040;
+    border-color: #525252;
+}
+
 html.dark-mode .article-title,
 html.dark-mode .news-title,
 html.dark-mode .place-name,
