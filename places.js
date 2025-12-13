@@ -98,19 +98,21 @@ window.addEventListener('lang-changed', () => {
 });
 
 // Direct Load - Wait for DOM
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        const path = window.location.pathname;
-        if (path === '/places' || path === '/places.html') {
-            console.log('[Places] DOM loaded, initializing');
-            initPlaces();
-        }
-    });
-} else {
-    // DOM already loaded
+function tryInitPlaces() {
     const path = window.location.pathname;
     if (path === '/places' || path === '/places.html') {
-        console.log('[Places] DOM already ready, initializing');
-        initPlaces();
+        console.log('[Places] Attempting to initialize');
+        // Use setTimeout to ensure DOM is fully ready
+        setTimeout(() => {
+            initPlaces();
+        }, 0);
     }
 }
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', tryInitPlaces);
+} else {
+    // DOM already loaded, but still use setTimeout to ensure script execution order
+    tryInitPlaces();
+}
+

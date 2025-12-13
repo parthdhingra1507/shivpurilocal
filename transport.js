@@ -396,19 +396,21 @@ window.addEventListener('lang-changed', (e) => {
 });
 
 // Initial Check (in case loaded directly) - Wait for DOM
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        const path = window.location.pathname;
-        if (path === '/transport' || path === '/transport.html') {
-            console.log('[Transport] DOM loaded, initializing');
-            initTransport();
-        }
-    });
-} else {
-    // DOM already loaded
+function tryInitTransport() {
     const path = window.location.pathname;
     if (path === '/transport' || path === '/transport.html') {
-        console.log('[Transport] DOM already ready, initializing');
-        initTransport();
+        console.log('[Transport] Attempting to initialize');
+        // Use setTimeout to ensure DOM is fully ready
+        setTimeout(() => {
+            initTransport();
+        }, 0);
     }
 }
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', tryInitTransport);
+} else {
+    // DOM already loaded, but still use setTimeout to ensure script execution order
+    tryInitTransport();
+}
+
