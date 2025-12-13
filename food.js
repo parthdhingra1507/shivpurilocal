@@ -90,7 +90,9 @@ function initFood() {
 
 // Router Event
 document.addEventListener('page-loaded', (e) => {
-    if (e.detail.page === '/food') {
+    const page = e.detail.page;
+    if (page === '/food' || page === '/food.html' || page.includes('/food')) {
+        console.log('[Food] page-loaded event triggered for:', page);
         initFood();
     }
 });

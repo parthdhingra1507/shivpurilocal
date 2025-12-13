@@ -405,7 +405,9 @@ function initTransport() {
 
 // Listen for Router Page Load
 document.addEventListener('page-loaded', (e) => {
-    if (e.detail.page === '/transport') {
+    const page = e.detail.page;
+    if (page === '/transport' || page === '/transport.html' || page.includes('/transport')) {
+        console.log('[Transport] page-loaded event triggered for:', page);
         initTransport();
     }
 });

@@ -87,7 +87,9 @@ function initPlaces() {
 
 // Router Event
 document.addEventListener('page-loaded', (e) => {
-    if (e.detail.page === '/places') {
+    const page = e.detail.page;
+    if (page === '/places' || page === '/places.html' || page.includes('/places')) {
+        console.log('[Places] page-loaded event triggered for:', page);
         initPlaces();
     }
 });
