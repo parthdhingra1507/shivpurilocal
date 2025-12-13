@@ -40,27 +40,29 @@
                 <a href="/" style="text-decoration: none; color: inherit;">
                     <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
                 </a>
-                <p class="tagline">The City Encyclopedia</p>
+                <p class="tagline" data-i18n="tagline">The City Encyclopedia</p>
             </div>
             <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
-                <button id="install-btn" class="install-btn" style="display: none;">⬇️ App</button>
+                <button id="dark-toggle" class="lang-btn" title="Dark Mode">🌙</button>
+                <button id="install-btn" class="install-btn" style="display: none;" data-i18n="install_app">⬇️
+                    App</button>
                 <button id="lang-toggle" class="lang-btn">हिंदी</button>
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/transport">Transport</a></li>
-                    <li><a href="/places">Places</a></li>
-                    <li><a href="/food">Food</a></li>
-                    <li><a href="/news" class="active">News</a></li>
+                    <li><a href="/" data-i18n="nav_home">Home</a></li>
+                    <li><a href="/transport" data-i18n="nav_transport">Transport</a></li>
+                    <li><a href="/places" data-i18n="nav_places">Places</a></li>
+                    <li><a href="/food" data-i18n="nav_food">Food</a></li>
+                    <li><a href="/news" class="active" data-i18n="nav_news">News</a></li>
                 </ul>
             </nav>
         </header>
 
         <main class="content-area">
             <section class="hero">
-                <h2 id="hero-title">City News</h2>
-                <p id="hero-desc">Latest headlines from Shivpuri & Madhya Pradesh</p>
+                <h2 id="hero-title" data-i18n="hero_news_title">City News</h2>
+                <p id="hero-desc" data-i18n="hero_news_desc">Latest headlines from Shivpuri & Madhya Pradesh</p>
             </section>
 
             <section class="news-container">
@@ -74,112 +76,19 @@
         </main>
 
         <footer class="main-footer">
-            <p>© 2025 shivpurilocal.in. All rights reserved.</p>
+            <p data-i18n="copyright">© 2025 shivpurilocal.in. All rights reserved.</p>
             <div class="footer-links">
-                <a href="mailto:hello@shivpurilocal.in?subject=Feedback" class="footer-link">Feedback</a>
+                <a href="mailto:hello@shivpurilocal.in?subject=Feedback" class="footer-link"
+                    data-i18n="feedback">Feedback</a>
             </div>
         </footer>
     </div>
 
     <div id="toast-container"></div>
-    <script src="common.js?v=1.8"></script>
-    <script>
-        const API_URL = window.location.hostname === 'localhost'
-            ? '/api/news'
-            : 'https://shivpurilocal-backend.onrender.com/api/news';
-
-        function getRelativeTime(dateStr) {
-            if (!dateStr) return '';
-            const date = new Date(dateStr);
-            const now = new Date();
-            const diff = Math.floor((now - date) / 1000);
-            const isHi = currentLang === 'hi';
-
-            if (diff < 60) return isHi ? 'अभी' : 'Just now';
-            if (diff < 3600) return `${Math.floor(diff / 60)} ${isHi ? 'मिनट पहले' : 'min ago'}`;
-            if (diff < 86400) return `${Math.floor(diff / 3600)} ${isHi ? 'घंटे पहले' : 'hours ago'}`;
-            return `${Math.floor(diff / 86400)} ${isHi ? 'दिन पहले' : 'days ago'}`;
-        }
-
-        function renderNews(articles) {
-            const grid = document.getElementById('news-grid');
-            const isHi = currentLang === 'hi';
-
-            if (!articles || articles.length === 0) {
-                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">
-                    ${isHi ? 'कोई खबर नहीं मिली' : 'No news found'}
-                </p>`;
-                return;
-            }
-
-            grid.innerHTML = '';
-
-            articles.forEach(news => {
-                const card = document.createElement('article');
-                card.className = 'news-card';
-
-                const title = news.title || '';
-                const time = getRelativeTime(news.publishedAt);
-                const source = news.source || (isHi ? 'समाचार' : 'News');
-                const url = news.url || '#';
-
-                const shareText = isHi ? 'साझा करें' : 'Share';
-                const readText = isHi ? 'पढ़ें' : 'Read';
-
-                const whatsappMsg = `📰 *${title}*\n\n🔗 ${url}\n\nvia shivpurilocal.in?lang=${currentLang}`;
-                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMsg)}`;
-
-                card.innerHTML = `
-                    <div class="news-body">
-                        <div class="news-meta">
-                            <span class="news-source">${source}</span>
-                            <span class="news-time">${time}</span>
-                        </div>
-                        <h3 class="news-title">${title}</h3>
-                        <div class="card-actions">
-                            <a href="${whatsappUrl}" target="_blank" rel="noopener" class="share-btn">${shareText}</a>
-                            <a href="${url}" target="_blank" rel="noopener" class="map-btn">${readText} ↗</a>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        async function fetchNews() {
-            const grid = document.getElementById('news-grid');
-            const isHi = currentLang === 'hi';
-
-            grid.innerHTML = `<div class="loading-state">
-                <div class="loading-spinner"></div>
-                <p>${isHi ? 'खबरें लोड हो रही हैं...' : 'Loading news...'}</p>
-            </div>`;
-
-            try {
-                const res = await fetch(`${API_URL}?lang=${currentLang}`);
-                if (!res.ok) throw new Error('API error');
-                const data = await res.json();
-                renderNews(data.articles || []);
-            } catch (e) {
-                console.error('News fetch error:', e);
-                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 2rem;">
-                    <p style="color: var(--text-muted); margin-bottom: 1rem;">
-                        ${isHi ? 'खबरें लोड नहीं हो सकीं' : 'Could not load news'}
-                    </p>
-                    <button onclick="fetchNews()" style="padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer;">
-                        ${isHi ? 'पुनः प्रयास करें' : 'Retry'}
-                    </button>
-                </div>`;
-            }
-        }
-
-        function updatePageLanguage(lang) {
-            fetchNews();
-        }
-
-        // Initial load
-        fetchNews();
-    </script>
+    <script src="i18n.js"></script>
+    <script src="router.js"></script>
+    <script src="common.js?v=2.0"></script>
+    <script src="news.js"></script>
 </body>
 
 </html>

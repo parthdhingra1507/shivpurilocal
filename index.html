@@ -1,37 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shivpuri Local - Your Complete City Guide</title>
-<meta name="description"
-    content="Explore Shivpuri with our complete city guide. Find bus schedules, discover places, and explore the best food spots in Shivpuri.">
-<link rel="canonical" href="https://shivpurilocal.in/">
 
-<!-- Open Graph / WhatsApp -->
-<meta property="og:title" content="Shivpuri Local - The City Guide">
-<meta property="og:description" content="Bus schedules, places, food, and more in Shivpuri.">
-<meta property="og:image" content="https://shivpurilocal.in/social-preview.png">
-<meta property="og:type" content="website">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shivpuri Local - Your Complete City Guide</title>
+    <meta name="description"
+        content="Explore Shivpuri with our complete city guide. Find bus schedules, discover places, and explore the best food spots in Shivpuri.">
+    <link rel="canonical" href="https://shivpurilocal.in/">
 
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6F0WC51BKD"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-6F0WC51BKD');
-</script>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#FAFAFA">
-<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3448/3448339.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Shivpuri Local">
-<link rel="stylesheet" href="style.css?v=1.5">
-<script src="sw-register.js?v=1.5"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Open Graph / WhatsApp -->
+    <meta property="og:title" content="Shivpuri Local - The City Guide">
+    <meta property="og:description" content="Bus schedules, places, food, and more in Shivpuri.">
+    <meta property="og:image" content="https://shivpurilocal.in/social-preview.png">
+    <meta property="og:type" content="website">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F0WC51BKD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-6F0WC51BKD');
+    </script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FAFAFA">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3448/3448339.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Shivpuri Local">
+    <link rel="stylesheet" href="style.css?v=1.6">
+    <script src="sw-register.js?v=1.5"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
 
 <body class="page-home">
     <div class="app-container">
@@ -40,81 +43,83 @@
                 <a href="/" style="text-decoration: none; color: inherit;">
                     <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
                 </a>
-                <p class="tagline">The City Encyclopedia</p>
+                <p class="tagline" data-i18n="tagline">The City Encyclopedia</p>
             </div>
             <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
                 <button id="install-btn" class="install-btn" style="display: none;">⬇️ App</button>
                 <button id="lang-toggle" class="lang-btn">हिंदी</button>
+                <button id="dark-toggle" class="theme-btn" aria-label="Toggle Dark Mode">🌙</button>
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="/" class="active">Home</a></li>
-                    <li><a href="/transport">Transport</a></li>
-                    <li><a href="/places">Places</a></li>
-                    <li><a href="/food">Food</a></li>
-                    <li><a href="/news">News</a></li>
+                    <li><a href="/" class="active" data-i18n="nav_home">Home</a></li>
+                    <li><a href="/transport" data-i18n="nav_transport">Transport</a></li>
+                    <li><a href="/places" data-i18n="nav_places">Places</a></li>
+                    <li><a href="/food" data-i18n="nav_food">Food</a></li>
+                    <li><a href="/news" data-i18n="nav_news">News</a></li>
                 </ul>
             </nav>
         </header>
 
         <main class="content-area">
             <section class="hero">
-                <h2>Welcome to Shivpuri</h2>
-                <p>Your complete guide to local bus schedules, top places, and best food spots.</p>
+                <h2 data-i18n="hero_title">Welcome to Shivpuri</h2>
+                <p data-i18n="hero_desc">Your complete guide to local bus schedules, top places, and best food spots.
+                </p>
             </section>
 
             <div class="category-grid">
                 <a href="/transport" class="category-card" id="cat-transport">
                     <div class="cat-icon">🚌</div>
-                    <h3>Bus Schedule</h3>
-                    <p>Live timings & Routes</p>
+                    <h3 data-i18n="cat_transport_title">Bus Schedule</h3>
+                    <p data-i18n="cat_transport_desc">Live timings & Routes</p>
                 </a>
                 <a href="/places" class="category-card" id="cat-places">
                     <div class="cat-icon">📍</div>
-                    <h3>Places to Visit</h3>
-                    <p>Tourist spots & Nature</p>
+                    <h3 data-i18n="cat_places_title">Places to Visit</h3>
+                    <p data-i18n="cat_places_desc">Tourist spots & Nature</p>
                 </a>
                 <a href="/food" class="category-card" id="cat-food">
                     <div class="cat-icon">🍽️</div>
-                    <h3>Food & Dining</h3>
-                    <p>Best Restaurants & Cafes</p>
+                    <h3 data-i18n="cat_food_title">Food & Dining</h3>
+                    <p data-i18n="cat_food_desc">Best Restaurants & Cafes</p>
                 </a>
                 <a href="/news" class="category-card" id="cat-news">
                     <div class="cat-icon">📰</div>
-                    <h3>City News</h3>
-                    <p>Latest Updates & Headlines</p>
+                    <h3 data-i18n="cat_news_title">City News</h3>
+                    <p data-i18n="cat_news_desc">Latest Updates & Headlines</p>
                 </a>
             </div>
 
             <!-- Emergency Numbers Section -->
             <section class="emergency-section">
-                <h2>Emergency Numbers</h2>
+                <h2 data-i18n="emerg_title">Emergency Numbers</h2>
                 <div class="emergency-grid">
                     <div class="emergency-card">
                         <span class="emergency-icon">🚓</span>
                         <div class="emergency-info">
-                            <h3>Police</h3>
+                            <h3 data-i18n="emerg_police">Police</h3>
                             <a href="tel:100" class="emergency-number">100</a>
                         </div>
                     </div>
                     <div class="emergency-card">
                         <span class="emergency-icon">🚑</span>
                         <div class="emergency-info">
-                            <h3>Ambulance</h3>
+                            <h3 data-i18n="emerg_ambulance">Ambulance</h3>
                             <a href="tel:108" class="emergency-number">108</a>
                         </div>
                     </div>
                     <div class="emergency-card">
                         <span class="emergency-icon">🚒</span>
                         <div class="emergency-info">
-                            <h3>Fire</h3>
+                            <h3 data-i18n="emerg_fire">Fire</h3>
                             <a href="tel:101" class="emergency-number">101</a>
                         </div>
                     </div>
                     <div class="emergency-card">
                         <span class="emergency-icon">👮</span>
                         <div class="emergency-info">
-                            <h3>Women Helpline</h3>
+                            <h3 data-i18n="emerg_women">Women Helpline</h3>
                             <a href="tel:1091" class="emergency-number">1091</a>
                         </div>
                     </div>
@@ -123,18 +128,28 @@
         </main>
 
         <footer class="main-footer">
-            <p>&copy; 2025 shivpurilocal.in. All rights reserved.</p>
+            <p data-i18n="footer_rights">&copy; 2025 shivpurilocal.in. All rights reserved.</p>
             <div class="footer-links">
-                <a href="mailto:hello@shivpurilocal.in?subject=Add%20My%20Business" class="footer-link">Add Your
-                    Business</a>
-                <a href="mailto:hello@shivpurilocal.in?subject=Feedback" class="footer-link">Feedback</a>
+                <a href="mailto:hello@shivpurilocal.in?subject=Add%20My%20Business" class="footer-link"
+                    data-i18n="footer_add_biz">Add Your Business</a>
+                <a href="mailto:hello@shivpurilocal.in?subject=Feedback" class="footer-link"
+                    data-i18n="footer_feedback">Feedback</a>
             </div>
         </footer>
     </div>
 
     <div id="toast-container"></div>
-    <script src="common.js?v=1.5"></script>
-    <script src="script.js?v=1.5"></script>
+
+    <!-- Core Modules -->
+    <script src="i18n.js?v=1.6"></script>
+    <script src="router.js?v=1.6"></script>
+    <script src="common.js?v=1.6"></script>
+
+    <!-- Page Specific Logic -->
+    <script src="news.js?v=1.6"></script>
+    <script src="transport.js?v=1.6"></script>
+    <script src="places.js?v=1.6"></script>
+    <script src="food.js?v=1.6"></script>
 </body>
 
 </html>

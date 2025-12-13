@@ -2,7 +2,8 @@
 <html lang="en">
 
 <head>
-    <meta name="theme-color" content="#FAFAFA">    <meta charset="UTF-8">
+    <meta name="theme-color" content="#FAFAFA">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food in Shivpuri - Shivpuri Local</title>
     <meta name="description" content="Discover the best food spots, restaurants, and street food in Shivpuri.">
@@ -15,17 +16,6 @@
     <meta property="og:type" content="website">
 
     <link rel="stylesheet" href="style.css?v=2.3">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F0WC51BKD"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-6F0WC51BKD');
-    </script>
     <script src="sw-register.js"></script>
 </head>
 
@@ -36,27 +26,28 @@
                 <a href="/" style="text-decoration: none; color: inherit;">
                     <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
                 </a>
-                <p class="tagline">The City Encyclopedia</p>
+                <p class="tagline" data-i18n="tagline">The City Encyclopedia</p>
             </div>
             <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
                 <button id="install-btn" class="install-btn" style="display: none;">⬇️ App</button>
                 <button id="lang-toggle" class="lang-btn">हिंदी</button>
+                <button id="dark-toggle" class="theme-btn" aria-label="Toggle Dark Mode">🌙</button>
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/transport">Transport</a></li>
-                    <li><a href="/places">Places</a></li>
-                    <li><a href="/food" class="active">Food</a></li>
-                    <li><a href="/news">News</a></li>
+                    <li><a href="/" data-i18n="nav_home">Home</a></li>
+                    <li><a href="/transport" data-i18n="nav_transport">Transport</a></li>
+                    <li><a href="/places" data-i18n="nav_places">Places</a></li>
+                    <li><a href="/food" class="active" data-i18n="nav_food">Food</a></li>
+                    <li><a href="/news" data-i18n="nav_news">News</a></li>
                 </ul>
             </nav>
         </header>
 
         <main class="content-area">
             <section class="hero-section">
-                <h2 id="hero-title">Food & Dining</h2>
-                <p id="hero-desc">Find the best restaurants and cafes in Shivpuri.</p>
+                <h2 id="hero-title" data-i18n="cat_food_title">Food & Dining</h2>
+                <p id="hero-desc" data-i18n="cat_food_desc">Find the best restaurants and cafes in Shivpuri.</p>
             </section>
 
             <section class="food-container">
@@ -69,12 +60,20 @@
         </main>
 
         <footer class="main-footer">
-            <p>&copy; 2025 shivpurilocal.in. All rights reserved.</p>
+            <p data-i18n="footer_rights">&copy; 2025 shivpurilocal.in. All rights reserved.</p>
         </footer>
     </div>
     <div id="toast-container"></div>
-    <script src="common.js?v=1.5"></script>
-    <script src="script.js?v=1.5"></script>
+    <!-- Core Modules -->
+    <script src="i18n.js?v=1.6"></script>
+    <script src="router.js?v=1.6"></script>
+    <script src="common.js?v=1.6"></script>
+
+    <!-- Page Specific Logic -->
+    <script src="news.js?v=1.6"></script>
+    <script src="transport.js?v=1.6"></script>
+    <script src="places.js?v=1.6"></script>
+    <script src="food.js?v=1.6"></script>
 </body>
 
 </html>

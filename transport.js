@@ -2,49 +2,7 @@ const busData = [
     { "operator_name": "DubeyJi Travels", "route_from": "Bhopal", "route_to": "Shivpuri", "via": "Biaora • Guna", "distance_km": 320, "departure_time": 1764914400000, "arrival_time": "14:00", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Bhopal–Shivpuri Via Biaora (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Bhopal", "route_to": "Shivpuri", "via": "Biaora • Guna", "distance_km": 320, "departure_time": 1764923400000, "arrival_time": "16:40", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Bhopal–Shivpuri Via Biaora (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Bhopal", "route_to": "Shivpuri", "via": "Biaora • Guna", "distance_km": 320, "departure_time": 1764936000000, "arrival_time": "20:15", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Bhopal–Shivpuri Via Biaora (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Bhopal", "route_to": "Shivpuri", "via": "Biaora • Guna", "distance_km": 320, "departure_time": 1764948600000, "arrival_time": "23:35", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Bhopal–Shivpuri Via Biaora (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Bhopal", "route_to": "Shivpuri", "via": "Biaora • Guna", "distance_km": 320, "departure_time": 1764957600000, "arrival_time": "02:00 (+1)", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Bhopal–Shivpuri Via Biaora (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Bhopal", "route_to": "Shivpuri", "via": "Biaora • Guna", "distance_km": 320, "departure_time": 1764972000000, "arrival_time": "05:50 (+1)", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Bhopal–Shivpuri Via Biaora (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Datia", "route_to": "Shivpuri", "via": "Dabra", "distance_km": 95, "departure_time": 1764914400000, "arrival_time": "08:10", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Datia–Shivpuri Via Dabra (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Datia", "route_to": "Shivpuri", "via": "Dabra", "distance_km": 95, "departure_time": 1764923400000, "arrival_time": "10:50", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Datia–Shivpuri Via Dabra (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Datia", "route_to": "Shivpuri", "via": "Dabra", "distance_km": 95, "departure_time": 1764936000000, "arrival_time": "14:25", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Datia–Shivpuri Via Dabra (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Datia", "route_to": "Shivpuri", "via": "Dabra", "distance_km": 95, "departure_time": 1764948600000, "arrival_time": "17:45", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Datia–Shivpuri Via Dabra (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Datia", "route_to": "Shivpuri", "via": "Dabra", "distance_km": 95, "departure_time": 1764957600000, "arrival_time": "20:10", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Datia–Shivpuri Via Dabra (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Datia", "route_to": "Shivpuri", "via": "Dabra", "distance_km": 95, "departure_time": 1764972000000, "arrival_time": "00:00 (+1)", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Datia–Shivpuri Via Dabra (AC Seater 2+2)" }, { "operator_name": "Sharad Travels", "route_from": "Guna", "route_to": "Shivpuri", "via": "Raghogarh • Badarwas", "distance_km": 103, "departure_time": 1764914400000, "arrival_time": "08:15", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Guna–Shivpuri Via Raghogarh (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Guna", "route_to": "Shivpuri", "via": "Raghogarh • Badarwas", "distance_km": 103, "departure_time": 1764923400000, "arrival_time": "10:55", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Guna–Shivpuri Via Raghogarh (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Guna", "route_to": "Shivpuri", "via": "Raghogarh • Badarwas", "distance_km": 103, "departure_time": 1764936000000, "arrival_time": "14:30", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Guna–Shivpuri Via Raghogarh (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Guna", "route_to": "Shivpuri", "via": "Raghogarh • Badarwas", "distance_km": 103, "departure_time": 1764948600000, "arrival_time": "17:50", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Guna–Shivpuri Via Raghogarh (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Guna", "route_to": "Shivpuri", "via": "Raghogarh • Badarwas", "distance_km": 103, "departure_time": 1764957600000, "arrival_time": "20:15", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Guna–Shivpuri Via Raghogarh (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Guna", "route_to": "Shivpuri", "via": "Raghogarh • Badarwas", "distance_km": 103, "departure_time": 1764972000000, "arrival_time": "00:05 (+1)", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Guna–Shivpuri Via Raghogarh (Non-AC Sleeper 2+1)" }, { "operator_name": "Hans Travels", "route_from": "Gwalior", "route_to": "Shivpuri", "via": "Mohna • Kolaras", "distance_km": 115, "departure_time": 1764914400000, "arrival_time": "08:30", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Gwalior–Shivpuri Via Mohna (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Gwalior", "route_to": "Shivpuri", "via": "Mohna • Kolaras", "distance_km": 115, "departure_time": 1764923400000, "arrival_time": "11:10", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Gwalior–Shivpuri Via Mohna (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Gwalior", "route_to": "Shivpuri", "via": "Mohna • Kolaras", "distance_km": 115, "departure_time": 1764936000000, "arrival_time": "14:45", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Gwalior–Shivpuri Via Mohna (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Gwalior", "route_to": "Shivpuri", "via": "Mohna • Kolaras", "distance_km": 115, "departure_time": 1764948600000, "arrival_time": "18:05", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Gwalior–Shivpuri Via Mohna (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Gwalior", "route_to": "Shivpuri", "via": "Mohna • Kolaras", "distance_km": 115, "departure_time": 1764957600000, "arrival_time": "20:30", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Gwalior–Shivpuri Via Mohna (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Gwalior", "route_to": "Shivpuri", "via": "Mohna • Kolaras", "distance_km": 115, "departure_time": 1764972000000, "arrival_time": "00:20 (+1)", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Gwalior–Shivpuri Via Mohna (AC Sleeper 2+1)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Indore", "route_to": "Shivpuri", "via": "Dewas • Guna", "distance_km": 360, "departure_time": 1764914400000, "arrival_time": "15:00", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Indore–Shivpuri Via Dewas (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Indore", "route_to": "Shivpuri", "via": "Dewas • Guna", "distance_km": 360, "departure_time": 1764923400000, "arrival_time": "17:40", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Indore–Shivpuri Via Dewas (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Indore", "route_to": "Shivpuri", "via": "Dewas • Guna", "distance_km": 360, "departure_time": 1764936000000, "arrival_time": "21:15", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Indore–Shivpuri Via Dewas (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Indore", "route_to": "Shivpuri", "via": "Dewas • Guna", "distance_km": 360, "departure_time": 1764948600000, "arrival_time": "00:35 (+1)", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Indore–Shivpuri Via Dewas (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Indore", "route_to": "Shivpuri", "via": "Dewas • Guna", "distance_km": 360, "departure_time": 1764957600000, "arrival_time": "03:00 (+1)", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Indore–Shivpuri Via Dewas (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Indore", "route_to": "Shivpuri", "via": "Dewas • Guna", "distance_km": 360, "departure_time": 1764972000000, "arrival_time": "06:50 (+1)", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Indore–Shivpuri Via Dewas (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Jaipur", "route_to": "Shivpuri", "via": "Dausa • Lalsot", "distance_km": 330, "departure_time": 1764914400000, "arrival_time": "14:00", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Jaipur–Shivpuri Via Dausa (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Jaipur", "route_to": "Shivpuri", "via": "Dausa • Lalsot", "distance_km": 330, "departure_time": 1764923400000, "arrival_time": "16:40", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Jaipur–Shivpuri Via Dausa (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Jaipur", "route_to": "Shivpuri", "via": "Dausa • Lalsot", "distance_km": 330, "departure_time": 1764936000000, "arrival_time": "20:15", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Jaipur–Shivpuri Via Dausa (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Jaipur", "route_to": "Shivpuri", "via": "Dausa • Lalsot", "distance_km": 330, "departure_time": 1764948600000, "arrival_time": "23:35", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Jaipur–Shivpuri Via Dausa (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Jaipur", "route_to": "Shivpuri", "via": "Dausa • Lalsot", "distance_km": 330, "departure_time": 1764957600000, "arrival_time": "02:00 (+1)", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Jaipur–Shivpuri Via Dausa (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Jaipur", "route_to": "Shivpuri", "via": "Dausa • Lalsot", "distance_km": 330, "departure_time": 1764972000000, "arrival_time": "05:50 (+1)", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Jaipur–Shivpuri Via Dausa (Non-AC Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Jhansi", "route_to": "Shivpuri", "via": "Dabra • Datia", "distance_km": 100, "departure_time": 1764914400000, "arrival_time": "08:20", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Jhansi–Shivpuri Via Dabra (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Jhansi", "route_to": "Shivpuri", "via": "Dabra • Datia", "distance_km": 100, "departure_time": 1764923400000, "arrival_time": "11:00", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Jhansi–Shivpuri Via Dabra (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Jhansi", "route_to": "Shivpuri", "via": "Dabra • Datia", "distance_km": 100, "departure_time": 1764936000000, "arrival_time": "14:35", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Jhansi–Shivpuri Via Dabra (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Jhansi", "route_to": "Shivpuri", "via": "Dabra • Datia", "distance_km": 100, "departure_time": 1764948600000, "arrival_time": "17:55", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Jhansi–Shivpuri Via Dabra (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Jhansi", "route_to": "Shivpuri", "via": "Dabra • Datia", "distance_km": 100, "departure_time": 1764957600000, "arrival_time": "20:20", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Jhansi–Shivpuri Via Dabra (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Jhansi", "route_to": "Shivpuri", "via": "Dabra • Datia", "distance_km": 100, "departure_time": 1764972000000, "arrival_time": "00:10 (+1)", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Jhansi–Shivpuri Via Dabra (Express Seater 3+2)" }, { "operator_name": "Hans Travels", "route_from": "Kota", "route_to": "Shivpuri", "via": "Baran", "distance_km": 260, "departure_time": 1764914400000, "arrival_time": "12:00", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Kota–Shivpuri Via Baran (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Kota", "route_to": "Shivpuri", "via": "Baran", "distance_km": 260, "departure_time": 1764923400000, "arrival_time": "14:40", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Kota–Shivpuri Via Baran (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Kota", "route_to": "Shivpuri", "via": "Baran", "distance_km": 260, "departure_time": 1764936000000, "arrival_time": "18:15", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Kota–Shivpuri Via Baran (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Kota", "route_to": "Shivpuri", "via": "Baran", "distance_km": 260, "departure_time": 1764948600000, "arrival_time": "21:35", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Kota–Shivpuri Via Baran (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Kota", "route_to": "Shivpuri", "via": "Baran", "distance_km": 260, "departure_time": 1764957600000, "arrival_time": "00:00 (+1)", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Kota–Shivpuri Via Baran (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Kota", "route_to": "Shivpuri", "via": "Baran", "distance_km": 260, "departure_time": 1764972000000, "arrival_time": "03:50 (+1)", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Kota–Shivpuri Via Baran (AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Sheopur", "route_to": "Shivpuri", "via": "Pohri • Karahal", "distance_km": 120, "departure_time": 1764914400000, "arrival_time": "09:20", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Sheopur–Shivpuri Via Pohri (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Sheopur", "route_to": "Shivpuri", "via": "Pohri • Karahal", "distance_km": 120, "departure_time": 1764923400000, "arrival_time": "12:00", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Sheopur–Shivpuri Via Pohri (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Sheopur", "route_to": "Shivpuri", "via": "Pohri • Karahal", "distance_km": 120, "departure_time": 1764936000000, "arrival_time": "15:35", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Sheopur–Shivpuri Via Pohri (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Sheopur", "route_to": "Shivpuri", "via": "Pohri • Karahal", "distance_km": 120, "departure_time": 1764948600000, "arrival_time": "18:55", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Sheopur–Shivpuri Via Pohri (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Sheopur", "route_to": "Shivpuri", "via": "Pohri • Karahal", "distance_km": 120, "departure_time": 1764957600000, "arrival_time": "21:20", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Sheopur–Shivpuri Via Pohri (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Sheopur", "route_to": "Shivpuri", "via": "Pohri • Karahal", "distance_km": 120, "departure_time": 1764972000000, "arrival_time": "01:10 (+1)", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Sheopur–Shivpuri Via Pohri (AC Seater 2+2)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Shivpuri", "route_to": "Bhopal", "via": "Guna • Biaora", "distance_km": 320, "departure_time": 1764914400000, "arrival_time": "14:00", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Shivpuri–Bhopal Via Guna (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Shivpuri", "route_to": "Bhopal", "via": "Guna • Biaora", "distance_km": 320, "departure_time": 1764923400000, "arrival_time": "16:40", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Shivpuri–Bhopal Via Guna (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Shivpuri", "route_to": "Bhopal", "via": "Guna • Biaora", "distance_km": 320, "departure_time": 1764936000000, "arrival_time": "20:15", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Shivpuri–Bhopal Via Guna (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Shivpuri", "route_to": "Bhopal", "via": "Guna • Biaora", "distance_km": 320, "departure_time": 1764948600000, "arrival_time": "23:35", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Shivpuri–Bhopal Via Guna (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Shivpuri", "route_to": "Bhopal", "via": "Guna • Biaora", "distance_km": 320, "departure_time": 1764957600000, "arrival_time": "02:00 (+1)", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Shivpuri–Bhopal Via Guna (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Shivpuri", "route_to": "Bhopal", "via": "Guna • Biaora", "distance_km": 320, "departure_time": 1764972000000, "arrival_time": "05:50 (+1)", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Shivpuri–Bhopal Via Guna (Express Seater 3+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Shivpuri", "route_to": "Datia", "via": "Dabra", "distance_km": 95, "departure_time": 1764914400000, "arrival_time": "08:10", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Shivpuri–Datia Via Dabra (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Shivpuri", "route_to": "Datia", "via": "Dabra", "distance_km": 95, "departure_time": 1764923400000, "arrival_time": "10:50", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Shivpuri–Datia Via Dabra (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Shivpuri", "route_to": "Datia", "via": "Dabra", "distance_km": 95, "departure_time": 1764936000000, "arrival_time": "14:25", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Shivpuri–Datia Via Dabra (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Shivpuri", "route_to": "Datia", "via": "Dabra", "distance_km": 95, "departure_time": 1764948600000, "arrival_time": "17:45", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Shivpuri–Datia Via Dabra (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Shivpuri", "route_to": "Datia", "via": "Dabra", "distance_km": 95, "departure_time": 1764957600000, "arrival_time": "20:10", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Shivpuri–Datia Via Dabra (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Shivpuri", "route_to": "Datia", "via": "Dabra", "distance_km": 95, "departure_time": 1764972000000, "arrival_time": "00:00 (+1)", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Shivpuri–Datia Via Dabra (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Shivpuri", "route_to": "Guna", "via": "Badarwas • Raghogarh", "distance_km": 103, "departure_time": 1764914400000, "arrival_time": "08:15", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Shivpuri–Guna Via Badarwas (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Shivpuri", "route_to": "Guna", "via": "Badarwas • Raghogarh", "distance_km": 103, "departure_time": 1764923400000, "arrival_time": "10:55", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Shivpuri–Guna Via Badarwas (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Shivpuri", "route_to": "Guna", "via": "Badarwas • Raghogarh", "distance_km": 103, "departure_time": 1764936000000, "arrival_time": "14:30", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Shivpuri–Guna Via Badarwas (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Shivpuri", "route_to": "Guna", "via": "Badarwas • Raghogarh", "distance_km": 103, "departure_time": 1764948600000, "arrival_time": "17:50", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Shivpuri–Guna Via Badarwas (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Shivpuri", "route_to": "Guna", "via": "Badarwas • Raghogarh", "distance_km": 103, "departure_time": 1764957600000, "arrival_time": "20:15", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Shivpuri–Guna Via Badarwas (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Shivpuri", "route_to": "Guna", "via": "Badarwas • Raghogarh", "distance_km": 103, "departure_time": 1764972000000, "arrival_time": "00:05 (+1)", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Shivpuri–Guna Via Badarwas (AC Seater 2+2)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Shivpuri", "route_to": "Gwalior", "via": "Kolaras • Mohna", "distance_km": 115, "departure_time": 1764914400000, "arrival_time": "08:30", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Shivpuri–Gwalior Via Kolaras (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Shivpuri", "route_to": "Gwalior", "via": "Kolaras • Mohna", "distance_km": 115, "departure_time": 1764923400000, "arrival_time": "11:10", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Shivpuri–Gwalior Via Kolaras (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Shivpuri", "route_to": "Gwalior", "via": "Kolaras • Mohna", "distance_km": 115, "departure_time": 1764936000000, "arrival_time": "14:45", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Shivpuri–Gwalior Via Kolaras (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Shivpuri", "route_to": "Gwalior", "via": "Kolaras • Mohna", "distance_km": 115, "departure_time": 1764948600000, "arrival_time": "18:05", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Shivpuri–Gwalior Via Kolaras (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Shivpuri", "route_to": "Gwalior", "via": "Kolaras • Mohna", "distance_km": 115, "departure_time": 1764957600000, "arrival_time": "20:30", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Shivpuri–Gwalior Via Kolaras (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Shivpuri", "route_to": "Gwalior", "via": "Kolaras • Mohna", "distance_km": 115, "departure_time": 1764972000000, "arrival_time": "00:20 (+1)", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Shivpuri–Gwalior Via Kolaras (AC Seater 2+2)" }, { "operator_name": "Sharad Travels", "route_from": "Shivpuri", "route_to": "Indore", "via": "Guna • Dewas", "distance_km": 360, "departure_time": 1764914400000, "arrival_time": "15:00", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Shivpuri–Indore Via Guna (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Shivpuri", "route_to": "Indore", "via": "Guna • Dewas", "distance_km": 360, "departure_time": 1764923400000, "arrival_time": "17:40", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Shivpuri–Indore Via Guna (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Shivpuri", "route_to": "Indore", "via": "Guna • Dewas", "distance_km": 360, "departure_time": 1764936000000, "arrival_time": "21:15", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Shivpuri–Indore Via Guna (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Shivpuri", "route_to": "Indore", "via": "Guna • Dewas", "distance_km": 360, "departure_time": 1764948600000, "arrival_time": "00:35 (+1)", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Shivpuri–Indore Via Guna (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Shivpuri", "route_to": "Indore", "via": "Guna • Dewas", "distance_km": 360, "departure_time": 1764957600000, "arrival_time": "03:00 (+1)", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Shivpuri–Indore Via Guna (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Shivpuri", "route_to": "Indore", "via": "Guna • Dewas", "distance_km": 360, "departure_time": 1764972000000, "arrival_time": "06:50 (+1)", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Shivpuri–Indore Via Guna (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Shivpuri", "route_to": "Jaipur", "via": "Lalsot • Dausa", "distance_km": 330, "departure_time": 1764914400000, "arrival_time": "14:00", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Shivpuri–Jaipur Via Lalsot (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Shivpuri", "route_to": "Jaipur", "via": "Lalsot • Dausa", "distance_km": 330, "departure_time": 1764923400000, "arrival_time": "16:40", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Shivpuri–Jaipur Via Lalsot (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Shivpuri", "route_to": "Jaipur", "via": "Lalsot • Dausa", "distance_km": 330, "departure_time": 1764936000000, "arrival_time": "20:15", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Shivpuri–Jaipur Via Lalsot (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Shivpuri", "route_to": "Jaipur", "via": "Lalsot • Dausa", "distance_km": 330, "departure_time": 1764948600000, "arrival_time": "23:35", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Shivpuri–Jaipur Via Lalsot (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Shivpuri", "route_to": "Jaipur", "via": "Lalsot • Dausa", "distance_km": 330, "departure_time": 1764957600000, "arrival_time": "02:00 (+1)", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Shivpuri–Jaipur Via Lalsot (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Shivpuri", "route_to": "Jaipur", "via": "Lalsot • Dausa", "distance_km": 330, "departure_time": 1764972000000, "arrival_time": "05:50 (+1)", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Shivpuri–Jaipur Via Lalsot (AC Seater 2+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Shivpuri", "route_to": "Jhansi", "via": "Datia • Dabra", "distance_km": 100, "departure_time": 1764914400000, "arrival_time": "08:20", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Shivpuri–Jhansi Via Datia (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Shivpuri", "route_to": "Jhansi", "via": "Datia • Dabra", "distance_km": 100, "departure_time": 1764923400000, "arrival_time": "11:00", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Shivpuri–Jhansi Via Datia (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Shivpuri", "route_to": "Jhansi", "via": "Datia • Dabra", "distance_km": 100, "departure_time": 1764936000000, "arrival_time": "14:35", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Shivpuri–Jhansi Via Datia (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Shivpuri", "route_to": "Jhansi", "via": "Datia • Dabra", "distance_km": 100, "departure_time": 1764948600000, "arrival_time": "17:55", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Shivpuri–Jhansi Via Datia (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Shivpuri", "route_to": "Jhansi", "via": "Datia • Dabra", "distance_km": 100, "departure_time": 1764957600000, "arrival_time": "20:20", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Shivpuri–Jhansi Via Datia (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Shivpuri", "route_to": "Jhansi", "via": "Datia • Dabra", "distance_km": 100, "departure_time": 1764972000000, "arrival_time": "00:10 (+1)", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Shivpuri–Jhansi Via Datia (AC Sleeper 2+1)" }, { "operator_name": "Kamla Travels (Sutra Sewa)", "route_from": "Shivpuri", "route_to": "Kota", "via": "Baran", "distance_km": 260, "departure_time": 1764914400000, "arrival_time": "12:00", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Kamla Shivpuri–Kota Via Baran (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Shivpuri", "route_to": "Kota", "via": "Baran", "distance_km": 260, "departure_time": 1764923400000, "arrival_time": "14:40", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Shivpuri–Kota Via Baran (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Shivpuri", "route_to": "Kota", "via": "Baran", "distance_km": 260, "departure_time": 1764936000000, "arrival_time": "18:15", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Shivpuri–Kota Via Baran (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Shivpuri", "route_to": "Kota", "via": "Baran", "distance_km": 260, "departure_time": 1764948600000, "arrival_time": "21:35", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Shivpuri–Kota Via Baran (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Shivpuri", "route_to": "Kota", "via": "Baran", "distance_km": 260, "departure_time": 1764957600000, "arrival_time": "00:00 (+1)", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Shivpuri–Kota Via Baran (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Shivpuri", "route_to": "Kota", "via": "Baran", "distance_km": 260, "departure_time": 1764972000000, "arrival_time": "03:50 (+1)", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Shivpuri–Kota Via Baran (AC Seater 2+2)" }, { "operator_name": "Hans Travels", "route_from": "Shivpuri", "route_to": "Sheopur", "via": "Karahal • Pohri", "distance_km": 120, "departure_time": 1764914400000, "arrival_time": "09:20", "days_of_operation": "Daily", "bus_type": "Non-AC Sleeper 2+1", "name_plate_text": "Hans Shivpuri–Sheopur Via Karahal (Non-AC Sleeper 2+1)" }, { "operator_name": "Jain Bus Service", "route_from": "Shivpuri", "route_to": "Sheopur", "via": "Karahal • Pohri", "distance_km": 120, "departure_time": 1764923400000, "arrival_time": "12:00", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "Jain Shivpuri–Sheopur Via Karahal (AC Sleeper 2+1)" }, { "operator_name": "Sharad Travels", "route_from": "Shivpuri", "route_to": "Sheopur", "via": "Karahal • Pohri", "distance_km": 120, "departure_time": 1764936000000, "arrival_time": "15:35", "days_of_operation": "Daily", "bus_type": "Express Seater 3+2", "name_plate_text": "Sharad Shivpuri–Sheopur Via Karahal (Express Seater 3+2)" }, { "operator_name": "Raj Ratan Tours & Travels", "route_from": "Shivpuri", "route_to": "Sheopur", "via": "Karahal • Pohri", "distance_km": 120, "departure_time": 1764948600000, "arrival_time": "18:55", "days_of_operation": "Daily", "bus_type": "Volvo B11R Sleeper 2+1", "name_plate_text": "Raj Shivpuri–Sheopur Via Karahal (Volvo B11R Sleeper 2+1)" }, { "operator_name": "Maa Pitambra Travels", "route_from": "Shivpuri", "route_to": "Sheopur", "via": "Karahal • Pohri", "distance_km": 120, "departure_time": 1764957600000, "arrival_time": "21:20", "days_of_operation": "Daily", "bus_type": "AC Seater 2+2", "name_plate_text": "Maa Shivpuri–Sheopur Via Karahal (AC Seater 2+2)" }, { "operator_name": "DubeyJi Travels", "route_from": "Shivpuri", "route_to": "Sheopur", "via": "Karahal • Pohri", "distance_km": 120, "departure_time": 1764972000000, "arrival_time": "01:10 (+1)", "days_of_operation": "Daily", "bus_type": "AC Sleeper 2+1", "name_plate_text": "DubeyJi Shivpuri–Sheopur Via Karahal (AC Sleeper 2+1)" }
 ];
 
-const placesData = [
-    { name: "Madhav National Park", name_hi: "माधव राष्ट्रीय उद्यान", category: "Nature & Wildlife", category_hi: "प्रकृति और वन्यजीव", area: "Near Shivpuri", area_hi: "शिवपुरी के पास", shortDescription: "National park / tiger reserve with lakes, deer, leopards and rich birdlife.", shortDescription_hi: "नील गाय, तेंदुए और पक्षियों से समृद्ध राष्ट्रीय उद्यान।", tags: ["wildlife", "tiger-reserve", "safari", "birding", "family-outing"] },
-    { name: "Sakhya Sagar Lake", name_hi: "साख्य सागर झील", category: "Lake", category_hi: "झील", area: "Edge of Madhav National Park", area_hi: "माधव नेशनल पार्क के पास", shortDescription: "Scenic lake and Ramsar site, known for crocodiles, birds and sunset views.", shortDescription_hi: "मगरमच्छ और पक्षियों के लिए प्रसिद्ध सुंदर झील।", tags: ["lake", "sunset", "boating", "bird-watching"] },
-    { name: "Bhadaiya Kund", name_hi: "भदैया कुंड", category: "Waterfall / Spring", category_hi: "झरना / कुंड", area: "Outskirts of Shivpuri", area_hi: "शिवपुरी बाहरी क्षेत्र", shortDescription: "Natural spring and small waterfall, popular local picnic spot.", shortDescription_hi: "प्राकृतिक झरना, लोकप्रिय पिकनिक स्थल।", tags: ["waterfall", "picnic", "monsoon-spot", "nature"] },
-    { name: "Bhoora Khon Waterfall", name_hi: "भूरा खो झरना", category: "Waterfall", category_hi: "झरना", area: "Near Shivpuri (forest side)", area_hi: "शिवपुरी के पास (जंगल)", shortDescription: "Tall seasonal waterfall with greenery and a small Shiva temple nearby.", shortDescription_hi: "हरियाली और शिव मंदिर के पास मौसमी झरना।", tags: ["waterfall", "photography", "picnic", "offbeat"] },
-    { name: "Motisagar Talab Viewpoint", name_hi: "मोतीसागर तालाब व्यूपॉइंट", category: "Lake / Viewpoint", category_hi: "झील / नज़ारा", area: "Shivpuri town", area_hi: "शिवपुरी शहर", shortDescription: "Quiet lake with viewpoint, good for evening walk and sunset.", shortDescription_hi: "शाम की सैर और सूर्यास्त के लिए शांत झील।", tags: ["lake", "sunset", "evening-walk", "relax"] },
-    { name: "Royal Scindia Chhatris", name_hi: "सिंधिया छत्री", category: "Heritage Monument", category_hi: "स्मारक", area: "Shivpuri town", area_hi: "शिवपुरी शहर", shortDescription: "White marble royal cenotaphs with intricate carving and gardens.", shortDescription_hi: "सफेद संगमरमर की शाही छतरियां और उद्यान।", tags: ["heritage", "architecture", "photography", "evening-visit"] },
-    { name: "Madhav Vilas Palace", name_hi: "माधव विलास पैलेस", category: "Palace / Heritage", category_hi: "महल / विरासत", area: "Near Madhav National Park", area_hi: "माधव नेशनल पार्क के पास", shortDescription: "Former Scindia summer palace with pink European-style architecture.", shortDescription_hi: "गुलाबी यूरोपीय वास्तुकला वाला सिंधिया ग्रीष्मकालीन महल।", tags: ["palace", "royal", "architecture", "history"] },
-    { name: "George Castle", name_hi: "जॉर्ज कैसल", category: "Viewpoint / Heritage", category_hi: "नज़ारा / विरासत", area: "Inside Madhav National Park", area_hi: "माधव नेशनल पार्क के अंदर", shortDescription: "Hilltop hunting lodge with panoramic view of lakes and forest.", shortDescription_hi: "पहाड़ी की चोटी पर स्थित शिकारगाह (लॉज)।", tags: ["viewpoint", "sunset", "heritage", "inside-park"] },
-    { name: "Tatya Tope Memorial Park", name_hi: "तात्या टोपे स्मारक पार्क", category: "Memorial / Park", category_hi: "स्मारक / पार्क", area: "Shivpuri", area_hi: "शिवपुरी", shortDescription: "Park and statue dedicated to freedom fighter Tatya Tope.", shortDescription_hi: "स्वतंत्रता सेनानी तात्या टोपे को समर्पित पार्क।", tags: ["freedom-struggle", "park", "history"] },
-    { name: "Survaya ki Garhi", name_hi: "सुरवाया की गढ़ी", category: "Fort & Temple Complex", category_hi: "किला और मंदिर परिसर", area: "Near Narwar (~20 km from Shivpuri)", area_hi: "नरवर के पास", shortDescription: "Ruined fort with carved temples, monastery and stepwell.", shortDescription_hi: "नक्काशीदार मंदिरों और बावड़ी वाला पुराना किला।", tags: ["heritage", "temples", "architecture", "day-trip"] },
-    { name: "Narwar Fort", name_hi: "नरवर किला", category: "Hill Fort", category_hi: "पहाड़ी किला", area: "Narwar (~40 km from Shivpuri)", area_hi: "नरवर", shortDescription: "Large historic hilltop fort with expansive views.", shortDescription_hi: "विशाल ऐतिहासिक पहाड़ी किला।", tags: ["fort", "history", "viewpoint", "day-trip"] },
-    { name: "Siddheshwar Temple", name_hi: "सिद्धेश्वर मंदिर", category: "Temple", category_hi: "मंदिर", area: "Chhatri Road, Shivpuri", area_hi: "छत्री रोड, शिवपुरी", shortDescription: "Important Shiva temple, crowded during Mahashivratri fair.", shortDescription_hi: "महत्वपूर्ण शिव मंदिर।", tags: ["shiv-temple", "mahashivratri", "pilgrimage"] },
-    { name: "Banganga", name_hi: "बाणगंगा", category: "Holy Kund", category_hi: "पवित्र कुंड", area: "Near Shivpuri", area_hi: "शिवपुरी के पास", shortDescription: "Sacred water body associated with Siddheshwar and rituals.", shortDescription_hi: "सिद्धेश्वर और अनुष्ठानों से जुड़ा पवित्र जल निकाय।", tags: ["holy-water", "pilgrimage"] },
-    { name: "Panihar", name_hi: "पनिहार", category: "Spring / Pilgrimage", category_hi: "झरना / तीर्थ", area: "On road between Gwalior and Shivpuri", area_hi: "ग्वालियर और शिवपुरी के बीच", shortDescription: "Holy springs and ghats used for ritual bathing.", shortDescription_hi: "स्नान के लिए पवित्र झरने और घाट।", tags: ["spring", "bathing-ghat", "religious"] },
-    { name: "Madhav Sagar Lake", name_hi: "माधव सागर झील", category: "Lake", category_hi: "झील", area: "Madhav landscape, near Shivpuri", area_hi: "शिवपुरी", shortDescription: "Lake forming part of the park's scenic and wildlife habitat.", shortDescription_hi: "पार्क का सुंदर झील और वन्यजीव आवास।", tags: ["lake", "scenic", "wildlife-habitat"] },
-    { name: "Chhatri Road Market", name_hi: "छत्री रोड बाजार", category: "Market / Street", category_hi: "बाजार", area: "Shivpuri town", area_hi: "शिवपुरी शहर", shortDescription: "Busy street with shops, temples and local food stalls.", shortDescription_hi: "दुकानों और स्थानीय भोजन स्टालों वाला व्यस्त बाजार।", tags: ["market", "street-food", "shopping", "evening-walk"] },
-    { name: "Jhansi Road Food Belt", name_hi: "झांसी रोड फूड बेल्ट", category: "Market / Food Street", category_hi: "फूड स्ट्रीट", area: "Jhansi Road, Shivpuri", area_hi: "झांसी रोड, शिवपुरी", shortDescription: "Stretch known for Chinese-style street food and small shops.", shortDescription_hi: "चाइनीज स्ट्रीट फूड और छोटी दुकानों के लिए जाना जाता है।", tags: ["street-food", "chinese", "shopping", "local-vibe"] },
-    { name: "Circular Road Food Belt", name_hi: "सर्कुलर रोड फूड बेल्ट", category: "Food Street", category_hi: "फूड स्ट्रीट", area: "Circular Road, Shivpuri", area_hi: "सर्कुलर रोड, शिवपुरी", shortDescription: "Cluster of veg and non-veg restaurants and kebab joints.", shortDescription_hi: "शाकाहारी और मांसाहारी रेस्तरां का समूह।", tags: ["restaurants", "street-food", "evening", "local-favourite"] },
-    { name: "Kuno National Park", name_hi: "कूनो राष्ट्रीय उद्यान", category: "Nature & Wildlife (Nearby)", category_hi: "वन्यजीव (पास में)", area: "Approx 60–80 km from Shivpuri", area_hi: "शिवपुरी से 60-80 किमी", shortDescription: "Cheetah reintroduction site and wildlife reserve near Shivpuri.", shortDescription_hi: "चीता पुनर्वास स्थल और वन्यजीव अभ्यारण्य।", tags: ["wildlife", "cheetah", "day-trip"] },
-    { name: "Datia Palace", name_hi: "दतिया महल", category: "Heritage (Nearby)", category_hi: "विरासत (पास में)", area: "Datia (~100 km from Shivpuri)", area_hi: "दतिया", shortDescription: "Seven-storey palace with Rajput–Mughal architecture.", shortDescription_hi: "राजपूत-मुगल वास्तुकला वाला सात मंजिला महल।", tags: ["heritage", "palace", "day-trip"] }
-];
 
-const foodData = [
-    { name: "Hotel Sonchiraiya", name_hi: "होटल सोनचिरैया", category: "Restaurant & Family Dining", category_hi: "रेस्तरां और पारिवारिक भोजन", area: "Circular Road, Shivpuri", area_hi: "सर्कुलर रोड, शिवपुरी", shortDescription: "Family restaurant for Chinese and North Indian dishes.", shortDescription_hi: "चाइनीज और उत्तर भारतीय व्यंजनों के लिए पारिवारिक रेस्तरां।", approxPriceForTwo: 500, tags: ["north-indian", "chinese", "family"] },
-    { name: "Zayka Restaurant", name_hi: "ज़ायका रेस्तरां", category: "Restaurant & Family Dining", category_hi: "रेस्तरां और पारिवारिक भोजन", area: "Near Gwalior Bypass Circle, Shivpuri", area_hi: "ग्वालियर बाईपास सर्कल के पास", shortDescription: "Punjabi and Chinese food, popular mid-budget family spot.", shortDescription_hi: "पंजाबी और चाइनीज भोजन, लोकप्रिय मिड-बजट फैमिली स्पॉट।", approxPriceForTwo: 300, tags: ["punjabi", "north-indian", "chinese", "family"] },
-    { name: "Varun Restaurant Inn", name_hi: "वरुण रेस्तरां इन", category: "Restaurant & Family Dining", category_hi: "रेस्तरां और पारिवारिक भोजन", area: "Nai Ki Bagiya, Hospital Road, Shivpuri", area_hi: "नई की बगिया, हॉस्पिटल रोड", shortDescription: "Chinese and Punjabi options for travellers and locals.", shortDescription_hi: "यात्रियों और स्थानीय लोगों के लिए चाइनीज और पंजाबी विकल्प।", approxPriceForTwo: 350, tags: ["punjabi", "chinese", "family"] },
-    { name: "Shivpuri Club Cafe", name_hi: "शिवपुरी क्लब कैफे", category: "Restaurant / Casual Dining", category_hi: "रेस्तरां / कैजुअल डाइनिंग", area: "Main Road, Shivpuri", area_hi: "मेन रोड, शिवपुरी", shortDescription: "Casual dining with mixed menu and good ambience.", shortDescription_hi: "अच्छे माहौल और मिश्रित मेनू के साथ कैजुअल डाइनिंग।", approxPriceForTwo: 600, tags: ["north-indian", "snacks", "family", "friends"] },
-    { name: "Galaxy Restaurant", name_hi: "गैलेक्सी रेस्तरां", category: "Multi-cuisine Restaurant", category_hi: "मल्टी-कुजीन रेस्तरां", area: "Shivpuri Locality", area_hi: "शिवपुरी", shortDescription: "South Indian, North Indian and Chinese in family setting.", shortDescription_hi: "पारिवारिक सेटिंग में दक्षिण भारतीय, उत्तर भारतीय और चाइनीज।", approxPriceForTwo: 200, tags: ["south-indian", "north-indian", "chinese", "family"] },
-    { name: "Nanii Treats", name_hi: "नानी ट्रीट (Nanii Treats)", category: "Street Food & North Indian", category_hi: "स्ट्रीट फूड और उत्तर भारतीय", area: "Shivpuri", area_hi: "शिवपुरी", shortDescription: "Budget-friendly North Indian meals and snacks.", shortDescription_hi: "बजट के अनुकूल उत्तर भारतीय भोजन और नाश्ता।", approxPriceForTwo: 200, tags: ["street-food", "north-indian", "budget"] },
-    { name: "Desi Planet", name_hi: "देसी प्लैनेट", category: "Fast Food & Momos", category_hi: "फास्ट फूड और मोमोज", area: "Shivpuri", area_hi: "शिवपुरी", shortDescription: "Momos and fast food for quick bites.", shortDescription_hi: "क्विक बाइट्स के लिए मोमोज और फास्ट फूड।", approxPriceForTwo: 200, tags: ["fast-food", "momos", "street-food"] },
-    { name: "Hotel That Baat", name_hi: "होटल ठाठ बात", category: "Street Food / North Indian", category_hi: "स्ट्रीट फूड / उत्तर भारतीय", area: "Shivpuri", area_hi: "शिवपुरी", shortDescription: "Street-style North Indian dishes and beverages.", shortDescription_hi: "स्ट्रीट-स्टाइल उत्तर भारतीय व्यंजन और पेय।", approxPriceForTwo: 400, tags: ["north-indian", "street-food"] },
-    { name: "Manoj Nashta Corner", name_hi: "मनोज नाश्ता कॉर्नर", category: "Street Food & Breakfast", category_hi: "स्ट्रीट फूड और नाश्ता", area: "Shivpuri", area_hi: "शिवपुरी", shortDescription: "Popular for nashta items like poha, kachori and jalebi.", shortDescription_hi: "पोहा, कचौरी और जलेबी जैसे नाश्ते के लिए लोकप्रिय।", approxPriceForTwo: 150, tags: ["breakfast", "street-food", "snacks"] },
-    { name: "Shiva's Cafe", name_hi: "शिवा कैफे", category: "Cafe & Restaurant", category_hi: "कैफे और रेस्तरां", area: "Physical College Road, Shivpuri", area_hi: "फिजिकल कॉलेज रोड", shortDescription: "Cafe-style hangout with coffee and snacks.", shortDescription_hi: "कॉफी और नाश्ते के साथ कैफे-स्टाइल हैंगआउट।", approxPriceForTwo: 400, tags: ["cafe", "coffee", "snacks", "college-crowd"] },
-    { name: "Hum Tum Aur Chai", name_hi: "हम तुम और चाय", category: "Tea Cafe", category_hi: "टी कैफे", area: "In front of Science College, Kamla Ganj", area_hi: "साइंस कॉलेज के सामने, कमला गंज", shortDescription: "Chai-focused cafe with light snacks.", shortDescription_hi: "हल्के नाश्ते के साथ चाय-केंद्रित कैफे।", approxPriceForTwo: 250, tags: ["chai", "cafe", "snacks"] },
-    { name: "MP33 Cafe", name_hi: "MP33 कैफे", category: "Cafe & Fast Food", category_hi: "कैफे और फास्ट फूड", area: "Shivpuri", area_hi: "शिवपुरी", shortDescription: "Urban cafe serving fast food, chaats and cheesy dishes.", shortDescription_hi: "फास्ट फूड, चाट और लजीज व्यंजन परोसने वाला अर्बन कैफे।", approxPriceForTwo: 300, tags: ["cafe", "fast-food", "friends"] },
-    { name: "Lakapse Cafe & Lounge", name_hi: "लाकाप्स कैफे और लाउंज", category: "Cafe", category_hi: "कैफे", area: "Shivpuri", area_hi: "शिवपुरी", shortDescription: "Lounge-style cafe for coffee and snacks.", shortDescription_hi: "कॉफी और नाश्ते के लिए लाउंज-स्टाइल कैफे।", approxPriceForTwo: 400, tags: ["cafe", "coffee", "snacks"] },
-    { name: "Foodose Cafe", name_hi: "फूडोज़ कैफे", category: "Cafe / Coffeehouse", category_hi: "कैफे / कॉफीहाउस", area: "Shivpuri", area_hi: "शिवपुरी", shortDescription: "Coffeehouse with light cafe menu.", shortDescription_hi: "हल्के कैफे मेनू वाला कॉफीहाउस।", approxPriceForTwo: 350, tags: ["coffee", "cafe", "snacks"] },
-    { name: "Suman Bakery", name_hi: "सुमन बेकरी", category: "Bakery & Cake Shop", category_hi: "बेकरी और केक शॉप", area: "Lakshmibai Road / Krishnapuram Colony", area_hi: "लक्ष्मीबाई रोड / कृष्णापुरम कॉलोनी", shortDescription: "Cakes, pastries, pizza and baked snacks.", shortDescription_hi: "केक, पेस्ट्री, पिज्जा और बेक्ड स्नैक्स।", approxPriceForTwo: 300, tags: ["bakery", "cakes", "pastries"] },
-    { name: "Mahakal Bakery", name_hi: "महाकाल बेकरी", category: "Bakery & Cake Shop", category_hi: "बेकरी और केक शॉप", area: "Ward 26, Mela Ground, Jawahar Colony", area_hi: "जवाहर कॉलोनी", shortDescription: "Local bakery known for fresh morning products.", shortDescription_hi: "ताजा सुबह के उत्पादों के लिए जानी जाने वाली स्थानीय बेकरी।", approxPriceForTwo: 250, tags: ["bakery", "cakes", "snacks"] },
-    { name: "Mahadev Bakery", name_hi: "महादेव बेकरी", category: "Bakery & Cake Shop", category_hi: "बेकरी और केक शॉप", area: "Indira Colony, Shivpuri", area_hi: "इंदिरा कॉलोनी", shortDescription: "Neighbourhood bakery for cakes and baked goods.", shortDescription_hi: "केक और बेक्ड सामानों के लिए पड़ोस की बेकरी।", approxPriceForTwo: 250, tags: ["bakery", "cakes"] },
-    { name: "Kapil Juice Store", name_hi: "कपिल जूस स्टोर", category: "Juice & Shakes", category_hi: "जूस और शेक", area: "Shivpuri", area_hi: "शिवपुरी", shortDescription: "Fresh fruit juices and milkshakes.", shortDescription_hi: "ताजे फलों के रस और मिल्कशेक।", approxPriceForTwo: 200, tags: ["juice", "shakes", "cold-drinks"] }
-];
 
 
 
@@ -185,31 +143,29 @@ const loadMoreBtn = document.getElementById('load-more-btn');
 
 // --- PAGE UPDATES FOR LANGUAGE ---
 // --- PAGE UPDATES FOR LANGUAGE ---
-function updatePageLanguage(lang) {
-    // Re-render content if dynamic
-    if (typeof isTransportPage !== 'undefined' && isTransportPage) {
-        // Update Filters
-        if (filterFrom && filterFrom.options.length > 0) filterFrom.options[0].text = translations[lang].filter_from;
-        if (filterTo && filterTo.options.length > 0) filterTo.options[0].text = translations[lang].filter_to;
+// --- PAGE UPDATES FOR LANGUAGE ---
+function updateTransportLanguage(lang) {
+    const isHi = lang === 'hi';
+    const t = window.i18n.translations ? window.i18n.translations[lang] : {};
 
-        if (filterTime && filterTime.options.length > 0) {
-            filterTime.options[0].text = translations[lang].filter_time;
-            filterTime.options[1].text = translations[lang].filter_time_0_6;
-            filterTime.options[2].text = translations[lang].filter_time_6_12;
-            filterTime.options[3].text = translations[lang].filter_time_12_18;
-            filterTime.options[4].text = translations[lang].filter_time_18_24;
-        }
+    // Update Filters
+    if (filterFrom && filterFrom.options.length > 0) filterFrom.options[0].text = window.i18n.t('filter_from');
+    if (filterTo && filterTo.options.length > 0) filterTo.options[0].text = window.i18n.t('filter_to');
 
-        // Update static buttons
-        if (resetBtn) resetBtn.textContent = translations[lang].reset_btn;
-        if (loadMoreBtn) loadMoreBtn.textContent = translations[lang].load_more;
-
-        renderBuses(currentBuses.length > 0 ? currentBuses : busData);
-    } else if (typeof isPlacesPage !== 'undefined' && isPlacesPage) {
-        renderPlaces();
-    } else if (typeof isFoodPage !== 'undefined' && isFoodPage) {
-        renderFood();
+    if (filterTime && filterTime.options.length > 0) {
+        filterTime.options[0].text = window.i18n.t('filter_time');
+        filterTime.options[1].text = window.i18n.t('filter_time_0_6');
+        filterTime.options[2].text = window.i18n.t('filter_time_6_12');
+        filterTime.options[3].text = window.i18n.t('filter_time_12_18');
+        filterTime.options[4].text = window.i18n.t('filter_time_18_24');
     }
+
+    // Update static buttons
+    if (resetBtn) resetBtn.textContent = window.i18n.t('reset_btn');
+    if (loadMoreBtn) loadMoreBtn.textContent = window.i18n.t('load_more');
+
+    // Re-render buses
+    renderBuses(currentBuses.length > 0 ? currentBuses : busData);
 }
 
 function renderBuses(buses, append = false) {
@@ -249,7 +205,7 @@ function renderBuses(buses, append = false) {
 
 
     sliceToRender.forEach(bus => {
-        const isHi = currentLang === 'hi';
+        const isHi = window.i18n.lang === 'hi';
 
         // Translate Fields
         let from = bus.route_from;
@@ -328,10 +284,12 @@ function applyFilters() {
     if (resetBtn) {
         const hasFilters = fromVal !== "" || toVal !== "" || timeVal !== "";
         if (hasFilters) {
-            resetBtn.textContent = isHi ? "रीसेट" : "Reset Filters"; // Simple toggle logic handled here or updatePageLanguage
+            resetBtn.textContent = window.i18n.t('reset_btn_reset');
+
             resetBtn.classList.add("reset-mode");
         } else {
-            resetBtn.textContent = isHi ? "खोजें" : "Search Buses"; // Fallback mostly, but dynamic update handles main text
+            resetBtn.textContent = window.i18n.t('reset_btn');
+
             resetBtn.classList.remove("reset-mode");
         }
     }
@@ -355,141 +313,11 @@ function applyFilters() {
     renderBuses(filtered);
 }
 
-// Render Places
-function renderPlaces(places = placesData) {
-    grid.innerHTML = '';
-    visibleCount = ITEMS_PER_PAGE;
-    loadMoreContainer.style.display = 'none';
+// Render Places - REMOVED
 
-    const isHi = currentLang === 'hi';
-    const noPlacesText = isHi ? "कोई जगह नहीं मिली।" : "No places found.";
+// Render Food - REMOVED
 
-    if (places.length === 0) {
-        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">${noPlacesText}</p>`;
-        return;
-    }
-
-    places.forEach(place => {
-        const name = isHi ? (place.name_hi || place.name) : place.name;
-        const category = isHi ? (place.category_hi || place.category) : place.category;
-        const area = isHi ? (place.area_hi || place.area) : place.area;
-        const desc = isHi ? (place.shortDescription_hi || place.shortDescription) : place.shortDescription;
-
-        const card = document.createElement('div');
-        card.className = 'place-card';
-
-        const shareText = `📍 *${name}*\n\n${desc}\n\nCategory: ${category}\nArea: ${area}\n\nExplore more on: https://shivpurilocal.in/places`;
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-
-        card.innerHTML = `
-            <div class="place-content">
-                <span class="place-cat">${category}</span>
-                <h3 class="place-name">${name}</h3>
-                <p class="place-area">📍 ${area}</p>
-                <p class="place-desc">${desc}</p>
-                
-                <div class="place-tags">
-                    ${place.tags.slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('')}
-                </div>
-
-                <div class="card-actions">
-                    <a href="${whatsappUrl}" target="_blank" class="share-btn">${isHi ? "साझा करें" : "Share"}</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' Shivpuri')}" target="_blank" class="map-btn">${isHi ? "मानचित्र" : "Map"}</a>
-                </div>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
-}
-
-// Render Food
-function renderFood(food = foodData) {
-    grid.innerHTML = '';
-    visibleCount = ITEMS_PER_PAGE;
-    loadMoreContainer.style.display = 'none';
-
-    const isHi = currentLang === 'hi';
-    const noFoodText = isHi ? "कोई खाने की जगह नहीं मिली।" : "No food spots found.";
-
-    if (food.length === 0) {
-        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">${noFoodText}</p>`;
-        return;
-    }
-
-    food.forEach(item => {
-        const name = isHi ? (item.name_hi || item.name) : item.name;
-        const category = isHi ? (item.category_hi || item.category) : item.category;
-        const area = isHi ? (item.area_hi || item.area) : item.area;
-        const desc = isHi ? (item.shortDescription_hi || item.shortDescription) : item.shortDescription;
-
-        const card = document.createElement('div');
-        card.className = 'food-card';
-
-        const shareText = `🍽️ *${name}*\n\n${desc}\n\nCategory: ${category}\nArea: ${area}\nPrice for 2: ₹${item.approxPriceForTwo}\n\nExplore more on: https://shivpurilocal.in/food`;
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-
-        card.innerHTML = `
-            <div class="food-content">
-                <span class="food-cat">${category}</span>
-                <h3 class="food-name">${name}</h3>
-                <p class="food-area">📍 ${area}</p>
-                <p class="food-price">💳 ₹${item.approxPriceForTwo} for two</p>
-                <p class="food-desc">${desc}</p>
-
-                <div class="food-tags">
-                    ${item.tags.slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('')}
-                </div>
-
-                <div class="card-actions">
-                    <a href="${whatsappUrl}" target="_blank" class="share-btn">${isHi ? "साझा करें" : "Share"}</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' Shivpuri')}" target="_blank" class="map-btn">${isHi ? "मानचित्र" : "Map"}</a>
-                </div>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
-}
-
-// Show Category
-function showCategory(category) {
-    currentCategory = category;
-
-    // Hide category selection
-    categorySelection.style.display = 'none';
-
-    // Update nav active state
-    document.querySelectorAll('.main-nav a').forEach(link => {
-        link.classList.remove('active');
-        if (link.dataset.category === category) {
-            link.classList.add('active');
-        }
-    });
-
-    // Show/hide sections based on category
-    if (category === 'transport') {
-        busScheduleContainer.style.display = 'block';
-        emergencySection.style.display = 'block';
-        document.getElementById('hero-title').textContent = 'Local Bus Schedule';
-        document.getElementById('hero-desc').textContent = 'Find the best route to your destination in Shivpuri.';
-        renderBuses(busData);
-    } else if (category === 'places') {
-        busScheduleContainer.style.display = 'block';
-        emergencySection.style.display = 'none';
-        document.getElementById('hero-title').textContent = 'Explore Places';
-        document.getElementById('hero-desc').textContent = 'Discover the best attractions in Shivpuri.';
-        // Hide filters for places
-        document.querySelector('.search-filter-bar').style.display = 'none';
-        renderPlaces();
-    } else if (category === 'food') {
-        busScheduleContainer.style.display = 'block';
-        emergencySection.style.display = 'none';
-        document.getElementById('hero-title').textContent = 'Food & Dining';
-        document.getElementById('hero-desc').textContent = 'Find the best restaurants and cafes in Shivpuri.';
-        // Hide filters for food
-        document.querySelector('.search-filter-bar').style.display = 'none';
-        renderFood();
-    }
-}
+// Show Category - REMOVED
 
 // Toast Notification Logic
 function showToast(message) {
@@ -510,65 +338,64 @@ function showToast(message) {
 
 // --- PAGE INITIALIZATION LOGIC ---
 
-// Detect Page
-const isTransportPage = document.body.classList.contains('page-transport');
-const isPlacesPage = document.body.classList.contains('page-places');
-const isFoodPage = document.body.classList.contains('page-food');
+function initTransport() {
+    // Re-grab DOM elements as they are new after swap
+    const filterFrom = document.getElementById('filter-from');
+    const filterTo = document.getElementById('filter-to');
+    const filterTime = document.getElementById('filter-time');
+    const resetBtn = document.getElementById('reset-btn');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const grid = document.getElementById('schedule-grid'); // Update global if needed, but better to use local or re-query
 
-// Global initializers
-if (typeof updateLanguage === 'function') {
-    // common.js handles language init
-}
+    if (filterFrom) {
+        populateDropdowns();
+        renderBuses(busData);
 
-// Page Specific Init
-if (isTransportPage) {
-    populateDropdowns();
-    renderBuses(busData);
+        filterFrom.addEventListener('change', applyFilters);
+        filterTo.addEventListener('change', applyFilters);
+        filterTime.addEventListener('change', applyFilters);
 
-    // Event Listeners for Transport
-    // Event Listeners for Transport
-    if (filterFrom) filterFrom.addEventListener('change', applyFilters);
-    if (filterTo) filterTo.addEventListener('change', applyFilters);
-    if (filterTime) filterTime.addEventListener('change', applyFilters);
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                if (resetBtn.classList.contains('reset-mode')) {
+                    filterFrom.value = '';
+                    filterTo.value = '';
+                    filterTime.value = '';
+                    applyFilters();
+                } else {
+                    if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        }
 
-    if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
-            if (resetBtn.classList.contains('reset-mode')) {
-                filterFrom.value = '';
-                filterTo.value = '';
-                filterTime.value = '';
-                applyFilters();
-            } else {
-                // Search Mode: Scroll to buses
-                const grid = document.getElementById('schedule-grid');
-                if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        });
-    }
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => {
+                visibleCount += ITEMS_PER_PAGE;
+                renderBuses(currentBuses, true);
+            });
+        }
 
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', () => {
-            visibleCount += ITEMS_PER_PAGE;
-            renderBuses(currentBuses, true);
-        });
+        // Initial Lang Update
+        updateTransportLanguage(window.i18n.lang);
     }
 }
 
-if (isPlacesPage) {
-    renderPlaces();
-}
+// Listen for Router Page Load
+document.addEventListener('page-loaded', (e) => {
+    if (e.detail.page === '/transport') {
+        initTransport();
+    }
+});
 
-if (isFoodPage) {
-    renderFood();
-}
+// Listen for Language Changes
+window.addEventListener('lang-changed', (e) => {
+    // Only update if we are on transport page (simple check: if filterFrom exists)
+    if (document.getElementById('filter-from')) {
+        updateTransportLanguage(e.detail.lang);
+    }
+});
 
-// Helper to keep Load More working correctly in Transport
-function getCurrentFilteredBuses() {
-    // Re-use applyFitlters logic but return data? 
-    // Actually applyFilters calls renderBuses. 
-    // renderBuses uses visibleCount.
-    return busData; // placeholder if needed
+// Initial Check (in case loaded directly)
+if (window.location.pathname === '/transport') {
+    initTransport();
 }
-
-// Init Language (if not done by common.js)
-// updateLanguage(currentLang);
