@@ -423,17 +423,19 @@ function tryInitTransport() {
     const path = window.location.pathname;
     if (path === '/transport' || path === '/transport.html') {
         console.log('[Transport] Attempting to initialize');
-        // Use setTimeout to ensure DOM is fully ready
-        setTimeout(() => {
-            initTransport();
-        }, 0);
+        // Use requestAnimationFrame to ensure DOM is fully rendered
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                initTransport();
+            });
+        });
     }
 }
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', tryInitTransport);
 } else {
-    // DOM already loaded, but still use setTimeout to ensure script execution order
+    // DOM already loaded, but still use RAF to ensure rendering is complete
     tryInitTransport();
 }
 

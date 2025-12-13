@@ -102,17 +102,19 @@ function tryInitPlaces() {
     const path = window.location.pathname;
     if (path === '/places' || path === '/places.html') {
         console.log('[Places] Attempting to initialize');
-        // Use setTimeout to ensure DOM is fully ready
-        setTimeout(() => {
-            initPlaces();
-        }, 0);
+        // Use requestAnimationFrame to ensure DOM is fully rendered
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                initPlaces();
+            });
+        });
     }
 }
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', tryInitPlaces);
 } else {
-    // DOM already loaded, but still use setTimeout to ensure script execution order
+    // DOM already loaded, but still use RAF to ensure rendering is complete
     tryInitPlaces();
 }
 

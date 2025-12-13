@@ -105,17 +105,19 @@ function tryInitFood() {
     const path = window.location.pathname;
     if (path === '/food' || path === '/food.html') {
         console.log('[Food] Attempting to initialize');
-        // Use setTimeout to ensure DOM is fully ready
-        setTimeout(() => {
-            initFood();
-        }, 0);
+        // Use requestAnimationFrame to ensure DOM is fully rendered
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                initFood();
+            });
+        });
     }
 }
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', tryInitFood);
 } else {
-    // DOM already loaded, but still use setTimeout to ensure script execution order
+    // DOM already loaded, but still use RAF to ensure rendering is complete
     tryInitFood();
 }
 
