@@ -398,13 +398,17 @@ window.addEventListener('lang-changed', (e) => {
 // Initial Check (in case loaded directly) - Wait for DOM
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        if (window.location.pathname === '/transport') {
+        const path = window.location.pathname;
+        if (path === '/transport' || path === '/transport.html') {
+            console.log('[Transport] DOM loaded, initializing');
             initTransport();
         }
     });
 } else {
     // DOM already loaded
-    if (window.location.pathname === '/transport') {
+    const path = window.location.pathname;
+    if (path === '/transport' || path === '/transport.html') {
+        console.log('[Transport] DOM already ready, initializing');
         initTransport();
     }
 }

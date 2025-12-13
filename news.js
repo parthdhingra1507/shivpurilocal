@@ -110,13 +110,17 @@ window.addEventListener('page-loaded', (e) => {
 // Initial Check (if loaded directly) - Wait for DOM
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        if (window.location.pathname === '/news') {
+        const path = window.location.pathname;
+        if (path === '/news' || path === '/news.html') {
+            console.log('[News] DOM loaded, initializing');
             NewsApp.init();
         }
     });
 } else {
     // DOM already loaded
-    if (window.location.pathname === '/news') {
+    const path = window.location.pathname;
+    if (path === '/news' || path === '/news.html') {
+        console.log('[News] DOM already ready, initializing');
         NewsApp.init();
     }
 }

@@ -76,8 +76,11 @@ function renderPlaces() {
 }
 
 function initPlaces() {
-    // Only run if we are on the places page
-    if (document.querySelector('.page-places') || window.location.pathname.includes('/places')) {
+    const path = window.location.pathname;
+    const shouldInit = document.querySelector('.page-places') || path === '/places' || path === '/places.html';
+
+    if (shouldInit) {
+        console.log('[Places] Initializing places page');
         renderPlaces();
     }
 }
@@ -97,13 +100,17 @@ window.addEventListener('lang-changed', () => {
 // Direct Load - Wait for DOM
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        if (window.location.pathname === '/places') {
+        const path = window.location.pathname;
+        if (path === '/places' || path === '/places.html') {
+            console.log('[Places] DOM loaded, initializing');
             initPlaces();
         }
     });
 } else {
     // DOM already loaded
-    if (window.location.pathname === '/places') {
+    const path = window.location.pathname;
+    if (path === '/places' || path === '/places.html') {
+        console.log('[Places] DOM already ready, initializing');
         initPlaces();
     }
 }

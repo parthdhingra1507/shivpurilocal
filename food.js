@@ -69,7 +69,11 @@ function renderFood() {
 }
 
 function initFood() {
-    if (document.querySelector('.page-food') || window.location.pathname.includes('/food')) {
+    const path = window.location.pathname;
+    const shouldInit = document.querySelector('.page-food') || path === '/food' || path === '/food.html';
+
+    if (shouldInit) {
+        console.log('[Food] Initializing food page');
         renderFood();
     }
 }
@@ -89,13 +93,17 @@ window.addEventListener('lang-changed', () => {
 // Direct Load - Wait for DOM
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        if (window.location.pathname === '/food') {
+        const path = window.location.pathname;
+        if (path === '/food' || path === '/food.html') {
+            console.log('[Food] DOM loaded, initializing');
             initFood();
         }
     });
 } else {
     // DOM already loaded
-    if (window.location.pathname === '/food') {
+    const path = window.location.pathname;
+    if (path === '/food' || path === '/food.html') {
+        console.log('[Food] DOM already ready, initializing');
         initFood();
     }
 }
