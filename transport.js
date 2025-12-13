@@ -395,7 +395,16 @@ window.addEventListener('lang-changed', (e) => {
     }
 });
 
-// Initial Check (in case loaded directly)
-if (window.location.pathname === '/transport') {
-    initTransport();
+// Initial Check (in case loaded directly) - Wait for DOM
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.location.pathname === '/transport') {
+            initTransport();
+        }
+    });
+} else {
+    // DOM already loaded
+    if (window.location.pathname === '/transport') {
+        initTransport();
+    }
 }

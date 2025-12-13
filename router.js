@@ -103,7 +103,7 @@ class Router {
 
     runPageScripts(url) {
         // Dispatch event so other scripts can re-init
-        const path = url === '/' ? 'home' : url.replace('/', '');
+        const path = url;
         const event = new CustomEvent('page-loaded', { detail: { page: path } });
         window.dispatchEvent(event);
     }

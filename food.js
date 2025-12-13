@@ -26,7 +26,7 @@ function renderFood() {
 
     grid.innerHTML = '';
 
-    const isHi = window.i18n.lang === 'hi';
+    const isHi = window.i18n ? window.i18n.lang === 'hi' : false;
     const noFoodText = isHi ? "कोई खाने की जगह नहीं मिली।" : "No food spots found.";
 
     if (foodData.length === 0) {
@@ -86,7 +86,16 @@ window.addEventListener('lang-changed', () => {
     initFood();
 });
 
-// Direct Load
-if (window.location.pathname === '/food') {
-    initFood();
+// Direct Load - Wait for DOM
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.location.pathname === '/food') {
+            initFood();
+        }
+    });
+} else {
+    // DOM already loaded
+    if (window.location.pathname === '/food') {
+        initFood();
+    }
 }

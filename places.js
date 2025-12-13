@@ -34,7 +34,7 @@ function renderPlaces() {
 
     grid.innerHTML = '';
 
-    const isHi = window.i18n.lang === 'hi';
+    const isHi = window.i18n ? window.i18n.lang === 'hi' : false;
     const noPlacesText = isHi ? "कोई जगह नहीं मिली।" : "No places found.";
 
     if (placesData.length === 0) {
@@ -94,7 +94,16 @@ window.addEventListener('lang-changed', () => {
     initPlaces();
 });
 
-// Direct Load
-if (window.location.pathname === '/places') {
-    initPlaces();
+// Direct Load - Wait for DOM
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.location.pathname === '/places') {
+            initPlaces();
+        }
+    });
+} else {
+    // DOM already loaded
+    if (window.location.pathname === '/places') {
+        initPlaces();
+    }
 }

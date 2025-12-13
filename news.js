@@ -102,12 +102,21 @@ const NewsApp = {
 
 // Listen for Router Page Load
 window.addEventListener('page-loaded', (e) => {
-    if (e.detail.page === 'news') {
+    if (e.detail.page === '/news') {
         NewsApp.init();
     }
 });
 
-// Initial Check (if loaded directly)
-if (window.location.pathname === '/news') {
-    NewsApp.init();
+// Initial Check (if loaded directly) - Wait for DOM
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.location.pathname === '/news') {
+            NewsApp.init();
+        }
+    });
+} else {
+    // DOM already loaded
+    if (window.location.pathname === '/news') {
+        NewsApp.init();
+    }
 }
