@@ -23,13 +23,8 @@ const busTypeTranslations = {
     "Volvo B11R Sleeper 2+1": "वोल्वो B11R स्लीपर 2+1"
 };
 
-const grid = document.getElementById('schedule-grid');
-const searchInput = document.getElementById('search-input');
-const searchBtn = document.getElementById('search-btn');
-const filterFrom = document.getElementById('filter-from');
-const filterTo = document.getElementById('filter-to');
-const filterTime = document.getElementById('filter-time');
-const resetBtn = document.getElementById('reset-btn');
+// DOM elements will be queried inside initTransport() when DOM is ready
+
 
 function formatTime(timestamp) {
     const date = new Date(timestamp);
@@ -58,6 +53,11 @@ function formatTimeString(timeStr) {
 }
 
 function populateDropdowns() {
+    const filterFrom = document.getElementById('filter-from');
+    const filterTo = document.getElementById('filter-to');
+
+    if (!filterFrom || !filterTo) return;
+
     const allFromCities = [...new Set(busData.map(bus => bus.route_from))];
     const allToCities = [...new Set(busData.map(bus => bus.route_to))];
 
@@ -94,6 +94,9 @@ function populateDropdowns() {
 }
 
 function updateFromDropdown(cities, selectedValue) {
+    const filterFrom = document.getElementById('filter-from');
+    if (!filterFrom) return;
+
     const currentValue = selectedValue || filterFrom.value;
     filterFrom.innerHTML = '<option value="">From City</option>';
 
@@ -112,6 +115,9 @@ function updateFromDropdown(cities, selectedValue) {
 }
 
 function updateToDropdown(cities, selectedValue) {
+    const filterTo = document.getElementById('filter-to');
+    if (!filterTo) return;
+
     const currentValue = selectedValue || filterTo.value;
     filterTo.innerHTML = '<option value="">To City</option>';
 
@@ -145,6 +151,12 @@ const loadMoreBtn = document.getElementById('load-more-btn');
 // --- PAGE UPDATES FOR LANGUAGE ---
 // --- PAGE UPDATES FOR LANGUAGE ---
 function updateTransportLanguage(lang) {
+    const filterFrom = document.getElementById('filter-from');
+    const filterTo = document.getElementById('filter-to');
+    const filterTime = document.getElementById('filter-time');
+    const resetBtn = document.getElementById('reset-btn');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+
     const isHi = lang === 'hi';
     const t = window.i18n.translations ? window.i18n.translations[lang] : {};
 
@@ -169,6 +181,10 @@ function updateTransportLanguage(lang) {
 }
 
 function renderBuses(buses, append = false) {
+    const grid = document.getElementById('schedule-grid');
+    const loadMoreContainer = document.getElementById('load-more-container');
+    if (!grid) return;
+
     if (!append) {
         grid.innerHTML = '';
         visibleCount = ITEMS_PER_PAGE;
@@ -177,7 +193,7 @@ function renderBuses(buses, append = false) {
 
     if (buses.length === 0) {
         grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No buses found matching your search.</p>';
-        loadMoreContainer.style.display = 'none';
+        if (loadMoreContainer) loadMoreContainer.style.display = 'none';
         return;
     }
 
@@ -276,6 +292,13 @@ function renderBuses(buses, append = false) {
 }
 
 function applyFilters() {
+    const filterFrom = document.getElementById('filter-from');
+    const filterTo = document.getElementById('filter-to');
+    const filterTime = document.getElementById('filter-time');
+    const resetBtn = document.getElementById('reset-btn');
+
+    if (!filterFrom || !filterTo || !filterTime) return;
+
     const fromVal = filterFrom.value;
     const toVal = filterTo.value;
     const timeVal = filterTime.value;
