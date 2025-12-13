@@ -11,6 +11,10 @@
         {
             "source": "/food",
             "destination": "/food.html"
+        },
+        {
+            "source": "/news",
+            "destination": "/news.html"
         }
     ],
     "cleanUrls": true
