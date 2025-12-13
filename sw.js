@@ -1,4 +1,4 @@
-const CACHE_VERSION = '20251211-2225'; // Simplified Architecture
+const CACHE_VERSION = '20251213-1348'; // Fixed chrome-extension caching error
 const CACHE_NAME = `shivpuri-local-${CACHE_VERSION}`;
 // 👆 Just update the timestamp above when deploying (format: YYYYMMDD-HHMM)
 const ASSETS = [
@@ -58,7 +58,12 @@ self.addEventListener('message', (event) => {
 
 // Fetch Event
 self.addEventListener('fetch', (event) => {
-    // 1. NETWORK ONLY for API requests (Never cache news)
+    // Skip non-HTTP(S) requests (chrome-extension://, etc.)
+    if (!event.request.url.startsWith('http')) {
+        return;
+    }
+
+    // NETWORK ONLY for API requests (Never cache news)
     if (event.request.url.includes('/api/')) {
         return; // Fallback to browser default (Network)
     }
