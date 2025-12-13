@@ -12,14 +12,29 @@ if ('serviceWorker' in navigator) {
     });
 
     window.addEventListener('load', () => {
+        // Clear old caches on load to ensure fresh start
+        caches.keys().then(cacheNames => {
+            const oldCaches = cacheNames.filter(name =>
+                name.startsWith('shivpuri-local-') &&
+                !name.includes('20251213-1401')
+            );
+            if (oldCaches.length > 0) {
+                console.log('[PWA] Clearing old caches:', oldCaches);
+                Promise.all(oldCaches.map(name => caches.delete(name)));
+            }
+        });
+
         navigator.serviceWorker.register('/sw.js')
             .then(registration => {
                 console.log('[PWA] Service Worker registered!', registration);
 
-                // Check for updates every 60 seconds
+                // Force immediate update check
+                registration.update();
+
+                // Check for updates every 30 seconds (more frequent)
                 setInterval(() => {
                     registration.update();
-                }, 60000);
+                }, 30000);
 
                 // Listen for updates
                 registration.addEventListener('updatefound', () => {
