@@ -42,12 +42,6 @@ const NewsApp = {
             card.className = 'news-card';
 
             const title = news.title || '';
-            const description = news.description || news.content || '';
-            // Truncate description to ~150 characters
-            const truncatedDesc = description.length > 150
-                ? description.substring(0, 150) + '...'
-                : description;
-
             const time = this.getRelativeTime(news.publishedAt);
             const source = news.source || (isHi ? 'समाचार' : 'News');
             const url = news.url || '#';
@@ -55,7 +49,7 @@ const NewsApp = {
             const shareText = isHi ? 'साझा करें' : 'Share';
             const readText = isHi ? 'पूरा पढ़ें' : 'Read More';
 
-            const whatsappMsg = `📰 *${title}*\n\n${truncatedDesc}\n\n🔗 ${url}\n\nvia shivpurilocal.in`;
+            const whatsappMsg = `📰 *${title}*\n\n🔗 ${url}\n\nvia shivpurilocal.in`;
             const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMsg)}`;
 
             card.innerHTML = `
@@ -65,7 +59,6 @@ const NewsApp = {
                         <span class="news-time">${time}</span>
                     </div>
                     <h3 class="news-title">${title}</h3>
-                    ${truncatedDesc ? `<p class="news-description">${truncatedDesc}</p>` : ''}
                     <div class="card-actions">
                         <a href="${whatsappUrl}" target="_blank" rel="noopener" class="share-btn">${shareText}</a>
                         <a href="${url}" target="_blank" rel="noopener" class="map-btn">${readText} ↗</a>
