@@ -1,16 +1,21 @@
-const CACHE_VERSION = '20251213-1348'; // Fixed chrome-extension caching error
+const CACHE_VERSION = '20251213-1401'; // Fixed asset caching and chrome-extension errors
 const CACHE_NAME = `shivpuri-local-${CACHE_VERSION}`;
 // 👆 Just update the timestamp above when deploying (format: YYYYMMDD-HHMM)
 const ASSETS = [
     '/',
     '/index.html',
-    '/transport',
-    '/places',
-    '/food',
-    '/news',
+    '/transport.html',
+    '/places.html',
+    '/food.html',
+    '/news.html',
     '/style.css',
-    '/script.js',
     '/common.js',
+    '/i18n.js',
+    '/router.js',
+    '/transport.js',
+    '/places.js',
+    '/food.js',
+    '/news.js',
     '/manifest.json',
     '/social-preview.png'
 ];
@@ -22,7 +27,11 @@ self.addEventListener('install', (event) => {
         caches.open(CACHE_NAME)
             .then((cache) => {
                 console.log('[SW] Caching assets');
-                return cache.addAll(ASSETS);
+                // Use addAll with error handling
+                return cache.addAll(ASSETS).catch((err) => {
+                    console.error('[SW] Failed to cache some assets:', err);
+                    // Continue anyway - don't block installation
+                });
             })
             .then(() => self.skipWaiting()) // Force activate immediately
     );
@@ -81,7 +90,12 @@ self.addEventListener('fetch', (event) => {
                     }
                     const responseToCache = response.clone();
                     caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseToCache);
+                        // Double-check URL scheme before caching
+                        if (event.request.url.startsWith('http')) {
+                            cache.put(event.request, responseToCache).catch((err) => {
+                                console.warn('[SW] Failed to cache:', event.request.url, err);
+                            });
+                        }
                     });
                     return response;
                 });
