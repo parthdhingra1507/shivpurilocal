@@ -994,6 +994,13 @@ body {
     line-height: 1.4;
 }
 
+.news-description {
+    font-size: 0.9rem;
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin: 0.25rem 0 0;
+}
+
 .news-content {
     font-size: 0.9rem;
     color: var(--gray-600);
