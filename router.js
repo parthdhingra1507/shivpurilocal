@@ -74,8 +74,13 @@ class Router {
                     // Re-run i18n
                     if (window.i18n) window.i18n.updateDOM();
 
-                    // Re-initialize Page Logic
-                    this.runPageScripts(url);
+                    // Wait for DOM to be rendered before initializing page scripts
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            // Re-initialize Page Logic
+                            this.runPageScripts(url);
+                        });
+                    });
 
                     // Fade in
                     currentContent.style.opacity = '1';
@@ -104,6 +109,7 @@ class Router {
     runPageScripts(url) {
         // Dispatch event so other scripts can re-init
         const path = url;
+        console.log('[Router] Dispatching page-loaded event for:', path);
         const event = new CustomEvent('page-loaded', { detail: { page: path } });
         window.dispatchEvent(event);
     }
