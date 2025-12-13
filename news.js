@@ -61,13 +61,58 @@ const NewsApp = {
                     <h3 class="news-title">${title}</h3>
                     <div class="card-actions">
                         <a href="${whatsappUrl}" target="_blank" rel="noopener" class="share-btn">${shareText}</a>
-                        <a href="${url}" target="_blank" rel="noopener" class="map-btn">${readText} ↗</a>
+                        <button class="map-btn" onclick="NewsApp.openArticle('${url.replace(/'/g, "\\'")}', '${title.replace(/'/g, "\\'")}')">
+                            ${readText} ↗
+                        </button>
                     </div>
                 </div>
             `;
             grid.appendChild(card);
         });
     },
+
+    openArticle(url, title) {
+        // Create modal if it doesn't exist
+        let modal = document.getElementById('article-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'article-modal';
+            modal.className = 'article-modal';
+            modal.innerHTML = `
+                <div class="article-modal-content">
+                    <div class="article-modal-header">
+                        <button class="article-back-btn" onclick="NewsApp.closeArticle()">
+                            ← Back to News
+                        </button>
+                        <h3 class="article-modal-title"></h3>
+                        <button class="article-close-btn" onclick="NewsApp.closeArticle()">✕</button>
+                    </div>
+                    <iframe class="article-iframe" frameborder="0" allowfullscreen></iframe>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Update modal content
+        const iframe = modal.querySelector('.article-iframe');
+        const modalTitle = modal.querySelector('.article-modal-title');
+
+        modalTitle.textContent = title;
+        iframe.src = url;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scroll
+    },
+
+    closeArticle() {
+        const modal = document.getElementById('article-modal');
+        if (modal) {
+            modal.classList.remove('active');
+            const iframe = modal.querySelector('.article-iframe');
+            iframe.src = ''; // Stop loading
+            document.body.style.overflow = ''; // Restore scroll
+        }
+    },
+
 
     async fetchNews() {
         const grid = document.getElementById('news-grid');
