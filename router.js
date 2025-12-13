@@ -5,31 +5,12 @@ class Router {
     }
 
     init() {
-        // Intercept clicks
-        document.addEventListener('click', (e) => {
-            const link = e.target.closest('a');
-            if (!link) return;
+        // Disable SPA navigation - use full page loads for reliability
+        // This ensures all page-specific JavaScript initializes correctly
 
-            const href = link.getAttribute('href');
-
-            // Ignore external links, anchors, or new tab links
-            if (!href ||
-                href.startsWith('http') ||
-                href.startsWith('//') ||
-                href.startsWith('#') ||
-                link.target === '_blank' ||
-                href.startsWith('mailto:') ||
-                href.startsWith('tel:')) {
-                return;
-            }
-
-            e.preventDefault();
-            this.navigate(href);
-        });
-
-        // Handle Back/Forward
+        // Still handle back/forward buttons
         window.addEventListener('popstate', (e) => {
-            this.loadPage(window.location.pathname, false);
+            window.location.reload();
         });
     }
 
