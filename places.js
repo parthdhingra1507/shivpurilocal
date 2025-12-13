@@ -66,8 +66,8 @@ function renderPlaces() {
                 </div>
 
                 <div class="card-actions">
-                    <a href="${whatsappUrl}" target="_blank" class="share-btn">${window.i18n.t('share') || 'Share'}</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' Shivpuri')}" target="_blank" class="map-btn">${window.i18n.t('map') || 'Map'}</a>
+                    <a href="${whatsappUrl}" target="_blank" class="share-btn">${window.i18n && window.i18n.t ? window.i18n.t('share') : 'Share'}</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' Shivpuri')}" target="_blank" class="map-btn">${window.i18n && window.i18n.t ? window.i18n.t('map') : 'Map'}</a>
                 </div>
             </div>
         `;

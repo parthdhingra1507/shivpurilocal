@@ -20,19 +20,27 @@ const foodData = [
 ];
 
 function renderFood() {
+    console.log('[Food] renderFood() called');
     // Similarly check for grid existence. It's likely sharing 'schedule-grid' in existing HTML.
     const grid = document.getElementById('food-grid') || document.getElementById('schedule-grid');
-    if (!grid) return;
+    console.log('[Food] Grid element:', grid);
+    if (!grid) {
+        console.error('[Food] Grid not found!');
+        return;
+    }
 
     grid.innerHTML = '';
 
     const isHi = window.i18n ? window.i18n.lang === 'hi' : false;
+    console.log('[Food] Language:', isHi ? 'Hindi' : 'English');
     const noFoodText = isHi ? "कोई खाने की जगह नहीं मिली।" : "No food spots found.";
 
     if (foodData.length === 0) {
         grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">${noFoodText}</p>`;
         return;
     }
+
+    console.log('[Food] Rendering', foodData.length, 'food items');
 
     foodData.forEach(item => {
         const name = isHi ? (item.name_hi || item.name) : item.name;
@@ -43,7 +51,7 @@ function renderFood() {
         const card = document.createElement('div');
         card.className = 'food-card';
 
-        const shareText = `🍽️ *${name}*\n\n${desc}\n\nCategory: ${category}\nArea: ${area}\nPrice for 2: ₹${item.approxPriceForTwo}\n\nExplore more on: https://shivpurilocal.in/food`;
+        const shareText = `🍽️ *${name}*\\n\\n${desc}\\n\\nCategory: ${category}\\nArea: ${area}\\nPrice for 2: ₹${item.approxPriceForTwo}\\n\\nExplore more on: https://shivpurilocal.in/food`;
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
         card.innerHTML = `
@@ -59,13 +67,15 @@ function renderFood() {
                 </div>
 
                 <div class="card-actions">
-                    <a href="${whatsappUrl}" target="_blank" class="share-btn">${window.i18n.t('share') || 'Share'}</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' Shivpuri')}" target="_blank" class="map-btn">${window.i18n.t('map') || 'Map'}</a>
+                    <a href="${whatsappUrl}" target="_blank" class="share-btn">${window.i18n && window.i18n.t ? window.i18n.t('share') : 'Share'}</a>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + ' Shivpuri')}" target="_blank" class="map-btn">${window.i18n && window.i18n.t ? window.i18n.t('map') : 'Map'}</a>
                 </div>
             </div>
         `;
         grid.appendChild(card);
     });
+
+    console.log('[Food] Rendering complete');
 }
 
 function initFood() {
