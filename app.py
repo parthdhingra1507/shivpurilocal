@@ -28,26 +28,58 @@ def generate_ai_summary(title, source, lang='en'):
     
     try:
         if lang == 'hi':
-            prompt = f"इस समाचार शीर्षक के आधार पर एक संक्षिप्त (50-80 शब्द) हिंदी सारांश लिखें। केवल सारांश दें, कोई अतिरिक्त टिप्पणी नहीं।\n\nशीर्षक: {title}\nस्रोत: {source}"
+            # Pure Hindi prompt - no English mixing
+            prompt = f"""आप एक समाचार लेखक हैं। नीचे दी गई समाचार शीर्षक को पढ़कर एक संक्षिप्त विवरण लिखें।
+
+नियम:
+- केवल शुद्ध हिंदी में लिखें (कोई अंग्रेजी शब्द नहीं)
+- 2-3 वाक्य में लिखें
+- केवल विवरण दें, कोई अतिरिक्त टिप्पणी नहीं
+
+शीर्षक: {title}
+स्रोत: {source}
+
+विवरण:"""
         else:
-            prompt = f"Based on this news headline, write a brief (2-3 sentence) factual summary of what this news might be about. Only provide the summary, no extra commentary.\n\nHeadline: {title}\nSource: {source}"
+            # Pure English prompt - clear and factual
+            prompt = f"""You are a news writer. Read the headline below and write a brief description.
+
+Rules:
+- Write in simple, clear English only
+- Write 2-3 sentences maximum
+- Be factual and informative
+- Only provide the description, no extra commentary
+
+Headline: {title}
+Source: {source}
+
+Description:"""
         
         response = requests.post(
             f"{GEMINI_API_URL}?key={GEMINI_API_KEY}",
             json={
                 "contents": [{"parts": [{"text": prompt}]}],
                 "generationConfig": {
-                    "temperature": 0.3,
-                    "maxOutputTokens": 150
+                    "temperature": 0.2,  # Lower temperature for more consistent output
+                    "maxOutputTokens": 100
                 }
             },
-            timeout=10
+            timeout=15
         )
         
         if response.status_code == 200:
             data = response.json()
             summary = data.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
-            return summary.strip()[:200]  # Limit to 200 chars
+            # Clean up the summary
+            summary = summary.strip()
+            # Remove any "Description:" prefix if AI included it
+            if summary.lower().startswith('description:'):
+                summary = summary[12:].strip()
+            if summary.startswith('विवरण:'):
+                summary = summary[7:].strip()
+            return summary[:200]  # Limit to 200 chars
+        else:
+            print(f"AI API error: {response.status_code}")
     except Exception as e:
         print(f"AI Summary error: {e}")
     
@@ -174,17 +206,25 @@ def fetch_news_for_lang(lang):
     unique.sort(key=lambda x: x.get('publishedAt', ''), reverse=True)
     top_articles = unique[:30]  # Top 30
     
-    # Generate AI summaries for articles without descriptions (limit to first 10 to save API calls)
+    # Generate AI summaries for ALL articles without good descriptions
     if GEMINI_API_KEY:
         print(f"🤖 Generating AI summaries for {lang} articles...")
         ai_count = 0
-        for article in top_articles[:10]:  # Only first 10 to stay within rate limits
-            if not article.get('description'):
+        for article in top_articles:
+            # Generate summary if no description OR if description looks like just headline+source
+            current_desc = article.get('description', '')
+            needs_summary = (
+                not current_desc or 
+                len(current_desc) < 50 or  # Too short
+                article['title'][:30].lower() in current_desc.lower()  # Just headline repeated
+            )
+            
+            if needs_summary:
                 summary = generate_ai_summary(article['title'], article['source'], lang)
-                if summary:
+                if summary and len(summary) > 30:
                     article['description'] = summary
                     ai_count += 1
-                time.sleep(0.5)  # Rate limit: small delay between API calls
+                time.sleep(0.3)  # Small delay between API calls
         print(f"✅ Generated {ai_count} AI summaries for {lang}")
     
     return top_articles
