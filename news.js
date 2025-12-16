@@ -42,6 +42,7 @@ const NewsApp = {
             card.className = 'news-card';
 
             const title = news.title || '';
+            const description = news.description || '';
             const time = this.getRelativeTime(news.publishedAt);
             const source = news.source || (isHi ? 'समाचार' : 'News');
             const url = news.url || '#';
@@ -52,6 +53,11 @@ const NewsApp = {
             const whatsappMsg = `📰 *${title}*\n\n🔗 ${url}\n\nvia shivpurilocal.in`;
             const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMsg)}`;
 
+            // Only show description if available
+            const descriptionHtml = description
+                ? `<p class="news-description">${description}</p>`
+                : '';
+
             card.innerHTML = `
                 <div class="news-body">
                     <div class="news-meta">
@@ -59,6 +65,7 @@ const NewsApp = {
                         <span class="news-time">${time}</span>
                     </div>
                     <h3 class="news-title">${title}</h3>
+                    ${descriptionHtml}
                     <div class="card-actions">
                         <a href="${whatsappUrl}" target="_blank" rel="noopener" class="share-btn">${shareText}</a>
                         <a href="${url}" target="_blank" rel="noopener" class="map-btn">${readText} ↗</a>

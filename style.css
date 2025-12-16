@@ -1513,9 +1513,12 @@ html.dark-mode .tagline,
 html.dark-mode .place-desc,
 html.dark-mode .food-desc,
 html.dark-mode .news-content,
+html.dark-mode .news-description,
 html.dark-mode .hero p {
     color: #a3a3a3;
-}/* ===================================
+}
+
+/* ===================================
    ARTICLE MODAL (IN-APP BROWSER)
    =================================== */
 
@@ -1671,6 +1674,7 @@ html.dark-mode .article-iframe {
         font-size: 18px;
     }
 }
+
 /* Article loading and blocked states */
 .article-loading {
     position: absolute;
