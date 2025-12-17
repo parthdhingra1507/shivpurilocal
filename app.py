@@ -167,6 +167,10 @@ def food():
 def news():
     return send_from_directory('.', 'news.html')
 
+@app.route('/forum')
+def forum():
+    return send_from_directory('.', 'forum.html')
+
 @app.route('/<path:path>')
 def static_files(path):
     return send_from_directory('.', path)

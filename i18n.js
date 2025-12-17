@@ -6,6 +6,7 @@ const translations = {
         nav_places: "Places",
         nav_food: "Food",
         nav_news: "News",
+        nav_forum: "Forum",
         hero_title: "Welcome to Shivpuri",
         hero_desc: "Your complete guide to local bus schedules, top places, and best food spots.",
         cat_transport_title: "Bus Schedule",
@@ -41,7 +42,12 @@ const translations = {
         no_food: "No food spots found.",
         share: "Share",
         map: "Map",
-        read: "Read"
+        read: "Read",
+        // Forum Page
+        hero_forum_title: "Community Forum",
+        hero_forum_desc: "Connect with Shivpuri locals. Discuss, help, and share.",
+        start_discussion: "Start a Discussion",
+        post: "Post"
     },
     hi: {
         tagline: "शहर का विश्वकोश",
@@ -50,6 +56,7 @@ const translations = {
         nav_places: "स्थान",
         nav_food: "भोजन",
         nav_news: "समाचार",
+        nav_forum: "फोरम",
         hero_title: "शिवपुरी में आपका स्वागत है",
         hero_desc: "स्थानीय बस समय सारिणी, प्रमुख स्थानों और बेहतरीन भोजन स्थलों के लिए आपका पूरा गाइड।",
         cat_transport_title: "बस समय सारिणी",
@@ -85,7 +92,12 @@ const translations = {
         no_food: "कोई खाने की जगह नहीं मिली।",
         share: "साझा करें",
         map: "मानचित्र",
-        read: "पढ़ें"
+        read: "पढ़ें",
+        // Forum Page
+        hero_forum_title: "समुदाय फोरम",
+        hero_forum_desc: "शिवपुरी के लोगों से जुड़ें। चर्चा करें, मदद करें, साझा करें।",
+        start_discussion: "चर्चा शुरू करें",
+        post: "पोस्ट करें"
     }
 };
 

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Forum - Shivpuri Local</title>
+    <meta name="description"
+        content="Join the Shivpuri community discussion. Ask questions, share updates, and connect with locals.">
+    <link rel="canonical" href="https://shivpurilocal.in/forum">
+
+    <meta property="og:title" content="Shivpuri Community Forum">
+    <meta property="og:description" content="Connect with Shivpuri locals. Discuss, help, and share.">
+    <meta property="og:image" content="https://shivpurilocal.in/social-preview.png">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F0WC51BKD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-6F0WC51BKD');
+    </script>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FAFAFA">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3448/3448339.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Shivpuri Local">
+    <link rel="stylesheet" href="style.css?v=2.5">
+    <link rel="stylesheet" href="forum.css?v=1.0">
+    <script src="sw-register.js?v=2.1"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+
+<body class="page-forum">
+    <div class="app-container">
+        <header class="main-header">
+            <div class="logo-container">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
+                </a>
+                <p class="tagline" data-i18n="tagline">The City Encyclopedia</p>
+            </div>
+            <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+                <button id="install-btn" class="install-btn" style="display: none;">⬇️ App</button>
+                <button id="lang-toggle" class="lang-btn">हिंदी</button>
+                <button id="dark-toggle" class="theme-btn" aria-label="Toggle Dark Mode">🌙</button>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/" data-i18n="nav_home">Home</a></li>
+                    <li><a href="/transport" data-i18n="nav_transport">Transport</a></li>
+                    <li><a href="/places" data-i18n="nav_places">Places</a></li>
+                    <li><a href="/food" data-i18n="nav_food">Food</a></li>
+                    <li><a href="/news" data-i18n="nav_news">News</a></li>
+                    <li><a href="/forum" class="active" data-i18n="nav_forum">Forum</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="content-area">
+            <section class="hero">
+                <h2 id="hero-title" data-i18n="hero_forum_title">Community Forum</h2>
+                <p id="hero-desc" data-i18n="hero_forum_desc">Connect with Shivpuri locals. Discuss, help, and share.
+                </p>
+            </section>
+
+            <!-- User Auth Section -->
+            <section class="forum-auth-section">
+                <div id="auth-container">
+                    <!-- Shows login button or user info -->
+                </div>
+            </section>
+
+            <!-- Category Filter -->
+            <section class="forum-categories">
+                <div class="category-tabs" id="category-tabs">
+                    <button class="cat-tab active" data-category="all">🏠 All</button>
+                    <button class="cat-tab" data-category="general">💬 General</button>
+                    <button class="cat-tab" data-category="help">❓ Help</button>
+                    <button class="cat-tab" data-category="events">📢 Events</button>
+                    <button class="cat-tab" data-category="marketplace">🛒 Buy/Sell</button>
+                    <button class="cat-tab" data-category="traffic">🚗 Traffic</button>
+                    <button class="cat-tab" data-category="jobs">💼 Jobs</button>
+                </div>
+            </section>
+
+            <!-- New Post Form -->
+            <section class="new-post-section" id="new-post-section">
+                <div class="new-post-card">
+                    <div class="post-header">
+                        <h3>✏️ <span data-i18n="start_discussion">Start a Discussion</span></h3>
+                    </div>
+                    <form id="new-post-form">
+                        <div class="form-row">
+                            <select id="post-category" required>
+                                <option value="">Select Category</option>
+                                <option value="general">💬 General</option>
+                                <option value="help">❓ Help & Questions</option>
+                                <option value="events">📢 Events & Announcements</option>
+                                <option value="marketplace">🛒 Buy & Sell</option>
+                                <option value="traffic">🚗 Traffic & Transport</option>
+                                <option value="jobs">💼 Jobs & Opportunities</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <input type="text" id="post-title" placeholder="Title (optional)" maxlength="100">
+                        </div>
+                        <div class="form-row">
+                            <textarea id="post-content" placeholder="What's on your mind?" required maxlength="1000"
+                                rows="3"></textarea>
+                        </div>
+                        <div class="form-row post-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="post-anonymous">
+                                <span>Post anonymously</span>
+                            </label>
+                            <button type="submit" class="post-submit-btn" id="submit-post-btn">
+                                <span data-i18n="post">Post</span> →
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Posts Feed -->
+            <section class="forum-feed">
+                <div id="posts-container" class="posts-container">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Loading discussions...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="main-footer">
+            <p data-i18n="copyright">© 2025 shivpurilocal.in. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="mailto:hello@shivpurilocal.in?subject=Feedback" class="footer-link"
+                    data-i18n="feedback">Feedback</a>
+            </div>
+        </footer>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content login-modal-content">
+            <button class="modal-close" id="close-login-modal">×</button>
+            <h2>Join the Community</h2>
+            <p>Sign in to post and participate in discussions</p>
+            <div class="login-options">
+                <button id="google-login-btn" class="login-btn google-btn">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                    Continue with Google
+                </button>
+                <div class="login-divider">
+                    <span>or</span>
+                </div>
+                <button id="guest-login-btn" class="login-btn guest-btn">
+                    👤 Continue as Guest
+                </button>
+            </div>
+            <p class="login-note">Guest posts will be marked as "Guest User"</p>
+        </div>
+    </div>
+
+    <script src="i18n.js"></script>
+    <script src="router.js"></script>
+    <script src="common.js?v=2.1"></script>
+    <script src="forum.js?v=1.0"></script>
+</body>
+
+</html>
