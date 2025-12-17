@@ -5,85 +5,9 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 import threading
 import time
-import os
-
-# Load .env file for local development
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass  # dotenv not installed, use system env vars
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
-
-# Gemini AI Configuration
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
-GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'
-
-def generate_ai_summary(title, source, lang='en'):
-    """Generate a brief news summary using Gemini AI"""
-    if not GEMINI_API_KEY:
-        return ''  # No API key, skip AI summaries
-    
-    try:
-        if lang == 'hi':
-            # Pure Hindi prompt - no English mixing
-            prompt = f"""आप एक समाचार लेखक हैं। नीचे दी गई समाचार शीर्षक को पढ़कर एक संक्षिप्त विवरण लिखें।
-
-नियम:
-- केवल शुद्ध हिंदी में लिखें (कोई अंग्रेजी शब्द नहीं)
-- 2-3 वाक्य में लिखें
-- केवल विवरण दें, कोई अतिरिक्त टिप्पणी नहीं
-
-शीर्षक: {title}
-स्रोत: {source}
-
-विवरण:"""
-        else:
-            # Pure English prompt - clear and factual
-            prompt = f"""You are a news writer. Read the headline below and write a brief description.
-
-Rules:
-- Write in simple, clear English only
-- Write 2-3 sentences maximum
-- Be factual and informative
-- Only provide the description, no extra commentary
-
-Headline: {title}
-Source: {source}
-
-Description:"""
-        
-        response = requests.post(
-            f"{GEMINI_API_URL}?key={GEMINI_API_KEY}",
-            json={
-                "contents": [{"parts": [{"text": prompt}]}],
-                "generationConfig": {
-                    "temperature": 0.2,  # Lower temperature for more consistent output
-                    "maxOutputTokens": 100
-                }
-            },
-            timeout=15
-        )
-        
-        if response.status_code == 200:
-            data = response.json()
-            summary = data.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
-            # Clean up the summary
-            summary = summary.strip()
-            # Remove any "Description:" prefix if AI included it
-            if summary.lower().startswith('description:'):
-                summary = summary[12:].strip()
-            if summary.startswith('विवरण:'):
-                summary = summary[7:].strip()
-            return summary[:200]  # Limit to 200 chars
-        else:
-            print(f"AI API error: {response.status_code}")
-    except Exception as e:
-        print(f"AI Summary error: {e}")
-    
-    return ''
 
 # In-memory news cache
 news_cache = {
@@ -106,23 +30,8 @@ FEEDS = {
 
 import email.utils
 
-import re
-
-def strip_html_tags(html_text):
-    """Remove HTML tags and clean up text"""
-    if not html_text:
-        return ''
-    # Remove HTML tags
-    clean = re.sub(r'<[^>]+>', '', html_text)
-    # Decode HTML entities
-    clean = clean.replace('&nbsp;', ' ').replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')
-    clean = clean.replace('&quot;', '"').replace('&#39;', "'")
-    # Clean up whitespace
-    clean = re.sub(r'\s+', ' ', clean).strip()
-    return clean
-
 def parse_rss(xml_text):
-    """Parse RSS XML and return articles with descriptions"""
+    """Parse RSS XML and return articles"""
     articles = []
     try:
         root = ET.fromstring(xml_text)
@@ -131,7 +40,6 @@ def parse_rss(xml_text):
             link = item.find('link')
             pubDate = item.find('pubDate')
             source = item.find('source')
-            description = item.find('description')
             
             if title is not None and link is not None:
                 # Parse date robustly using email.utils
@@ -148,29 +56,8 @@ def parse_rss(xml_text):
                 now = datetime.now(pub_time.tzinfo) if pub_time and pub_time.tzinfo else datetime.now()
                 
                 if pub_time and (now - pub_time) < timedelta(hours=48):
-                    # Extract and clean description
-                    title_text = title.text.split(' - ')[0] if title.text else ''
-                    desc_text = ''
-                    
-                    if description is not None and description.text:
-                        raw_desc = strip_html_tags(description.text)
-                        
-                        # Check if description is meaningful (not just title + source repeated)
-                        # Remove the source name from the end for comparison
-                        source_name = source.text if source is not None else ''
-                        desc_without_source = raw_desc.replace(source_name, '').strip()
-                        
-                        # Only use description if it's significantly different from title
-                        # (more than just minor variations)
-                        if desc_without_source.lower() != title_text.lower() and len(desc_without_source) > len(title_text) + 20:
-                            desc_text = raw_desc
-                            # Limit description length to 200 characters
-                            if len(desc_text) > 200:
-                                desc_text = desc_text[:197] + '...'
-                    
                     articles.append({
-                        'title': title_text,
-                        'description': desc_text,
+                        'title': title.text.split(' - ')[0] if title.text else '',
                         'url': link.text,
                         'publishedAt': pub_time.isoformat() if pub_time else None,
                         'source': source.text if source is not None else 'News'
@@ -204,30 +91,7 @@ def fetch_news_for_lang(lang):
     
     # Sort by date
     unique.sort(key=lambda x: x.get('publishedAt', ''), reverse=True)
-    top_articles = unique[:30]  # Top 30
-    
-    # Generate AI summaries for ALL articles without good descriptions
-    if GEMINI_API_KEY:
-        print(f"🤖 Generating AI summaries for {lang} articles...")
-        ai_count = 0
-        for article in top_articles:
-            # Generate summary if no description OR if description looks like just headline+source
-            current_desc = article.get('description', '')
-            needs_summary = (
-                not current_desc or 
-                len(current_desc) < 50 or  # Too short
-                article['title'][:30].lower() in current_desc.lower()  # Just headline repeated
-            )
-            
-            if needs_summary:
-                summary = generate_ai_summary(article['title'], article['source'], lang)
-                if summary and len(summary) > 30:
-                    article['description'] = summary
-                    ai_count += 1
-                time.sleep(0.3)  # Small delay between API calls
-        print(f"✅ Generated {ai_count} AI summaries for {lang}")
-    
-    return top_articles
+    return unique[:30]  # Top 30
 
 def refresh_cache():
     """Background job to refresh news cache"""
