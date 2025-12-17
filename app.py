@@ -1,10 +1,11 @@
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
 import requests
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 import threading
 import time
+from db import save_article, get_recent_articles, get_article_by_id, upsert_user, log_analytics_event
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
@@ -129,7 +130,6 @@ bg_thread.start()
 # API Routes
 @app.route('/api/news')
 def get_news():
-    from flask import request
     lang = request.args.get('lang', 'en')
     
     # Lazy load if empty (fixes "No news" on first load)
@@ -145,6 +145,30 @@ def get_news():
 @app.route('/health')
 def health():
     return jsonify({'status': 'ok', 'cache': news_cache.get('last_fetch')})
+
+@app.route('/api/user/sync', methods=['POST'])
+def sync_user():
+    data = request.json
+    if not data or not data.get('uid'):
+        return jsonify({'error': 'Missing UID'}), 400
+    
+    success = upsert_user(data)
+    if success:
+        return jsonify({'status': 'synced'})
+    else:
+        return jsonify({'error': 'Failed to sync'}), 500
+
+@app.route('/api/analytics/log', methods=['POST'])
+def log_event():
+    data = request.json
+    if not data or not data.get('eventType'):
+        return jsonify({'error': 'Missing event type'}), 400
+    
+    success = log_analytics_event(data)
+    if success:
+        return jsonify({'status': 'logged'})
+    else:
+        return jsonify({'error': 'Failed to log'}), 500
 
 # Static routes
 @app.route('/')

@@ -29,6 +29,7 @@ const ForumApp = {
     posts: [],
     db: null,
     auth: null,
+    unsubscribe: null,
 
     // Category info
     categories: {
@@ -59,6 +60,32 @@ const ForumApp = {
         this.auth = firebase.auth();
         this.db = firebase.firestore();
 
+        // Enable offline persistence
+        this.db.enablePersistence()
+            .catch((err) => {
+                if (err.code == 'failed-precondition') {
+                    console.log('Persistence failed: Multiple tabs open');
+                } else if (err.code == 'unimplemented') {
+                    console.log('Persistence not supported by browser');
+                }
+            });
+
+        // Check for Redirect Result (for Google Login)
+        this.auth.getRedirectResult().then((result) => {
+            if (result.user) {
+                console.log('Redirect Login Success:', result.user.uid);
+                this.showToast('Welcome back! You can now post.');
+                this.syncUserWithDB(result.user);
+            }
+        }).catch((error) => {
+            console.error('Redirect Login Error:', error);
+            if (error.code === 'auth/unauthorized-domain') {
+                this.showError('Login Failed: Domain not authorized. Add to Firebase Console.');
+            } else {
+                this.showToast('Login failed: ' + error.message);
+            }
+        });
+
         // Setup event listeners
         this.setupEventListeners();
 
@@ -68,19 +95,39 @@ const ForumApp = {
                 this.currentUser = user;
                 this.isGuest = user.isAnonymous;
                 this.updateAuthUI();
-            } else {
-                // Check for stored guest session
-                const guestSession = localStorage.getItem('forum_guest');
-                if (guestSession) {
-                    this.isGuest = true;
-                    this.currentUser = { displayName: 'Guest User', photoURL: null };
+
+                // Sync user with SQL DB
+                if (!user.isAnonymous) {
+                    this.syncUserWithDB(user);
                 }
+            } else {
                 this.updateAuthUI();
             }
         });
 
         // Load posts
         this.loadPosts();
+    },
+
+    // Sync user with SQL DB
+    async syncUserWithDB(user) {
+        const isLocal = window.location.hostname === 'localhost';
+        const API_URL = isLocal ? '/api/user/sync' : 'https://shivpurilocal-backend.onrender.com/api/user/sync';
+
+        try {
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName,
+                    photoURL: user.photoURL
+                })
+            });
+        } catch (error) {
+            console.error('User sync error:', error);
+        }
     },
 
     // Setup event listeners
@@ -171,26 +218,38 @@ const ForumApp = {
     },
 
     // Login with Google
+    // Login with Google
     async loginWithGoogle() {
+        console.log('Starting Google Redirect Login...');
         try {
             const provider = new firebase.auth.GoogleAuthProvider();
-            await this.auth.signInWithPopup(provider);
-            this.hideLoginModal();
-            this.showToast('Welcome! You can now post.');
+            provider.setCustomParameters({ prompt: 'select_account' });
+
+            // Use Redirect instead of Popup
+            await this.auth.signInWithRedirect(provider);
+            // Page will reload and 'getRedirectResult' in init() will handle the rest
+
         } catch (error) {
-            console.error('Google login error:', error);
-            this.showToast('Login failed. Please try again.');
+            console.error('Google login launch error:', error);
+            this.showToast('Could not start login: ' + error.message);
         }
     },
 
     // Login as guest
-    loginAsGuest() {
-        this.isGuest = true;
-        this.currentUser = { displayName: 'Guest User', photoURL: null };
-        localStorage.setItem('forum_guest', 'true');
-        this.updateAuthUI();
-        this.hideLoginModal();
-        this.showToast('Posting as Guest');
+    // Login as guest
+    async loginAsGuest() {
+        try {
+            await this.auth.signInAnonymously();
+            this.hideLoginModal();
+            this.showToast('Posting as Guest');
+        } catch (error) {
+            console.error('Guest login error:', error);
+            if (error.code === 'auth/operation-not-allowed') {
+                this.showError('Guest Login Disabled. Enable "Anonymous" in Firebase Console > Authentication > Sign-in method.');
+            } else {
+                this.showToast('Guest login failed: ' + error.message);
+            }
+        }
     },
 
     // Logout
@@ -215,8 +274,10 @@ const ForumApp = {
 
     // Submit new post
     async submitPost() {
-        // Check if logged in
-        if (!this.currentUser && !this.isGuest) {
+        // Ensure accurate auth state
+        const user = this.auth.currentUser;
+
+        if (!user) {
             this.showLoginModal();
             return;
         }
@@ -253,11 +314,11 @@ const ForumApp = {
                 category: category,
                 title: title || null,
                 content: content,
-                authorId: this.currentUser?.uid || 'guest',
-                authorName: isAnonymous ? 'Anonymous' : (this.currentUser?.displayName || 'Guest User'),
-                authorPhoto: isAnonymous ? null : (this.currentUser?.photoURL || null),
+                authorId: user.uid, // Strict UID usage
+                authorName: isAnonymous ? 'Anonymous' : (user.displayName || 'Guest User'),
+                authorPhoto: isAnonymous ? null : (user.photoURL || null),
                 isAnonymous: isAnonymous,
-                isGuest: this.isGuest,
+                isGuest: user.isAnonymous,
                 likes: 0,
                 likedBy: [],
                 replies: 0,
@@ -265,6 +326,7 @@ const ForumApp = {
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
+            console.log('Attemping to post:', post);
             await this.db.collection('forum_posts').add(post);
 
             // Clear form
@@ -275,12 +337,16 @@ const ForumApp = {
 
             this.showToast('Post published! 🎉');
 
-            // Reload posts
-            this.loadPosts();
-
         } catch (error) {
-            console.error('Post error:', error);
-            this.showToast('Failed to post. Please try again.');
+            console.error('FAILED to post. Error:', error);
+            console.error('Error Code:', error.code);
+            console.error('Error Message:', error.message);
+
+            if (error.code === 'permission-denied') {
+                this.showError('Posting failed: Permission Denied. Are you logged in?');
+            } else {
+                this.showToast('Failed to post: ' + error.message);
+            }
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<span>Post</span> →';
@@ -300,8 +366,13 @@ const ForumApp = {
         `;
 
         try {
+            // Unsubscribe from previous listener if exists
+            if (this.unsubscribe) {
+                this.unsubscribe();
+            }
+
             // Real-time listener
-            this.db.collection('forum_posts')
+            this.unsubscribe = this.db.collection('forum_posts')
                 .orderBy('createdAt', 'desc')
                 .limit(50)
                 .onSnapshot(snapshot => {

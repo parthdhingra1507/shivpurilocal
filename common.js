@@ -59,4 +59,54 @@ window.addEventListener('beforeinstallprompt', (e) => {
 window.addEventListener('appinstalled', () => {
     console.log('PWA was installed');
     if (installBtn) installBtn.style.display = 'none';
+    logAnalyticsEvent('pwa_install', { platform: navigator.platform });
+});
+
+// ===================================
+// ANALYTICS
+// ===================================
+function getSessionId() {
+    let sid = sessionStorage.getItem('analytics_sid');
+    if (!sid) {
+        sid = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        sessionStorage.setItem('analytics_sid', sid);
+    }
+    return sid;
+}
+
+async function logAnalyticsEvent(eventType, metadata = {}) {
+    // Only log if not localhost (unless testing)
+    const isLocal = window.location.hostname === 'localhost';
+    const API_URL = isLocal ? '/api/analytics/log' : 'https://shivpurilocal-backend.onrender.com/api/analytics/log';
+
+    try {
+        const currentUser = firebase.auth().currentUser;
+
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                eventType: eventType,
+                userId: currentUser ? currentUser.uid : null,
+                sessionId: getSessionId(),
+                metadata: JSON.stringify({
+                    url: window.location.pathname,
+                    referrer: document.referrer,
+                    lang: currentLang,
+                    ...metadata
+                })
+            })
+        });
+    } catch (e) {
+        // Silent fail for analytics
+        if (isLocal) console.error('Analytics error:', e);
+    }
+}
+
+// Track Page View
+window.addEventListener('load', () => {
+    // Small delay to ensure auth state might be ready (though usually it's async)
+    setTimeout(() => {
+        logAnalyticsEvent('page_view');
+    }, 1000);
 });

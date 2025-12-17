@@ -38,6 +38,31 @@ def init_db():
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+
+    # Create users table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            email TEXT,
+            display_name TEXT,
+            role TEXT DEFAULT 'user',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            last_active_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
+    # Create analytics_events table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS analytics_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT,
+            event_type TEXT NOT NULL,
+            metadata TEXT,
+            session_id TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )
+    ''')
     
     conn.commit()
     conn.close()
@@ -118,3 +143,48 @@ def get_article_by_id(article_id):
     row = c.fetchone()
     conn.close()
     return dict(row) if row else None
+
+def upsert_user(user_data):
+    conn = get_db_connection()
+    c = conn.cursor()
+    try:
+        c.execute('''
+            INSERT INTO users (id, email, display_name, last_active_at)
+            VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(id) DO UPDATE SET
+                display_name = excluded.display_name,
+                email = excluded.email,
+                last_active_at = CURRENT_TIMESTAMP
+        ''', (
+            user_data.get('uid'),
+            user_data.get('email'),
+            user_data.get('displayName')
+        ))
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error upserting user: {e}")
+        return False
+    finally:
+        conn.close()
+
+def log_analytics_event(event_data):
+    conn = get_db_connection()
+    c = conn.cursor()
+    try:
+        c.execute('''
+            INSERT INTO analytics_events (user_id, event_type, metadata, session_id)
+            VALUES (?, ?, ?, ?)
+        ''', (
+            event_data.get('userId'),
+            event_data.get('eventType'),
+            event_data.get('metadata'),
+            event_data.get('sessionId')
+        ))
+        conn.commit()
+        return c.lastrowid
+    except Exception as e:
+        print(f"Error logging event: {e}")
+        return None
+    finally:
+        conn.close()
