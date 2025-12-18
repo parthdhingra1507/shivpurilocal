@@ -155,8 +155,8 @@ const ForumApp = {
 
     // Sync user with SQL DB
     async syncUserWithDB(user) {
-        const isLocal = window.location.hostname === 'localhost';
-        const API_URL = isLocal ? '/api/user/sync' : 'https://shivpurilocal-backend.onrender.com/api/user/sync';
+        // Use relative URL for both local and Vercel deployment
+        const API_URL = '/api/user/sync';
 
         try {
             await fetch(API_URL, {
