@@ -165,20 +165,32 @@ def health():
 
 @app.route('/api/user/sync', methods=['POST'])
 def sync_user():
-    data = request.json
-    if not data or not data.get('uid'):
-        return jsonify({'error': 'Missing UID'}), 400
-    
-    success = upsert_user(data)
-    
-    # Check DB type for debugging
-    conn, db_type = get_db_connection()
-    conn.close()
-    
-    if success:
-        return jsonify({'status': 'synced', 'db_type': db_type})
-    else:
-        return jsonify({'error': 'Failed to sync', 'db_type': db_type}), 500
+    try:
+        data = request.json
+        if not data or not data.get('uid'):
+            return jsonify({'error': 'Missing UID'}), 400
+        
+        # Debug connection before upsert
+        try:
+            conn, db_type = get_db_connection()
+            conn.close()
+        except Exception as e:
+            return jsonify({'error': f'DB Connection Failed: {str(e)}', 'db_type': 'unknown'}), 500
+
+        success = upsert_user(data)
+        
+        if success:
+            return jsonify({'status': 'synced', 'db_type': db_type})
+        else:
+            return jsonify({'error': 'Failed to sync (upsert returned False)', 'db_type': db_type}), 500
+            
+    except Exception as e:
+        import traceback
+        return jsonify({
+            'error': 'Internal Error', 
+            'details': str(e),
+            'trace': traceback.format_exc()
+        }), 500
 
 @app.route('/api/analytics/log', methods=['POST'])
 def log_event():
