@@ -46,8 +46,8 @@ const ForumApp = {
         // Initialize Sentry
         if (typeof Sentry !== 'undefined') {
             Sentry.init({
+                dsn: "https://8922a1eb759c408c9c777c151d72b12f@o4510554243334144.ingest.de.sentry.io/4510554785120336",
                 // TracesSampleRate is the percentage of transactions to capture for performance monitoring.
-                // We recommend setting this to 1.0 in development and a lower value in production.
                 tracesSampleRate: 1.0,
             });
             console.log('[Forum] Sentry initialized');
