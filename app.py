@@ -5,7 +5,24 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 import threading
 import time
+import os
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 from db import save_article, get_recent_articles, get_article_by_id, upsert_user, log_analytics_event
+
+# Initialize Sentry
+sentry_dsn = os.environ.get('SENTRY_DSN')
+if sentry_dsn:
+    sentry_sdk.init(
+        dsn=sentry_dsn,
+        integrations=[FlaskIntegration()],
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        traces_sample_rate=1.0,
+        # Set profiles_sample_rate to 1.0 to profile 100%
+        # of transactions.
+        profiles_sample_rate=1.0,
+    )
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)

@@ -1,8 +1,9 @@
 /**
  * Shivpuri Local - Community Forum
- * Diagnostic Version
+ * Using Firebase for auth and real-time database
  */
 
+// Firebase Configuration - Replace with your own config
 const firebaseConfig = {
     apiKey: "AIzaSyC-EUvVO-Pv_HpqXKdTQ_bL2DLMMVS0eGY",
     authDomain: "shivpurilocal.firebaseapp.com",
@@ -13,6 +14,7 @@ const firebaseConfig = {
     measurementId: "G-DB24PP475M"
 };
 
+// Profanity filter - basic list (expand as needed)
 const PROFANITY_LIST = [
     'badword1', 'badword2', // Add actual words to filter
     // Hindi profanity
@@ -41,6 +43,16 @@ const ForumApp = {
 
     // Initialize
     init() {
+        // Initialize Sentry
+        if (typeof Sentry !== 'undefined') {
+            Sentry.init({
+                // TracesSampleRate is the percentage of transactions to capture for performance monitoring.
+                // We recommend setting this to 1.0 in development and a lower value in production.
+                tracesSampleRate: 1.0,
+            });
+            console.log('[Forum] Sentry initialized');
+        }
+
         console.log('[Forum] Initializing...');
 
         // Check if Firebase is loaded
@@ -99,8 +111,6 @@ const ForumApp = {
                     this.syncUserWithDB(user);
                 }
             } else {
-                this.currentUser = null;
-                this.isGuest = false;
                 this.updateAuthUI();
             }
         });
@@ -218,17 +228,24 @@ const ForumApp = {
     },
 
     // Login with Google
+    // Login with Google
     async loginWithGoogle() {
+        console.log('Starting Google Redirect Login...');
         try {
             const provider = new firebase.auth.GoogleAuthProvider();
             provider.setCustomParameters({ prompt: 'select_account' });
+
+            // Use Redirect instead of Popup
             await this.auth.signInWithRedirect(provider);
+            // Page will reload and 'getRedirectResult' in init() will handle the rest
+
         } catch (error) {
-            console.error('Google login error:', error);
+            console.error('Google login launch error:', error);
             this.showToast('Could not start login: ' + error.message);
         }
     },
 
+    // Login as guest
     // Login as guest
     async loginAsGuest() {
         try {
@@ -238,7 +255,7 @@ const ForumApp = {
         } catch (error) {
             console.error('Guest login error:', error);
             if (error.code === 'auth/operation-not-allowed') {
-                this.showError('Guest Login Disabled. Enable "Anonymous" in Firebase Console.');
+                this.showError('Guest Login Disabled. Enable "Anonymous" in Firebase Console > Authentication > Sign-in method.');
             } else {
                 this.showToast('Guest login failed: ' + error.message);
             }
@@ -249,6 +266,7 @@ const ForumApp = {
     async logout() {
         try {
             await this.auth.signOut();
+            localStorage.removeItem('forum_guest');
             this.currentUser = null;
             this.isGuest = false;
             this.updateAuthUI();
@@ -266,7 +284,9 @@ const ForumApp = {
 
     // Submit new post
     async submitPost() {
+        // Ensure accurate auth state
         const user = this.auth.currentUser;
+
         if (!user) {
             this.showLoginModal();
             return;
@@ -277,11 +297,24 @@ const ForumApp = {
         const content = document.getElementById('post-content').value.trim();
         const isAnonymous = document.getElementById('post-anonymous').checked;
 
-        if (!category || !content) {
-            this.showToast('Please fill in category and content');
+        // Validation
+        if (!category) {
+            this.showToast('Please select a category');
             return;
         }
 
+        if (!content) {
+            this.showToast('Please write something');
+            return;
+        }
+
+        // Profanity check
+        if (this.containsProfanity(content) || this.containsProfanity(title)) {
+            this.showToast('Please remove inappropriate language');
+            return;
+        }
+
+        // Disable submit button
         const submitBtn = document.getElementById('submit-post-btn');
         submitBtn.disabled = true;
         submitBtn.innerHTML = 'Posting...';
@@ -291,7 +324,7 @@ const ForumApp = {
                 category: category,
                 title: title || null,
                 content: content,
-                authorId: user.uid,
+                authorId: user.uid, // Strict UID usage
                 authorName: isAnonymous ? 'Anonymous' : (user.displayName || 'Guest User'),
                 authorPhoto: isAnonymous ? null : (user.photoURL || null),
                 isAnonymous: isAnonymous,
@@ -303,8 +336,8 @@ const ForumApp = {
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            const docRef = await this.db.collection('forum_posts').add(post);
-            console.log('Post published with ID:', docRef.id);
+            console.log('Attemping to post:', post);
+            await this.db.collection('forum_posts').add(post);
 
             // Clear form
             document.getElementById('post-category').value = '';
@@ -315,9 +348,12 @@ const ForumApp = {
             this.showToast('Post published! 🎉');
 
         } catch (error) {
-            console.error('Post error:', error);
+            console.error('FAILED to post. Error:', error);
+            console.error('Error Code:', error.code);
+            console.error('Error Message:', error.message);
+
             if (error.code === 'permission-denied') {
-                this.showError('Permission Denied: Check Firestore rules.');
+                this.showError('Posting failed: Permission Denied. Are you logged in?');
             } else {
                 this.showToast('Failed to post: ' + error.message);
             }
@@ -332,8 +368,18 @@ const ForumApp = {
         const container = document.getElementById('posts-container');
         if (!container) return;
 
+        container.innerHTML = `
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Loading discussions...</p>
+            </div>
+        `;
+
         try {
-            if (this.unsubscribe) this.unsubscribe();
+            // Unsubscribe from previous listener if exists
+            if (this.unsubscribe) {
+                this.unsubscribe();
+            }
 
             // Real-time listener
             this.unsubscribe = this.db.collection('forum_posts')
@@ -346,19 +392,13 @@ const ForumApp = {
                     });
                     this.filterPosts();
                 }, error => {
-                    console.error('Snapshot error:', error);
-                    if (error.message.includes('index')) {
-                        const link = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]+/);
-                        if (link) {
-                            this.showError('Database indexing required. <a href="' + link[0] + '" target="_blank">Click here to fix.</a>');
-                        }
-                    } else {
-                        this.showError('Could not load posts. Please refresh.');
-                    }
+                    console.error('Posts load error:', error);
+                    this.showError('Could not load posts. Please refresh.');
                 });
 
         } catch (error) {
-            console.error('Load error:', error);
+            console.error('Posts load error:', error);
+            this.showError('Could not load posts. Please refresh.');
         }
     },
 
@@ -367,6 +407,7 @@ const ForumApp = {
         const filtered = this.currentCategory === 'all'
             ? this.posts
             : this.posts.filter(p => p.category === this.currentCategory);
+
         this.renderPosts(filtered);
     },
 
@@ -436,12 +477,14 @@ const ForumApp = {
 
     // Toggle like
     async toggleLike(postId) {
-        if (!this.currentUser) {
+        if (!this.currentUser && !this.isGuest) {
             this.showLoginModal();
             return;
         }
-        const userId = this.currentUser.uid;
+
+        const userId = this.currentUser?.uid || 'guest_' + Date.now();
         const postRef = this.db.collection('forum_posts').doc(postId);
+
         try {
             const doc = await postRef.get();
             if (!doc.exists) return;
@@ -451,11 +494,13 @@ const ForumApp = {
             const isLiked = likedBy.includes(userId);
 
             if (isLiked) {
+                // Unlike
                 await postRef.update({
                     likes: firebase.firestore.FieldValue.increment(-1),
                     likedBy: firebase.firestore.FieldValue.arrayRemove(userId)
                 });
             } else {
+                // Like
                 await postRef.update({
                     likes: firebase.firestore.FieldValue.increment(1),
                     likedBy: firebase.firestore.FieldValue.arrayUnion(userId)
@@ -463,14 +508,20 @@ const ForumApp = {
             }
         } catch (error) {
             console.error('Like error:', error);
+            this.showToast('Could not update like');
         }
     },
 
     // Share post
     sharePost(postId) {
         const url = `${window.location.origin}/forum#${postId}`;
+
         if (navigator.share) {
-            navigator.share({ title: 'Shivpuri Local Forum', url: url });
+            navigator.share({
+                title: 'Shivpuri Local Forum',
+                text: 'Check out this discussion on Shivpuri Local',
+                url: url
+            });
         } else {
             navigator.clipboard.writeText(url);
             this.showToast('Link copied!');
@@ -480,11 +531,14 @@ const ForumApp = {
     // Get relative time
     getTimeAgo(date) {
         if (!date) return 'Just now';
+
         const seconds = Math.floor((new Date() - date) / 1000);
+
         if (seconds < 60) return 'Just now';
         if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
         if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
         if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+
         return date.toLocaleDateString();
     },
 
@@ -502,7 +556,7 @@ const ForumApp = {
             container.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-state-icon">⚠️</div>
-                    <h3>Error</h3>
+                    <h3>Something went wrong</h3>
                     <p>${message}</p>
                     <button onclick="ForumApp.loadPosts()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--gray-900); color: white; border: none; border-radius: 8px; cursor: pointer;">
                         Retry
@@ -520,25 +574,42 @@ const ForumApp = {
         const toast = document.createElement('div');
         toast.className = 'toast';
         toast.textContent = message;
-        toast.style.cssText = 'background:var(--gray-900); color:white; padding:0.75rem 1.5rem; border-radius:8px; margin-bottom:0.5rem; animation:slideIn 0.3s ease;';
+        toast.style.cssText = `
+            background: var(--gray-900);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            animation: slideIn 0.3s ease;
+        `;
+
         container.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 };
 
-// Initialization patterns
+// Initialize on page load
 window.addEventListener('page-loaded', (e) => {
-    if (e.detail.page === '/forum') ForumApp.init();
+    if (e.detail.page === '/forum') {
+        ForumApp.init();
+    }
 });
 
-if (document.readyState !== 'loading') {
-    const p = window.location.pathname;
-    if (p === '/forum' || p === '/forum.html') ForumApp.init();
-} else {
+// Direct load check
+if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        const p = window.location.pathname;
-        if (p === '/forum' || p === '/forum.html') ForumApp.init();
+        const path = window.location.pathname;
+        if (path === '/forum' || path === '/forum.html') {
+            ForumApp.init();
+        }
     });
+} else {
+    const path = window.location.pathname;
+    if (path === '/forum' || path === '/forum.html') {
+        ForumApp.init();
+    }
 }
-
-
