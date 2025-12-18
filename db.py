@@ -255,3 +255,95 @@ def log_analytics_event(event_data):
         return False
     finally:
         conn.close()
+
+def get_all_articles(page=1, limit=50):
+    conn, db_type = get_db_connection()
+    try:
+        offset = (page - 1) * limit
+        query = "SELECT * FROM articles ORDER BY created_at DESC LIMIT ? OFFSET ?"
+        params = (limit, offset)
+        
+        rows = execute_query(conn, db_type, query, params, fetch='all')
+        
+        # Get total count for pagination
+        count_query = "SELECT COUNT(*) as total FROM articles"
+        total_row = execute_query(conn, db_type, count_query, (), fetch='one')
+        total = total_row['total'] if total_row else 0
+        
+        articles = []
+        for row in rows:
+            articles.append(dict(row))
+            
+        return {
+            'articles': articles,
+            'total': total,
+            'page': page,
+            'limit': limit
+        }
+    finally:
+        conn.close()
+
+def update_article(article_id, data):
+    conn, db_type = get_db_connection()
+    try:
+        # Build dynamic update query
+        fields = []
+        params = []
+        
+        allowed_fields = [
+            'title_en', 'title_hi', 'description_en', 'description_hi',
+            'content', 'source', 'url', 'image_url', 'priority', 'category'
+        ]
+        
+        for field in allowed_fields:
+            if field in data:
+                fields.append(f"{field} = ?")
+                params.append(data[field])
+        
+        if not fields:
+            return False
+            
+        params.append(article_id)
+        query = f"UPDATE articles SET {', '.join(fields)} WHERE id = ?"
+        
+        execute_query(conn, db_type, query, tuple(params), commit=True)
+        return True
+    except Exception as e:
+        print(f"Error updating article: {e}")
+        return False
+    finally:
+        conn.close()
+
+def delete_article(article_id):
+    conn, db_type = get_db_connection()
+    try:
+        query = "DELETE FROM articles WHERE id = ?"
+        execute_query(conn, db_type, query, (article_id,), commit=True)
+        return True
+    except Exception as e:
+        print(f"Error deleting article: {e}")
+        return False
+    finally:
+        conn.close()
+
+def execute_raw_sql(query, params=()):
+    conn, db_type = get_db_connection()
+    try:
+        # Very basic safety check - but rely on admin auth
+        if not query.strip():
+            return {'error': 'Empty query'}
+            
+        is_select = query.strip().upper().startswith('SELECT')
+        
+        if is_select:
+            rows = execute_query(conn, db_type, query, params, fetch='all')
+            results = [dict(row) for row in rows]
+            return {'results': results, 'count': len(results)}
+        else:
+            execute_query(conn, db_type, query, params, commit=True)
+            return {'status': 'success', 'message': 'Query executed successfully'}
+            
+    except Exception as e:
+        return {'error': str(e)}
+    finally:
+        conn.close()

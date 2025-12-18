@@ -8,7 +8,7 @@ import time
 import os
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
-from db import save_article, get_recent_articles, get_article_by_id, upsert_user, log_analytics_event
+from db import save_article, get_recent_articles, get_article_by_id, upsert_user, log_analytics_event, get_all_articles, update_article, delete_article, execute_raw_sql
 
 # Initialize Sentry
 sentry_dsn = os.environ.get('SENTRY_DSN')
@@ -187,6 +187,58 @@ def log_event():
     else:
         return jsonify({'error': 'Failed to log'}), 500
 
+# Admin API Routes
+@app.route('/api/admin/articles', methods=['GET', 'POST'])
+def admin_articles():
+    # Simple auth check
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025': # Hardcoded for now matching admin.html
+        return jsonify({'error': 'Unauthorized'}), 401
+        
+    if request.method == 'GET':
+        page = int(request.args.get('page', 1))
+        limit = int(request.args.get('limit', 50))
+        result = get_all_articles(page, limit)
+        return jsonify(result)
+        
+    elif request.method == 'POST':
+        data = request.json
+        # Add basic validation or defaults
+        if not data.get('url'):
+             # Auto-generate URL from title if missing (simple slug)
+             import re
+             slug = re.sub(r'[^a-zA-Z0-9]+', '-', data.get('title_en', '').lower()).strip('-')
+             data['url'] = f"https://shivpurilocal.in/news/{slug}-{int(time.time())}"
+             
+        save_article(data)
+        return jsonify({'status': 'created'})
+
+@app.route('/api/admin/articles/<int:article_id>', methods=['PUT', 'DELETE'])
+def admin_article_detail(article_id):
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025':
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    if request.method == 'PUT':
+        data = request.json
+        success = update_article(article_id, data)
+        return jsonify({'status': 'updated' if success else 'failed'})
+        
+    elif request.method == 'DELETE':
+        success = delete_article(article_id)
+        return jsonify({'status': 'deleted' if success else 'failed'})
+
+@app.route('/api/admin/sql', methods=['POST'])
+def admin_sql():
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025':
+        return jsonify({'error': 'Unauthorized'}), 401
+        
+    data = request.json
+    query = data.get('query')
+    result = execute_raw_sql(query)
+    return jsonify(result)
+
 # Static routes
 @app.route('/')
 def home():
@@ -211,6 +263,14 @@ def news():
 @app.route('/forum')
 def forum():
     return send_from_directory('.', 'forum.html')
+
+@app.route('/panel')
+def panel():
+    return send_from_directory('.', 'panel.html')
+
+@app.route('/admin')
+def admin_alias():
+     return send_from_directory('.', 'panel.html')
 
 @app.route('/<path:path>')
 def static_files(path):

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shivpuri Local - Unit Tests</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #f5f5f5;
+        }
+
+        .summary-card {
+            padding: 20px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .summary-card.pass {
+            border-left: 5px solid #2ecc71;
+        }
+
+        .summary-card.fail {
+            border-left: 5px solid #e74c3c;
+        }
+
+        .text-success {
+            color: #2ecc71;
+        }
+
+        .text-danger {
+            color: #e74c3c;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .test-item {
+            background: white;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .test-item.pass .icon {
+            color: #2ecc71;
+        }
+
+        .test-item.fail .icon {
+            color: #e74c3c;
+        }
+
+        .test-item .row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error {
+            color: #e74c3c;
+            background: #fff0f0;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Unit Test Runner</h1>
+    <div id="test-summary">Running tests...</div>
+    <ul id="test-list"></ul>
+
+    <!-- 1. Load Test Framework -->
+    <script src="test-suite.js"></script>
+
+    <!-- 2. Mocks (if needed) -->
+    <script>
+        // Mock localStorage to avoid messing with real user data
+        const store = {};
+        const mockStorage = {
+            getItem: (key) => store[key] || null,
+            setItem: (key, value) => store[key] = value.toString(),
+            removeItem: (key) => delete store[key],
+            clear: () => { }
+        };
+        // We can't easily replace window.localStorage in some browsers, but we can try 
+        // or just rely on test cleanup. For now let's use real localstorage with unique keys or cleanup.
+        // Actually, let's wrap our app code updates to use a 'storage' object if possible?
+        // For now, we will test the actual implementations.
+    </script>
+
+    <!-- 3. Load App Scripts -->
+    <!-- We load them so their globals are available -->
+    <script src="../i18n.js"></script>
+    <script src="../common.js"></script>
+    <script src="../router.js"></script>
+    <!-- Feature Scripts (these usually execute on load, might need care) -->
+    <!-- <script src="../transport.js"></script> -->
+
+    <!-- 4. Load Test Cases -->
+    <script src="core.test.js"></script>
+
+    <!-- 5. Run Report -->
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(window.runTests, 100);
+        });
+    </script>
+</body>
+
+</html>
