@@ -374,9 +374,9 @@
 }
 
 .post-action-btn.liked {
-    background: #fef2f2;
-    border-color: #fca5a5;
-    color: #dc2626;
+    background: var(--gray-900);
+    border-color: var(--gray-900);
+    color: var(--white);
 }
 
 /* Login Modal */
