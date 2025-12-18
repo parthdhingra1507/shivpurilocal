@@ -122,6 +122,43 @@ def init_db():
         '''
         execute_query(conn, db_type, create_events, commit=True)
         
+        # Create transport table
+        create_transport = f'''
+            CREATE TABLE IF NOT EXISTS transport (
+                id {id_type},
+                operator_name TEXT,
+                route_from TEXT,
+                route_to TEXT,
+                via TEXT,
+                distance_km INTEGER,
+                departure_time BIGINT, -- Storing as timestamp (ms) for compatibility
+                arrival_time TEXT,
+                days_of_operation TEXT,
+                bus_type TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        '''
+        execute_query(conn, db_type, create_transport, commit=True)
+
+        # Create places table
+        create_places = f'''
+            CREATE TABLE IF NOT EXISTS places (
+                id {id_type},
+                name_en TEXT,
+                name_hi TEXT,
+                category TEXT,
+                category_hi TEXT,
+                area TEXT,
+                area_hi TEXT,
+                description_en TEXT,
+                description_hi TEXT,
+                tags TEXT, -- JSON or comma separated
+                image_url TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        '''
+        execute_query(conn, db_type, create_places, commit=True)
+        
         print(f"✅ Database initialized ({db_type} mode)")
         
     except Exception as e:
@@ -345,5 +382,121 @@ def execute_raw_sql(query, params=()):
             
     except Exception as e:
         return {'error': str(e)}
+    finally:
+        conn.close()
+
+# --- Transport Helpers ---
+def get_all_transport():
+    conn, db_type = get_db_connection()
+    try:
+        rows = execute_query(conn, db_type, "SELECT * FROM transport ORDER BY departure_time", fetch='all')
+        return [dict(row) for row in rows]
+    finally:
+        conn.close()
+
+def save_transport(data):
+    conn, db_type = get_db_connection()
+    try:
+        if 'id' in data and data['id']:
+            # Update
+            query = '''
+                UPDATE transport SET operator_name=?, route_from=?, route_to=?, via=?, distance_km=?, 
+                departure_time=?, arrival_time=?, days_of_operation=?, bus_type=? WHERE id=?
+            '''
+            params = (data['operator_name'], data['route_from'], data['route_to'], data['via'], data['distance_km'],
+                      data['departure_time'], data['arrival_time'], data['days_of_operation'], data['bus_type'], data['id'])
+        else:
+            # Insert
+            query = '''
+                INSERT INTO transport (operator_name, route_from, route_to, via, distance_km, departure_time, arrival_time, days_of_operation, bus_type)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            '''
+            params = (data['operator_name'], data['route_from'], data['route_to'], data['via'], data['distance_km'],
+                      data['departure_time'], data['arrival_time'], data['days_of_operation'], data['bus_type'])
+        
+        execute_query(conn, db_type, query, params, commit=True)
+        return True
+    finally:
+        conn.close()
+
+def delete_transport(id):
+    conn, db_type = get_db_connection()
+    try:
+        execute_query(conn, db_type, "DELETE FROM transport WHERE id = ?", (id,), commit=True)
+        return True
+    finally:
+        conn.close()
+
+# --- Places Helpers ---
+def get_all_places():
+    conn, db_type = get_db_connection()
+    try:
+        rows = execute_query(conn, db_type, "SELECT * FROM places ORDER BY created_at DESC", fetch='all')
+        return [dict(row) for row in rows]
+    finally:
+        conn.close()
+
+def save_place(data):
+    conn, db_type = get_db_connection()
+    try:
+        if 'id' in data and data['id']:
+             query = '''
+                UPDATE places SET name_en=?, name_hi=?, category=?, category_hi=?, area=?, area_hi=?, 
+                description_en=?, description_hi=?, tags=?, image_url=? WHERE id=?
+            '''
+             params = (data['name_en'], data['name_hi'], data['category'], data['category_hi'], data['area'], data['area_hi'],
+                      data['description_en'], data['description_hi'], data['tags'], data['image_url'], data['id'])
+        else:
+            query = '''
+                INSERT INTO places (name_en, name_hi, category, category_hi, area, area_hi, description_en, description_hi, tags, image_url)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            '''
+            params = (data['name_en'], data['name_hi'], data['category'], data['category_hi'], data['area'], data['area_hi'],
+                      data['description_en'], data['description_hi'], data['tags'], data['image_url'])
+        
+        execute_query(conn, db_type, query, params, commit=True)
+        return True
+    finally:
+        conn.close()
+
+def delete_place(id):
+    conn, db_type = get_db_connection()
+    try:
+        execute_query(conn, db_type, "DELETE FROM places WHERE id = ?", (id,), commit=True)
+        return True
+    finally:
+        conn.close()
+
+# --- User/Analytics Helpers ---
+def get_all_users():
+    conn, db_type = get_db_connection()
+    try:
+        rows = execute_query(conn, db_type, "SELECT * FROM users ORDER BY last_active_at DESC", fetch='all')
+        return [dict(row) for row in rows]
+    finally:
+        conn.close()
+
+def delete_user(id):
+    conn, db_type = get_db_connection()
+    try:
+        execute_query(conn, db_type, "DELETE FROM users WHERE id = ?", (id,), commit=True)
+        return True
+    finally:
+        conn.close()
+
+def get_analytics_stats():
+    conn, db_type = get_db_connection()
+    try:
+        users = execute_query(conn, db_type, "SELECT COUNT(*) as count FROM users", fetch='one')['count']
+        events = execute_query(conn, db_type, "SELECT COUNT(*) as count FROM analytics_events", fetch='one')['count']
+        today_events = execute_query(conn, db_type, "SELECT COUNT(*) as count FROM analytics_events WHERE timestamp >= date('now')", fetch='one')['count']
+        
+        return {
+            'total_users': users,
+            'total_events': events,
+            'today_events': today_events
+        }
+    except:
+        return {'total_users': 0, 'total_events': 0, 'today_events': 0}
     finally:
         conn.close()

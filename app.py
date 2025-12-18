@@ -8,7 +8,7 @@ import time
 import os
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
-from db import save_article, get_recent_articles, get_article_by_id, upsert_user, log_analytics_event, get_all_articles, update_article, delete_article, execute_raw_sql
+from db import save_article, get_recent_articles, get_article_by_id, upsert_user, log_analytics_event, get_all_articles, update_article, delete_article, execute_raw_sql, get_all_transport, save_transport, delete_transport, get_all_places, save_place, delete_place, get_all_users, delete_user, get_analytics_stats
 
 # Initialize Sentry
 sentry_dsn = os.environ.get('SENTRY_DSN')
@@ -227,6 +227,79 @@ def admin_article_detail(article_id):
     elif request.method == 'DELETE':
         success = delete_article(article_id)
         return jsonify({'status': 'deleted' if success else 'failed'})
+
+@app.route('/api/transport', methods=['GET'])
+def api_transport():
+    data = get_all_transport()
+    return jsonify(data)
+
+@app.route('/api/places', methods=['GET'])
+def api_places():
+    data = get_all_places()
+    return jsonify(data)
+
+# Admin Endpoints for New Resources
+@app.route('/api/admin/transport', methods=['GET', 'POST'])
+def admin_transport():
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025': return jsonify({'error': 'Unauthorized'}), 401
+    
+    if request.method == 'GET':
+        return jsonify(get_all_transport())
+    
+    if request.method == 'POST':
+        save_transport(request.json)
+        return jsonify({'status': 'saved'})
+
+@app.route('/api/admin/transport/<int:id>', methods=['DELETE'])
+def admin_transport_delete(id):
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025': return jsonify({'error': 'Unauthorized'}), 401
+    
+    delete_transport(id)
+    return jsonify({'status': 'deleted'})
+
+@app.route('/api/admin/places', methods=['GET', 'POST'])
+def admin_places():
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025': return jsonify({'error': 'Unauthorized'}), 401
+    
+    if request.method == 'GET':
+        return jsonify(get_all_places())
+    
+    if request.method == 'POST':
+        save_place(request.json)
+        return jsonify({'status': 'saved'})
+
+@app.route('/api/admin/places/<int:id>', methods=['DELETE'])
+def admin_places_delete(id):
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025': return jsonify({'error': 'Unauthorized'}), 401
+    
+    delete_place(id)
+    return jsonify({'status': 'deleted'})
+
+@app.route('/api/admin/users', methods=['GET'])
+def admin_users():
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025': return jsonify({'error': 'Unauthorized'}), 401
+    
+    return jsonify(get_all_users())
+
+@app.route('/api/admin/users/<string:id>', methods=['DELETE'])
+def admin_users_delete(id):
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025': return jsonify({'error': 'Unauthorized'}), 401
+    
+    delete_user(id)
+    return jsonify({'status': 'deleted'})
+
+@app.route('/api/admin/analytics', methods=['GET'])
+def admin_analytics():
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025': return jsonify({'error': 'Unauthorized'}), 401
+    
+    return jsonify(get_analytics_stats())
 
 @app.route('/api/admin/sql', methods=['POST'])
 def admin_sql():
