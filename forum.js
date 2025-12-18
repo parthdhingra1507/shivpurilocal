@@ -159,7 +159,8 @@ const ForumApp = {
         const API_URL = '/api/user/sync';
 
         try {
-            await fetch(API_URL, {
+            console.log('[Forum] Syncing user to DB...', user.email);
+            const res = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -169,6 +170,16 @@ const ForumApp = {
                     photoURL: user.photoURL
                 })
             });
+
+            const data = await res.json();
+            console.log('[Forum] Sync result:', data);
+
+            if (res.ok) {
+                // Optional: ensure we know it worked
+                // this.showToast('Account synced'); 
+            } else {
+                console.error('[Forum] Sync failed:', data);
+            }
         } catch (error) {
             console.error('User sync error:', error);
         }

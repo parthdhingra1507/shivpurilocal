@@ -8,7 +8,7 @@ import time
 import os
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
-from db import save_article, get_recent_articles, get_article_by_id, upsert_user, log_analytics_event, get_all_articles, update_article, delete_article, execute_raw_sql
+from db import save_article, get_recent_articles, get_article_by_id, upsert_user, log_analytics_event, get_all_articles, update_article, delete_article, execute_raw_sql, get_all_transport, get_all_places, save_transport, delete_transport, save_place, delete_place, get_all_users, delete_user, get_analytics_stats, get_db_connection
 
 # Initialize Sentry
 sentry_dsn = os.environ.get('SENTRY_DSN')
@@ -170,10 +170,15 @@ def sync_user():
         return jsonify({'error': 'Missing UID'}), 400
     
     success = upsert_user(data)
+    
+    # Check DB type for debugging
+    conn, db_type = get_db_connection()
+    conn.close()
+    
     if success:
-        return jsonify({'status': 'synced'})
+        return jsonify({'status': 'synced', 'db_type': db_type})
     else:
-        return jsonify({'error': 'Failed to sync'}), 500
+        return jsonify({'error': 'Failed to sync', 'db_type': db_type}), 500
 
 @app.route('/api/analytics/log', methods=['POST'])
 def log_event():
