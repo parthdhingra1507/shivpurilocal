@@ -463,8 +463,8 @@
 }
 
 .google-btn:hover {
-    background: #f8f8f8;
-    border-color: #4285f4;
+    background: var(--gray-100);
+    border-color: var(--gray-300);
 }
 
 .guest-btn {
