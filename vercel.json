@@ -1,25 +1,46 @@
 {
-    "rewrites": [
+    "builds": [
         {
-            "source": "/admin",
-            "destination": "/admin.html"
-        },
-        {
-            "source": "/transport",
-            "destination": "/transport.html"
-        },
-        {
-            "source": "/places",
-            "destination": "/places.html"
-        },
-        {
-            "source": "/food",
-            "destination": "/food.html"
-        },
-        {
-            "source": "/news",
-            "destination": "/news.html"
+            "src": "app.py",
+            "use": "@vercel/python"
         }
     ],
-    "cleanUrls": true
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "app.py"
+        },
+        {
+            "src": "/admin",
+            "dest": "/admin.html"
+        },
+        {
+            "src": "/panel",
+            "dest": "/panel.html"
+        },
+        {
+            "src": "/transport",
+            "dest": "/transport.html"
+        },
+        {
+            "src": "/places",
+            "dest": "/places.html"
+        },
+        {
+            "src": "/food",
+            "dest": "/food.html"
+        },
+        {
+            "src": "/news",
+            "dest": "/news.html"
+        },
+        {
+            "src": "/forum",
+            "dest": "/forum.html"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/$1"
+        }
+    ]
 }
