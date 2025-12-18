@@ -140,7 +140,12 @@ window.addEventListener('load', () => {
     // Navigate to page
     function navigateToPage(index) {
         if (index >= 0 && index < pages.length) {
-            window.location.href = pages[index];
+            const url = pages[index];
+            if (window.router) {
+                window.router.navigate(url);
+            } else {
+                window.location.href = url;
+            }
         }
     }
 

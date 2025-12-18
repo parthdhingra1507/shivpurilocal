@@ -5,27 +5,37 @@ class Router {
     }
 
     init() {
-        // Disable SPA navigation - use full page loads for reliability
-        // This ensures all page-specific JavaScript initializes correctly
+        // Intercept global link clicks for SPA navigation
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            if (link) {
+                const href = link.getAttribute('href');
+                // Only handle internal links that aren't #anchors or external
+                if (href && href.startsWith('/') && !href.startsWith('//') && !href.includes('#')) {
+                    e.preventDefault();
+                    this.navigate(href);
+                }
+            }
+        });
 
-        // Still handle back/forward buttons
+        // Handle back/forward navigation
         window.addEventListener('popstate', (e) => {
-            window.location.reload();
+            this.loadPage(window.location.pathname, false);
         });
     }
 
     async navigate(url) {
+        if (window.location.pathname === url) return;
         history.pushState(null, '', url);
         await this.loadPage(url, true);
     }
 
     async loadPage(url, stickyScroll = true) {
-        // Show loading bar (optional)
-        document.body.classList.add('loading');
+        // Show loading state if slow
+        const loadingTimeout = setTimeout(() => document.body.classList.add('loading'), 300);
 
         try {
             let html;
-            // Simple cache
             if (this.cache.has(url)) {
                 html = this.cache.get(url);
             } else {
@@ -35,40 +45,42 @@ class Router {
                 this.cache.set(url, html);
             }
 
-            // Parse HTML
+            clearTimeout(loadingTimeout);
+            document.body.classList.remove('loading');
+
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const newContent = doc.querySelector('.content-area');
             const currentContent = document.querySelector('.content-area');
 
             if (newContent && currentContent) {
-                // Fade out
-                currentContent.style.opacity = '0';
-
-                setTimeout(() => {
+                // The Update Logic wrapped in View Transition
+                const updateDOM = () => {
                     currentContent.innerHTML = newContent.innerHTML;
                     document.title = doc.title;
+                    if (stickyScroll) window.scrollTo(0, 0);
 
-                    // Update Active Nav State
                     this.updateNav(url);
 
                     // Re-run i18n
                     if (window.i18n) window.i18n.updateDOM();
 
-                    // Wait for DOM to be rendered before initializing page scripts
+                    // Initialize Scripts
                     requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            // Re-initialize Page Logic
-                            this.runPageScripts(url);
-                        });
+                        this.runPageScripts(url);
+                        // Re-initialize swipe nav if needed or any other global listeners
                     });
+                };
 
-                    // Fade in
-                    currentContent.style.opacity = '1';
-                    if (stickyScroll) window.scrollTo(0, 0);
-
-                    document.body.classList.remove('loading');
-                }, 200);
+                // Use View Transition API if supported
+                if (document.startViewTransition) {
+                    await document.startViewTransition(() => {
+                        updateDOM();
+                    }).finished;
+                } else {
+                    // Fallback for older browsers
+                    updateDOM();
+                }
             }
         } catch (err) {
             console.error('Route error:', err);
@@ -77,9 +89,10 @@ class Router {
     }
 
     updateNav(url) {
-        const path = url === '/' ? '/' : url.split('?')[0]; // Simple path match
+        const path = url === '/' ? '/' : url.split('?')[0];
         document.querySelectorAll('.main-nav a').forEach(a => {
-            if (a.getAttribute('href') === path) {
+            const href = a.getAttribute('href');
+            if (href === path || (path !== '/' && href.startsWith(path))) {
                 a.classList.add('active');
             } else {
                 a.classList.remove('active');
@@ -88,13 +101,11 @@ class Router {
     }
 
     runPageScripts(url) {
-        // Dispatch event so other scripts can re-init
         const path = url;
-        console.log('[Router] Dispatching page-loaded event for:', path);
-        const event = new CustomEvent('page-loaded', { detail: { page: path } });
-        window.dispatchEvent(event);
+        console.log('[Router] Dispatching page-loaded for:', path);
+        window.dispatchEvent(new CustomEvent('page-loaded', { detail: { page: path } }));
     }
 }
 
-// Initialize
+// Initialize and expose global instance
 window.router = new Router();
