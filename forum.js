@@ -30,6 +30,8 @@ const ForumApp = {
     db: null,
     auth: null,
     unsubscribe: null,
+    authUnsubscribe: null,  // Track auth listener
+    initialized: false,      // Prevent double initialization
 
     // Category info
     categories: {
@@ -43,17 +45,26 @@ const ForumApp = {
 
     // Initialize
     init() {
-        // Initialize Sentry
-        if (typeof Sentry !== 'undefined') {
-            Sentry.init({
-                dsn: "https://8922a1eb759c408c9c777c151d72b12f@o4510554243334144.ingest.de.sentry.io/4510554785120336",
-                // TracesSampleRate is the percentage of transactions to capture for performance monitoring.
-                tracesSampleRate: 1.0,
-            });
-            console.log('[Forum] Sentry initialized');
+        console.log('[Forum] Initializing...', this.initialized ? '(already initialized)' : '(first time)');
+
+        // If already initialized, just refresh UI with current auth state
+        if (this.initialized) {
+            console.log('[Forum] Already initialized, refreshing UI only');
+            this.setupEventListeners();
+            this.updateAuthUI();
+            this.loadPosts();
+            return;
         }
 
-        console.log('[Forum] Initializing...');
+        // Initialize Sentry (only once)
+        if (typeof Sentry !== 'undefined' && !window._sentryInitialized) {
+            Sentry.init({
+                dsn: "https://8922a1eb759c408c9c777c151d72b12f@o4510554243334144.ingest.de.sentry.io/4510554785120336",
+                tracesSampleRate: 1.0,
+            });
+            window._sentryInitialized = true;
+            console.log('[Forum] Sentry initialized');
+        }
 
         // Check if Firebase is loaded
         if (typeof firebase === 'undefined') {
@@ -62,45 +73,63 @@ const ForumApp = {
             return;
         }
 
-        // Initialize Firebase
+        // Initialize Firebase (only once)
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
+            console.log('[Forum] Firebase app initialized');
         }
 
         this.auth = firebase.auth();
         this.db = firebase.firestore();
 
-        // Enable offline persistence
+        // Set auth persistence to LOCAL - survives browser restarts
+        this.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .then(() => {
+                console.log('[Forum] Auth persistence set to LOCAL');
+            })
+            .catch((error) => {
+                console.error('[Forum] Auth persistence error:', error);
+            });
+
+        // Enable offline persistence for Firestore (only once)
         this.db.enablePersistence()
             .catch((err) => {
                 if (err.code == 'failed-precondition') {
-                    console.log('Persistence failed: Multiple tabs open');
+                    console.log('[Forum] Firestore persistence failed: Multiple tabs open');
                 } else if (err.code == 'unimplemented') {
-                    console.log('Persistence not supported by browser');
+                    console.log('[Forum] Firestore persistence not supported by browser');
                 }
             });
 
-        // Check for Redirect Result (for Google Login)
+        // Check for Redirect Result (for Google Login fallback)
         this.auth.getRedirectResult().then((result) => {
             if (result.user) {
-                console.log('Redirect Login Success:', result.user.uid);
-                this.showToast('Welcome back! You can now post.');
+                console.log('[Forum] Redirect Login Success:', result.user.email);
+                this.currentUser = result.user;
+                this.isGuest = result.user.isAnonymous;
+                this.updateAuthUI();
+                this.hideLoginModal();
+                this.showToast('Welcome, ' + (result.user.displayName || 'User') + '!');
                 this.syncUserWithDB(result.user);
             }
         }).catch((error) => {
-            console.error('Redirect Login Error:', error);
             if (error.code === 'auth/unauthorized-domain') {
+                console.error('[Forum] Redirect Login Error:', error);
                 this.showError('Login Failed: Domain not authorized. Add to Firebase Console.');
-            } else {
-                this.showToast('Login failed: ' + error.message);
             }
+            // Silently ignore other errors (normal when no redirect happened)
         });
 
         // Setup event listeners
         this.setupEventListeners();
 
-        // Check auth state
-        this.auth.onAuthStateChanged(user => {
+        // Setup auth state listener (only once)
+        if (this.authUnsubscribe) {
+            this.authUnsubscribe(); // Clean up any existing listener
+        }
+
+        this.authUnsubscribe = this.auth.onAuthStateChanged(user => {
+            console.log('[Forum] Auth state changed:', user ? (user.isAnonymous ? 'Guest' : user.email) : 'Signed out');
             if (user) {
                 this.currentUser = user;
                 this.isGuest = user.isAnonymous;
@@ -111,9 +140,14 @@ const ForumApp = {
                     this.syncUserWithDB(user);
                 }
             } else {
+                this.currentUser = null;
+                this.isGuest = false;
                 this.updateAuthUI();
             }
         });
+
+        // Mark as initialized
+        this.initialized = true;
 
         // Load posts
         this.loadPosts();
@@ -194,9 +228,15 @@ const ForumApp = {
         const container = document.getElementById('auth-container');
         if (!container) return;
 
-        if (this.currentUser || this.isGuest) {
-            const name = this.currentUser?.displayName || 'Guest User';
-            const photo = this.currentUser?.photoURL;
+        // Use Firebase's current user as source of truth
+        const user = this.currentUser || this.auth?.currentUser;
+        const isLoggedIn = !!user;
+
+        console.log('[Forum] Updating auth UI, user:', user?.email || user?.uid || 'none', 'isGuest:', this.isGuest);
+
+        if (isLoggedIn) {
+            const name = user.displayName || (user.isAnonymous ? 'Guest User' : 'User');
+            const photo = user.photoURL;
 
             container.innerHTML = `
                 <div class="auth-user-info">
@@ -227,35 +267,68 @@ const ForumApp = {
         if (modal) modal.classList.remove('active');
     },
 
-    // Login with Google
-    // Login with Google
+    // Login with Google - Try popup first, fallback to redirect
     async loginWithGoogle() {
-        console.log('Starting Google Redirect Login...');
+        console.log('[Forum] Starting Google Login...');
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+
         try {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            provider.setCustomParameters({ prompt: 'select_account' });
+            // Try popup first (works better on most browsers)
+            const result = await this.auth.signInWithPopup(provider);
+            console.log('[Forum] Google popup login success:', result.user.email);
 
-            // Use Redirect instead of Popup
-            await this.auth.signInWithRedirect(provider);
-            // Page will reload and 'getRedirectResult' in init() will handle the rest
+            // Explicitly set state
+            this.currentUser = result.user;
+            this.isGuest = false;
 
+            // Update UI immediately
+            this.updateAuthUI();
+            this.hideLoginModal();
+            this.showToast('Welcome, ' + (result.user.displayName || result.user.email) + '!');
+            this.syncUserWithDB(result.user);
         } catch (error) {
-            console.error('Google login launch error:', error);
-            this.showToast('Could not start login: ' + error.message);
+            console.error('[Forum] Google popup error:', error.code, error.message);
+
+            // Handle specific errors
+            if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+                // Fallback to redirect
+                console.log('[Forum] Popup blocked/closed, trying redirect...');
+                this.showToast('Redirecting to Google login...');
+                try {
+                    await this.auth.signInWithRedirect(provider);
+                } catch (redirectError) {
+                    console.error('[Forum] Redirect also failed:', redirectError);
+                    this.showToast('Login failed. Please try again.');
+                }
+            } else if (error.code === 'auth/unauthorized-domain') {
+                this.showError('Login failed: This domain is not authorized. Please contact admin to add this domain to Firebase Console.');
+            } else if (error.code === 'auth/cancelled-popup-request') {
+                // User clicked login multiple times, ignore
+                console.log('[Forum] Multiple popup requests, ignoring...');
+            } else {
+                this.showToast('Login failed: ' + error.message);
+            }
         }
     },
 
-    // Login as guest
-    // Login as guest
+    // Login as guest (Anonymous Firebase Auth)
     async loginAsGuest() {
+        console.log('[Forum] Starting Guest Login...');
         try {
-            await this.auth.signInAnonymously();
+            const result = await this.auth.signInAnonymously();
+            console.log('[Forum] Guest login success, UID:', result.user.uid);
+            this.currentUser = result.user;
+            this.isGuest = true;
             this.hideLoginModal();
-            this.showToast('Posting as Guest');
+            this.updateAuthUI();
+            this.showToast('You are now posting as Guest');
         } catch (error) {
-            console.error('Guest login error:', error);
+            console.error('[Forum] Guest login error:', error.code, error.message);
             if (error.code === 'auth/operation-not-allowed') {
-                this.showError('Guest Login Disabled. Enable "Anonymous" in Firebase Console > Authentication > Sign-in method.');
+                this.showError('Guest Login is disabled. Admin needs to enable "Anonymous" sign-in in Firebase Console > Authentication > Sign-in method.');
+            } else if (error.code === 'auth/admin-restricted-operation') {
+                this.showError('Guest Login is restricted. Please contact admin.');
             } else {
                 this.showToast('Guest login failed: ' + error.message);
             }
@@ -381,23 +454,45 @@ const ForumApp = {
                 this.unsubscribe();
             }
 
-            // Real-time listener
+            // Real-time listener with metadata changes to handle "vanishing" posts
             this.unsubscribe = this.db.collection('forum_posts')
                 .orderBy('createdAt', 'desc')
                 .limit(50)
-                .onSnapshot(snapshot => {
+                .onSnapshot({ includeMetadataChanges: true }, snapshot => {
+                    const hasPendingWrites = snapshot.metadata.hasPendingWrites;
+                    const fromCache = snapshot.metadata.fromCache;
+                    console.log(`[Forum] Snapshot: ${snapshot.size} docs, cache: ${fromCache}, pending: ${hasPendingWrites}`);
+
                     this.posts = [];
                     snapshot.forEach(doc => {
-                        this.posts.push({ id: doc.id, ...doc.data() });
+                        const data = doc.data();
+                        const docMeta = doc.metadata;
+
+                        // Handle documents with pending writes (newly created posts)
+                        if (docMeta.hasPendingWrites || !data.createdAt) {
+                            // Use current time for posts that haven't synced yet
+                            data.createdAt = { toDate: () => new Date() };
+                            console.log(`[Forum] Doc ${doc.id} has pending writes, using local time`);
+                        }
+
+                        this.posts.push({ id: doc.id, ...data });
                     });
+
+                    // Always render, even during pending state - prevents "vanishing"
                     this.filterPosts();
                 }, error => {
-                    console.error('Posts load error:', error);
-                    this.showError('Could not load posts. Please refresh.');
+                    console.error('[Forum] Posts load error:', error.code, error.message);
+                    if (error.code === 'failed-precondition') {
+                        this.showError('Database index required. Please contact admin.');
+                    } else if (error.code === 'permission-denied') {
+                        this.showError('Permission denied. Firestore rules may need updating.');
+                    } else {
+                        this.showError('Could not load posts. Please refresh.');
+                    }
                 });
 
         } catch (error) {
-            console.error('Posts load error:', error);
+            console.error('[Forum] Posts load error:', error);
             this.showError('Could not load posts. Please refresh.');
         }
     },
@@ -441,7 +536,17 @@ const ForumApp = {
     // Render single post card
     renderPostCard(post) {
         const cat = this.categories[post.category] || { icon: '💬', label: post.category };
-        const timeAgo = this.getTimeAgo(post.createdAt?.toDate());
+
+        // Handle potential null date from serverTimestamp() during local sync
+        let timeAgo = 'Just now';
+        try {
+            if (post.createdAt) {
+                timeAgo = this.getTimeAgo(post.createdAt.toDate());
+            }
+        } catch (e) {
+            console.error('Date error:', e);
+        }
+
         const isLiked = post.likedBy?.includes(this.currentUser?.uid);
 
         return `
