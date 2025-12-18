@@ -32,9 +32,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Shivpuri Local">
-    <link rel="stylesheet" href="style.css?v=20251218-2204">
-    <link rel="stylesheet" href="forum.css?v=20251218-2204">
-    <script src="sw-register.js?v=20251218-2204"></script>
+    <link rel="stylesheet" href="style.css?v=20251218-2209">
+    <link rel="stylesheet" href="forum.css?v=20251218-2209">
+    <script src="sw-register.js?v=20251218-2209"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -51,18 +51,10 @@
 <body class="page-forum">
     <div class="app-container">
         <header class="main-header">
-            <div class="logo-container">
-                <a href="/" style="text-decoration: none; color: inherit;">
-                    <h1 class="logo">Shivpuri<span class="highlight">Local</span></h1>
-                </a>
-                <p class="tagline" data-i18n="tagline">The City Encyclopedia</p>
-            </div>
-            <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
-                <button id="install-btn" class="install-btn" style="display: none;">⬇️ App</button>
-                <button id="lang-toggle" class="lang-btn">हिंदी</button>
-                <button id="dark-toggle" class="theme-btn" aria-label="Toggle Dark Mode">🌙</button>
-            </div>
             <nav class="main-nav">
+                <a href="/" class="logo-link">
+                    <span class="logo">Shivpuri<span class="highlight">Local</span></span>
+                </a>
                 <ul>
                     <li><a href="/" data-i18n="nav_home">Home</a></li>
                     <li><a href="/transport" data-i18n="nav_transport">Transport</a></li>
@@ -71,9 +63,12 @@
                     <li><a href="/news" data-i18n="nav_news">News</a></li>
                     <li><a href="/forum" class="active" data-i18n="nav_forum">Forum</a></li>
                 </ul>
+                <div class="nav-actions">
+                    <button id="lang-toggle" class="lang-btn">हिंदी</button>
+                    <button id="dark-toggle" class="theme-btn" aria-label="Toggle Dark Mode">🌙</button>
+                </div>
             </nav>
         </header>
-
         <main class="content-area">
             <section class="hero">
                 <h2 id="hero-title" data-i18n="hero_forum_title">Community Forum</h2>
@@ -185,8 +180,8 @@
 
     <script src="i18n.js"></script>
     <script src="router.js"></script>
-    <script src="common.js?v=20251218-2204"></script>
-    <script src="forum.js?v=20251218-2204"></script>
+    <script src="common.js?v=20251218-2209"></script>
+    <script src="forum.js?v=20251218-2209"></script>
 </body>
 
 </html>
