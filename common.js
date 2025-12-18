@@ -110,3 +110,77 @@ window.addEventListener('load', () => {
         logAnalyticsEvent('page_view');
     }, 1000);
 });
+
+// ===================================
+// SWIPE NAVIGATION
+// ===================================
+(function initSwipeNavigation() {
+    // Page order for navigation
+    const pages = [
+        '/',
+        '/transport',
+        '/places',
+        '/food',
+        '/news',
+        '/forum'
+    ];
+
+    // Get current page index
+    function getCurrentPageIndex() {
+        let currentPath = window.location.pathname;
+        // Normalize path
+        if (currentPath === '' || currentPath === '/index.html') currentPath = '/';
+        // Remove .html extension if present
+        currentPath = currentPath.replace('.html', '');
+
+        const index = pages.findIndex(p => p === currentPath);
+        return index >= 0 ? index : 0;
+    }
+
+    // Navigate to page
+    function navigateToPage(index) {
+        if (index >= 0 && index < pages.length) {
+            window.location.href = pages[index];
+        }
+    }
+
+    // Touch handling
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+
+    const minSwipeDistance = 80; // Minimum swipe distance in pixels
+    const maxVerticalDistance = 100; // Max vertical movement to still count as horizontal swipe
+
+    document.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+
+        // Check if it's a horizontal swipe (not vertical scroll)
+        if (Math.abs(deltaX) > minSwipeDistance && Math.abs(deltaY) < maxVerticalDistance) {
+            const currentIndex = getCurrentPageIndex();
+
+            if (deltaX < 0) {
+                // Swipe LEFT - go to NEXT page
+                navigateToPage(currentIndex + 1);
+            } else {
+                // Swipe RIGHT - go to PREVIOUS page
+                navigateToPage(currentIndex - 1);
+            }
+        }
+    }
+
+    console.log('[Swipe Nav] Initialized - Swipe left/right to navigate');
+})();
