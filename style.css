@@ -1097,8 +1097,7 @@ html.dark-mode .main-header {
 }
 
 html.dark-mode .logo .highlight {
-    color: var(--gray-900);
-    font-weight: 800;
+    color: #ef4444;
 }
 
 html.dark-mode .main-nav a.active {
