@@ -13,24 +13,11 @@ const firebaseConfig = {
     measurementId: "G-DB24PP475M"
 };
 
-const PROFANITY_LIST = ['badword1', 'badword2'];
-
-const ForumDebug = {
-    logs: [],
-    log(msg) {
-        const timestamp = new Date().toLocaleTimeString();
-        const entry = `[${timestamp}] ${msg}`;
-        this.logs.push(entry);
-        console.log(`[ForumDiag] ${msg}`);
-        this.updateUI();
-    },
-    updateUI() {
-        const display = document.getElementById('forum-debug-footer');
-        if (display) {
-            display.innerHTML = this.logs.slice(-5).join('<br>');
-        }
-    }
-};
+const PROFANITY_LIST = [
+    'badword1', 'badword2', // Add actual words to filter
+    // Hindi profanity
+    'गाली1', 'गाली2'
+];
 
 const ForumApp = {
     // State
@@ -54,26 +41,18 @@ const ForumApp = {
 
     // Initialize
     init() {
-        ForumDebug.log('Initializing ForumApp...');
-
-        // Add Debug UI
-        this.injectDebugUI();
+        console.log('[Forum] Initializing...');
 
         // Check if Firebase is loaded
         if (typeof firebase === 'undefined') {
-            ForumDebug.log('ERROR: Firebase SDK not found');
-            this.showError('Forum is temporarily unavailable. Firebase SDK error.');
+            console.error('[Forum] Firebase not loaded');
+            this.showError('Forum is temporarily unavailable. Please try again later.');
             return;
         }
 
         // Initialize Firebase
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-                ForumDebug.log('Firebase initialized');
-            }
-        } catch (e) {
-            ForumDebug.log('Firebase Init Error: ' + e.message);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
 
         this.auth = firebase.auth();
@@ -81,23 +60,23 @@ const ForumApp = {
 
         // Enable offline persistence
         this.db.enablePersistence()
-            .then(() => ForumDebug.log('Persistence enabled'))
             .catch((err) => {
-                ForumDebug.log('Persistence warning: ' + err.code);
+                if (err.code == 'failed-precondition') {
+                    console.log('Persistence failed: Multiple tabs open');
+                } else if (err.code == 'unimplemented') {
+                    console.log('Persistence not supported by browser');
+                }
             });
 
         // Check for Redirect Result (for Google Login)
-        ForumDebug.log('Checking for Redirect Result...');
         this.auth.getRedirectResult().then((result) => {
             if (result.user) {
-                ForumDebug.log('Redirect SUCCESS: ' + result.user.uid);
+                console.log('Redirect Login Success:', result.user.uid);
                 this.showToast('Welcome back! You can now post.');
                 this.syncUserWithDB(result.user);
-            } else {
-                ForumDebug.log('No pending redirect found.');
             }
         }).catch((error) => {
-            ForumDebug.log('REDIRECT ERROR: ' + error.code + " - " + error.message);
+            console.error('Redirect Login Error:', error);
             if (error.code === 'auth/unauthorized-domain') {
                 this.showError('Login Failed: Domain not authorized. Add to Firebase Console.');
             } else {
@@ -111,16 +90,15 @@ const ForumApp = {
         // Check auth state
         this.auth.onAuthStateChanged(user => {
             if (user) {
-                ForumDebug.log('Auth State: Logged In (' + (user.isAnonymous ? 'Guest' : user.uid) + ')');
                 this.currentUser = user;
                 this.isGuest = user.isAnonymous;
                 this.updateAuthUI();
 
+                // Sync user with SQL DB
                 if (!user.isAnonymous) {
                     this.syncUserWithDB(user);
                 }
             } else {
-                ForumDebug.log('Auth State: Not Logged In');
                 this.currentUser = null;
                 this.isGuest = false;
                 this.updateAuthUI();
@@ -131,22 +109,13 @@ const ForumApp = {
         this.loadPosts();
     },
 
-    injectDebugUI() {
-        if (document.getElementById('forum-debug-container')) return;
-        const div = document.createElement('div');
-        div.id = 'forum-debug-container';
-        div.style.cssText = 'position:fixed; bottom:0; left:0; right:0; background:rgba(0,0,0,0.8); color:#0f0; font-family:monospace; font-size:10px; padding:5px; z-index:9999; pointer-events:none; border-top:1px solid #0f0;';
-        div.innerHTML = '<strong>FORUM DIAGNOSTICS:</strong> <span id="forum-debug-footer">Waiting...</span>';
-        document.body.appendChild(div);
-    },
-
     // Sync user with SQL DB
     async syncUserWithDB(user) {
         const isLocal = window.location.hostname === 'localhost';
         const API_URL = isLocal ? '/api/user/sync' : 'https://shivpurilocal-backend.onrender.com/api/user/sync';
 
         try {
-            const res = await fetch(API_URL, {
+            await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -156,9 +125,8 @@ const ForumApp = {
                     photoURL: user.photoURL
                 })
             });
-            ForumDebug.log('SQL Sync: ' + res.status);
         } catch (error) {
-            ForumDebug.log('SQL Sync Error: ' + error.message);
+            console.error('User sync error:', error);
         }
     },
 
@@ -251,26 +219,24 @@ const ForumApp = {
 
     // Login with Google
     async loginWithGoogle() {
-        ForumDebug.log('Starting Google Login Redirect...');
         try {
             const provider = new firebase.auth.GoogleAuthProvider();
             provider.setCustomParameters({ prompt: 'select_account' });
             await this.auth.signInWithRedirect(provider);
         } catch (error) {
-            ForumDebug.log('Google login start error: ' + error.code);
+            console.error('Google login error:', error);
             this.showToast('Could not start login: ' + error.message);
         }
     },
 
     // Login as guest
     async loginAsGuest() {
-        ForumDebug.log('Starting Guest Login (Anonymous)...');
         try {
             await this.auth.signInAnonymously();
             this.hideLoginModal();
             this.showToast('Posting as Guest');
         } catch (error) {
-            ForumDebug.log('GUEST ERROR: ' + error.code);
+            console.error('Guest login error:', error);
             if (error.code === 'auth/operation-not-allowed') {
                 this.showError('Guest Login Disabled. Enable "Anonymous" in Firebase Console.');
             } else {
@@ -287,9 +253,8 @@ const ForumApp = {
             this.isGuest = false;
             this.updateAuthUI();
             this.showToast('Logged out');
-            ForumDebug.log('Logged out');
         } catch (error) {
-            ForumDebug.log('Logout error: ' + error.message);
+            console.error('Logout error:', error);
         }
     },
 
@@ -303,7 +268,6 @@ const ForumApp = {
     async submitPost() {
         const user = this.auth.currentUser;
         if (!user) {
-            ForumDebug.log('Attempted post without user - showing login');
             this.showLoginModal();
             return;
         }
@@ -339,9 +303,8 @@ const ForumApp = {
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            ForumDebug.log('Submitting post to Firestore...');
             const docRef = await this.db.collection('forum_posts').add(post);
-            ForumDebug.log('Post SUCCESS: ' + docRef.id);
+            console.log('Post published with ID:', docRef.id);
 
             // Clear form
             document.getElementById('post-category').value = '';
@@ -352,11 +315,11 @@ const ForumApp = {
             this.showToast('Post published! 🎉');
 
         } catch (error) {
-            ForumDebug.log('POST ERROR: ' + error.code + " - " + error.message);
+            console.error('Post error:', error);
             if (error.code === 'permission-denied') {
-                this.showError('Permission Denied: Check Firestore rules or ensure auth is enabled.');
+                this.showError('Permission Denied: Check Firestore rules.');
             } else {
-                this.showToast('Failed: ' + error.message);
+                this.showToast('Failed to post: ' + error.message);
             }
         } finally {
             submitBtn.disabled = false;
@@ -369,7 +332,6 @@ const ForumApp = {
         const container = document.getElementById('posts-container');
         if (!container) return;
 
-        ForumDebug.log('Loading posts...');
         try {
             if (this.unsubscribe) this.unsubscribe();
 
@@ -378,27 +340,25 @@ const ForumApp = {
                 .orderBy('createdAt', 'desc')
                 .limit(50)
                 .onSnapshot(snapshot => {
-                    ForumDebug.log('Snapshot received: ' + snapshot.size + ' posts');
                     this.posts = [];
                     snapshot.forEach(doc => {
                         this.posts.push({ id: doc.id, ...doc.data() });
                     });
                     this.filterPosts();
                 }, error => {
-                    ForumDebug.log('SNAPSHOT ERROR: ' + error.code + " - " + error.message);
+                    console.error('Snapshot error:', error);
                     if (error.message.includes('index')) {
                         const link = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]+/);
                         if (link) {
-                            ForumDebug.log('Missing Index! Click link in console or dashboard.');
                             this.showError('Database indexing required. <a href="' + link[0] + '" target="_blank">Click here to fix.</a>');
                         }
                     } else {
-                        this.showError('Could not load posts: ' + error.message);
+                        this.showError('Could not load posts. Please refresh.');
                     }
                 });
 
         } catch (error) {
-            ForumDebug.log('Load error: ' + error.message);
+            console.error('Load error:', error);
         }
     },
 
@@ -502,7 +462,7 @@ const ForumApp = {
                 });
             }
         } catch (error) {
-            ForumDebug.log('Like error: ' + error.message);
+            console.error('Like error:', error);
         }
     },
 
@@ -543,7 +503,7 @@ const ForumApp = {
                 <div class="empty-state">
                     <div class="empty-state-icon">⚠️</div>
                     <h3>Error</h3>
-                    <p style="color:red; font-weight:bold;">${message}</p>
+                    <p>${message}</p>
                     <button onclick="ForumApp.loadPosts()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--gray-900); color: white; border: none; border-radius: 8px; cursor: pointer;">
                         Retry
                     </button>
@@ -560,7 +520,7 @@ const ForumApp = {
         const toast = document.createElement('div');
         toast.className = 'toast';
         toast.textContent = message;
-        toast.style.cssText = 'background:black; color:white; padding:10px; border-radius:5px; margin:5px; animation:fadeIn 0.3s;';
+        toast.style.cssText = 'background:var(--gray-900); color:white; padding:0.75rem 1.5rem; border-radius:8px; margin-bottom:0.5rem; animation:slideIn 0.3s ease;';
         container.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
@@ -580,4 +540,5 @@ if (document.readyState !== 'loading') {
         if (p === '/forum' || p === '/forum.html') ForumApp.init();
     });
 }
+
 
