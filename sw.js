@@ -76,6 +76,11 @@ self.addEventListener('message', (event) => {
 
 // Fetch Event - NETWORK FIRST for everything (ensures freshness)
 self.addEventListener('fetch', (event) => {
+    // Skip non-GET requests (POST, PUT, DELETE, etc.)
+    if (event.request.method !== 'GET') {
+        return;
+    }
+
     // Skip non-HTTP(S) requests
     if (!event.request.url.startsWith('http')) {
         return;
