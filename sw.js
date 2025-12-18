@@ -1,14 +1,27 @@
-const CACHE_VERSION = '20251213-1401'; // Fixed asset caching and chrome-extension errors
+/**
+ * Service Worker - Auto-updating Version
+ * Cache version is auto-generated from deploy time
+ */
+
+// Auto-generated version - updates with each deployment
+const CACHE_VERSION = 'v' + Date.now();  // Will be replaced by build time
 const CACHE_NAME = `shivpuri-local-${CACHE_VERSION}`;
-// 👆 Just update the timestamp above when deploying (format: YYYYMMDD-HHMM)
-const ASSETS = [
+
+// Core assets to cache (but with network-first strategy)
+const CORE_ASSETS = [
     '/',
     '/index.html',
+    '/style.css',
+    '/manifest.json'
+];
+
+// Assets that change frequently - use network-first
+const DYNAMIC_ASSETS = [
     '/transport.html',
     '/places.html',
     '/food.html',
     '/news.html',
-    '/style.css',
+    '/forum.html',
     '/common.js',
     '/i18n.js',
     '/router.js',
@@ -16,93 +29,86 @@ const ASSETS = [
     '/places.js',
     '/food.js',
     '/news.js',
-    '/manifest.json',
-    '/social-preview.png'
+    '/forum.js',
+    '/forum.css'
 ];
 
-// Install Event
+// Install Event - Minimal caching, let network-first handle updates
 self.addEventListener('install', (event) => {
-    console.log('[SW] Installing version:', CACHE_NAME);
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then((cache) => {
-                console.log('[SW] Caching assets');
-                // Use addAll with error handling
-                return cache.addAll(ASSETS).catch((err) => {
-                    console.error('[SW] Failed to cache some assets:', err);
-                    // Continue anyway - don't block installation
-                });
-            })
-            .then(() => self.skipWaiting()) // Force activate immediately
-    );
+    console.log('[SW] Installing...');
+    // Skip waiting immediately - don't wait for old SW to die
+    self.skipWaiting();
 });
 
-// Activate Event
+// Activate Event - Clean up ALL old caches immediately
 self.addEventListener('activate', (event) => {
-    console.log('[SW] Activating version:', CACHE_NAME);
+    console.log('[SW] Activating, cleaning all old caches...');
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('[SW] Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
-                    }
+                    // Delete ALL caches to ensure fresh content
+                    console.log('[SW] Deleting cache:', cacheName);
+                    return caches.delete(cacheName);
                 })
             );
         }).then(() => {
-            console.log('[SW] Claiming clients');
-            return self.clients.claim(); // Take control immediately
+            console.log('[SW] Taking control of all clients');
+            return self.clients.claim();
         })
     );
 });
 
-// Listen for skip waiting message
+// Listen for skip waiting message from page
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
-        console.log('[SW] Received SKIP_WAITING message');
+        console.log('[SW] Received SKIP_WAITING, activating now');
         self.skipWaiting();
+    }
+
+    // Force refresh all clients when requested
+    if (event.data && event.data.type === 'REFRESH_ALL') {
+        self.clients.matchAll().then(clients => {
+            clients.forEach(client => client.navigate(client.url));
+        });
     }
 });
 
-// Fetch Event
+// Fetch Event - NETWORK FIRST for everything (ensures freshness)
 self.addEventListener('fetch', (event) => {
-    // Skip non-HTTP(S) requests (chrome-extension://, etc.)
+    // Skip non-HTTP(S) requests
     if (!event.request.url.startsWith('http')) {
         return;
     }
 
-    // NETWORK ONLY for API requests (Never cache news)
+    // Skip API requests entirely - let browser handle
     if (event.request.url.includes('/api/')) {
-        return; // Fallback to browser default (Network)
+        return;
     }
 
+    // NETWORK FIRST strategy - always try to get fresh content
     event.respondWith(
-        caches.match(event.request)
-            .then((response) => {
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request).then((response) => {
-                    // Don't cache non-successful responses
-                    if (!response || response.status !== 200 || response.type !== 'basic') {
-                        return response;
-                    }
-                    const responseToCache = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        // Double-check URL scheme before caching
-                        if (event.request.url.startsWith('http')) {
-                            cache.put(event.request, responseToCache).catch((err) => {
-                                console.warn('[SW] Failed to cache:', event.request.url, err);
-                            });
-                        }
+        fetch(event.request)
+            .then((networkResponse) => {
+                // Got fresh response - return it
+                // Optionally cache for offline (but we prioritize freshness)
+                if (networkResponse && networkResponse.status === 200) {
+                    const responseClone = networkResponse.clone();
+                    caches.open('offline-cache').then((cache) => {
+                        cache.put(event.request, responseClone);
                     });
-                    return response;
-                });
+                }
+                return networkResponse;
             })
             .catch(() => {
-                // Return offline page if available
-                return caches.match('/');
+                // Network failed - try cache as fallback for offline support
+                return caches.match(event.request).then((cachedResponse) => {
+                    if (cachedResponse) {
+                        return cachedResponse;
+                    }
+                    // Last resort - return cached homepage
+                    return caches.match('/');
+                });
             })
     );
 });

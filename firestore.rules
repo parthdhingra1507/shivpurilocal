@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Forum posts - anyone can read, authenticated users can create
+    match /forum_posts/{postId} {
+      // Anyone can read posts (public forum)
+      allow read: if true;
+      
+      // Authenticated users (including anonymous/guest) can create posts
+      allow create: if request.auth != null;
+      
+      // Only the author can update or delete their own posts
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.authorId;
+    }
+    
+    // Users collection (if you sync user data)
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Default deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
