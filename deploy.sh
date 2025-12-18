@@ -1,16 +1,52 @@
 #!/bin/bash
-echo "🚀 Starting deployment..."
+# Deploy script with auto cache-busting
+# Run this before every git push
 
-# Add all changes
-git add .
+# Generate version from timestamp
+VERSION=$(date '+%Y%m%d-%H%M')
 
-# Commit changes
+echo "🚀 Deploying version: $VERSION"
+echo ""
+
+# Update version in all HTML files
+echo "📝 Updating asset versions in HTML files..."
+for file in *.html; do
+    # Update CSS versions
+    sed -i '' "s/style\.css?v=[^\"']*/style.css?v=$VERSION/g" "$file"
+    sed -i '' "s/forum\.css?v=[^\"']*/forum.css?v=$VERSION/g" "$file"
+    
+    # Update JS versions  
+    sed -i '' "s/sw-register\.js?v=[^\"']*/sw-register.js?v=$VERSION/g" "$file"
+    sed -i '' "s/common\.js?v=[^\"']*/common.js?v=$VERSION/g" "$file"
+    sed -i '' "s/i18n\.js?v=[^\"']*/i18n.js?v=$VERSION/g" "$file"
+    sed -i '' "s/router\.js?v=[^\"']*/router.js?v=$VERSION/g" "$file"
+    sed -i '' "s/transport\.js?v=[^\"']*/transport.js?v=$VERSION/g" "$file"
+    sed -i '' "s/places\.js?v=[^\"']*/places.js?v=$VERSION/g" "$file"
+    sed -i '' "s/food\.js?v=[^\"']*/food.js?v=$VERSION/g" "$file"
+    sed -i '' "s/news\.js?v=[^\"']*/news.js?v=$VERSION/g" "$file"
+    sed -i '' "s/forum\.js?v=[^\"']*/forum.js?v=$VERSION/g" "$file"
+    
+    echo "  ✓ $file"
+done
+
+# Update version.js
+if [ -f "version.js" ]; then
+    sed -i '' "s/APP_BUILD = '[^']*'/APP_BUILD = '$VERSION'/g" version.js
+    echo "  ✓ version.js"
+fi
+
+echo ""
+echo "✅ All files updated to version $VERSION"
+echo ""
+
+# Git operations
 echo "📦 Committing changes..."
-git commit -m "Update content and design"
+git add -A
+git commit -m "Deploy v$VERSION - auto cache bust"
 
-# Push to GitHub
+echo ""
 echo "⬆️ Pushing to GitHub..."
-echo "NOTE: You may be asked for your GitHub username and password (or token)."
 git push
 
-echo "✅ Done! Netlify will update your site automatically."
+echo ""
+echo "🎉 Deployed! Site will update automatically."
