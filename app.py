@@ -228,16 +228,81 @@ def admin_article_detail(article_id):
         success = delete_article(article_id)
         return jsonify({'status': 'deleted' if success else 'failed'})
 
-@app.route('/api/admin/sql', methods=['POST'])
-def admin_sql():
+@app.route('/api/transport')
+def get_transport():
+    data = get_all_transport()
+    return jsonify(data)
+
+@app.route('/api/places')
+def get_places():
+    data = get_all_places()
+    return jsonify(data)
+
+@app.route('/api/admin/transport', methods=['GET', 'POST'])
+def admin_transport():
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025':
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    if request.method == 'GET':
+        return jsonify(get_all_transport())
+    
+    data = request.json
+    success = save_transport(data)
+    return jsonify({'status': 'saved' if success else 'failed'})
+
+@app.route('/api/admin/transport/<int:id>', methods=['DELETE'])
+def delete_transport_route(id):
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025':
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    success = delete_transport(id)
+    return jsonify({'status': 'deleted' if success else 'failed'})
+
+@app.route('/api/admin/places', methods=['GET', 'POST'])
+def admin_places():
     auth_header = request.headers.get('X-Admin-Key')
     if auth_header != 'shivpuri2025':
         return jsonify({'error': 'Unauthorized'}), 401
         
+    if request.method == 'GET':
+        return jsonify(get_all_places())
+    
     data = request.json
-    query = data.get('query')
-    result = execute_raw_sql(query)
-    return jsonify(result)
+    success = save_place(data)
+    return jsonify({'status': 'saved' if success else 'failed'})
+
+@app.route('/api/admin/places/<int:id>', methods=['DELETE'])
+def delete_place_route(id):
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025':
+        return jsonify({'error': 'Unauthorized'}), 401
+        
+    success = delete_place(id)
+    return jsonify({'status': 'deleted' if success else 'failed'})
+
+@app.route('/api/admin/users', methods=['GET'])
+def admin_users():
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025':
+        return jsonify({'error': 'Unauthorized'}), 401
+    return jsonify(get_all_users())
+
+@app.route('/api/admin/users/<string:id>', methods=['DELETE'])
+def delete_user_route(id):
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025':
+        return jsonify({'error': 'Unauthorized'}), 401
+    success = delete_user(id)
+    return jsonify({'status': 'deleted' if success else 'failed'})
+
+@app.route('/api/admin/analytics', methods=['GET'])
+def admin_stats():
+    auth_header = request.headers.get('X-Admin-Key')
+    if auth_header != 'shivpuri2025':
+        return jsonify({'error': 'Unauthorized'}), 401
+    return jsonify(get_analytics_stats())
 
 # Static routes
 @app.route('/')
