@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Prevent caching -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -32,9 +32,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Shivpuri Local">
-    <link rel="stylesheet" href="style.css?v=20251218-2327">
-    <link rel="stylesheet" href="forum.css?v=20251218-2327">
-    <script src="sw-register.js?v=20251218-2327"></script>
+    <link rel="stylesheet" href="style.css?v=20251219-0100">
+    <link rel="stylesheet" href="forum.css?v=20251219-0100">
+    <script src="sw-register.js?v=20251219-0100"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -68,79 +68,80 @@
                     <button id="dark-toggle" class="theme-btn">🌙</button>
                 </div>
             </div>
-        </header>            <section class="hero">
-                <h2 id="hero-title" data-i18n="hero_forum_title">Community Forum</h2>
-                <p id="hero-desc" data-i18n="hero_forum_desc">Connect with Shivpuri locals. Discuss, help, and share.
-                </p>
-            </section>
+        </header>
+        <section class="hero">
+            <h2 id="hero-title" data-i18n="hero_forum_title">Community Forum</h2>
+            <p id="hero-desc" data-i18n="hero_forum_desc">Connect with Shivpuri locals. Discuss, help, and share.
+            </p>
+        </section>
 
-            <!-- User Auth Section -->
-            <section class="forum-auth-section">
-                <div id="auth-container">
-                    <!-- Shows login button or user info -->
+        <!-- User Auth Section -->
+        <section class="forum-auth-section">
+            <div id="auth-container">
+                <!-- Shows login button or user info -->
+            </div>
+        </section>
+
+        <!-- Category Filter -->
+        <section class="forum-categories">
+            <div class="category-tabs" id="category-tabs">
+                <button class="cat-tab active" data-category="all">🏠 All</button>
+                <button class="cat-tab" data-category="general">💬 General</button>
+                <button class="cat-tab" data-category="help">❓ Help</button>
+                <button class="cat-tab" data-category="events">📢 Events</button>
+                <button class="cat-tab" data-category="marketplace">🛒 Buy/Sell</button>
+                <button class="cat-tab" data-category="traffic">🚗 Traffic</button>
+                <button class="cat-tab" data-category="jobs">💼 Jobs</button>
+            </div>
+        </section>
+
+        <!-- New Post Form -->
+        <section class="new-post-section" id="new-post-section">
+            <div class="new-post-card">
+                <div class="post-header">
+                    <h3>✏️ <span data-i18n="start_discussion">Start a Discussion</span></h3>
                 </div>
-            </section>
-
-            <!-- Category Filter -->
-            <section class="forum-categories">
-                <div class="category-tabs" id="category-tabs">
-                    <button class="cat-tab active" data-category="all">🏠 All</button>
-                    <button class="cat-tab" data-category="general">💬 General</button>
-                    <button class="cat-tab" data-category="help">❓ Help</button>
-                    <button class="cat-tab" data-category="events">📢 Events</button>
-                    <button class="cat-tab" data-category="marketplace">🛒 Buy/Sell</button>
-                    <button class="cat-tab" data-category="traffic">🚗 Traffic</button>
-                    <button class="cat-tab" data-category="jobs">💼 Jobs</button>
-                </div>
-            </section>
-
-            <!-- New Post Form -->
-            <section class="new-post-section" id="new-post-section">
-                <div class="new-post-card">
-                    <div class="post-header">
-                        <h3>✏️ <span data-i18n="start_discussion">Start a Discussion</span></h3>
+                <form id="new-post-form">
+                    <div class="form-row">
+                        <select id="post-category" required>
+                            <option value="">Select Category</option>
+                            <option value="general">💬 General</option>
+                            <option value="help">❓ Help & Questions</option>
+                            <option value="events">📢 Events & Announcements</option>
+                            <option value="marketplace">🛒 Buy & Sell</option>
+                            <option value="traffic">🚗 Traffic & Transport</option>
+                            <option value="jobs">💼 Jobs & Opportunities</option>
+                        </select>
                     </div>
-                    <form id="new-post-form">
-                        <div class="form-row">
-                            <select id="post-category" required>
-                                <option value="">Select Category</option>
-                                <option value="general">💬 General</option>
-                                <option value="help">❓ Help & Questions</option>
-                                <option value="events">📢 Events & Announcements</option>
-                                <option value="marketplace">🛒 Buy & Sell</option>
-                                <option value="traffic">🚗 Traffic & Transport</option>
-                                <option value="jobs">💼 Jobs & Opportunities</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <input type="text" id="post-title" placeholder="Title (optional)" maxlength="100">
-                        </div>
-                        <div class="form-row">
-                            <textarea id="post-content" placeholder="What's on your mind?" required maxlength="1000"
-                                rows="3"></textarea>
-                        </div>
-                        <div class="form-row post-options">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="post-anonymous">
-                                <span>Post anonymously</span>
-                            </label>
-                            <button type="submit" class="post-submit-btn" id="submit-post-btn">
-                                <span data-i18n="post">Post</span> →
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </section>
-
-            <!-- Posts Feed -->
-            <section class="forum-feed">
-                <div id="posts-container" class="posts-container">
-                    <div class="loading-state">
-                        <div class="loading-spinner"></div>
-                        <p>Loading discussions...</p>
+                    <div class="form-row">
+                        <input type="text" id="post-title" placeholder="Title (optional)" maxlength="100">
                     </div>
+                    <div class="form-row">
+                        <textarea id="post-content" placeholder="What's on your mind?" required maxlength="1000"
+                            rows="3"></textarea>
+                    </div>
+                    <div class="form-row post-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="post-anonymous">
+                            <span>Post anonymously</span>
+                        </label>
+                        <button type="submit" class="post-submit-btn" id="submit-post-btn">
+                            <span data-i18n="post">Post</span> →
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Posts Feed -->
+        <section class="forum-feed">
+            <div id="posts-container" class="posts-container">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Loading discussions...</p>
                 </div>
-            </section>
+            </div>
+        </section>
         </main>
 
         <footer class="main-footer">
@@ -178,8 +179,8 @@
 
     <script src="i18n.js"></script>
     <script src="router.js"></script>
-    <script src="common.js?v=20251218-2327"></script>
-    <script src="forum.js?v=20251218-2327"></script>
+    <script src="common.js?v=20251219-0100"></script>
+    <script src="forum.js?v=20251219-0100"></script>
 </body>
 
 </html>
