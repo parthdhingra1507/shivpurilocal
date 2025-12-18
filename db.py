@@ -2,6 +2,10 @@ import sqlite3
 import datetime
 import os
 from urllib.parse import urlparse
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 try:
     import psycopg2
@@ -17,15 +21,20 @@ DB_PATH = os.path.join(BASE_DIR, 'news.db')
 def get_db_connection():
     db_url = os.environ.get('DATABASE_URL')
     
-    if db_url:
-        # PostgreSQL (Render)
-        conn = psycopg2.connect(db_url, sslmode='require')
-        return conn, 'postgres'
-    else:
-        # SQLite (Local)
-        conn = sqlite3.connect(DB_PATH)
-        conn.row_factory = sqlite3.Row
-        return conn, 'sqlite'
+    if db_url and psycopg2:
+        try:
+            # PostgreSQL (Supabase/Render)
+            # For Supabase, we might need to use the pooling URL
+            conn = psycopg2.connect(db_url, sslmode='require', connect_timeout=10)
+            return conn, 'postgres'
+        except Exception as e:
+            print(f"PostgreSQL connection failed: {e}")
+            print("Falling back to SQLite...")
+            
+    # SQLite (Local fallback)
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn, 'sqlite'
 
 def execute_query(conn, db_type, query, params=(), commit=False, fetch=None):
     """
