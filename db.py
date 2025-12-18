@@ -2,10 +2,6 @@ import sqlite3
 import datetime
 import os
 from urllib.parse import urlparse
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
 
 try:
     import psycopg2
@@ -21,20 +17,15 @@ DB_PATH = os.path.join(BASE_DIR, 'news.db')
 def get_db_connection():
     db_url = os.environ.get('DATABASE_URL')
     
-    if db_url and psycopg2:
-        try:
-            # PostgreSQL (Supabase/Render)
-            # For Supabase, we might need to use the pooling URL
-            conn = psycopg2.connect(db_url, sslmode='require', connect_timeout=10)
-            return conn, 'postgres'
-        except Exception as e:
-            print(f"PostgreSQL connection failed: {e}")
-            print("Falling back to SQLite...")
-            
-    # SQLite (Local fallback)
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn, 'sqlite'
+    if db_url:
+        # PostgreSQL (Render)
+        conn = psycopg2.connect(db_url, sslmode='require')
+        return conn, 'postgres'
+    else:
+        # SQLite (Local)
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        return conn, 'sqlite'
 
 def execute_query(conn, db_type, query, params=(), commit=False, fetch=None):
     """
@@ -130,17 +121,17 @@ def init_db():
             )
         '''
         execute_query(conn, db_type, create_events, commit=True)
-        
+
         # Create transport table
         create_transport = f'''
             CREATE TABLE IF NOT EXISTS transport (
                 id {id_type},
-                operator_name TEXT,
-                route_from TEXT,
-                route_to TEXT,
+                operator_name TEXT NOT NULL,
+                route_from TEXT NOT NULL,
+                route_to TEXT NOT NULL,
                 via TEXT,
                 distance_km INTEGER,
-                departure_time BIGINT, -- Storing as timestamp (ms) for compatibility
+                departure_time TIMESTAMP,
                 arrival_time TEXT,
                 days_of_operation TEXT,
                 bus_type TEXT,
@@ -153,7 +144,7 @@ def init_db():
         create_places = f'''
             CREATE TABLE IF NOT EXISTS places (
                 id {id_type},
-                name_en TEXT,
+                name_en TEXT NOT NULL,
                 name_hi TEXT,
                 category TEXT,
                 category_hi TEXT,
@@ -161,7 +152,7 @@ def init_db():
                 area_hi TEXT,
                 description_en TEXT,
                 description_hi TEXT,
-                tags TEXT, -- JSON or comma separated
+                tags TEXT,
                 image_url TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -174,6 +165,13 @@ def init_db():
         print(f"Init DB Error: {e}")
     finally:
         conn.close()
+
+def save_article(article):
+    # ... (existing save_article code)
+    pass 
+
+# ... (omitting existing functions for brevity, I will append new ones at the end of the file)
+
 
 def save_article(article):
     conn, db_type = get_db_connection()
@@ -394,12 +392,15 @@ def execute_raw_sql(query, params=()):
     finally:
         conn.close()
 
-# --- Transport Helpers ---
 def get_all_transport():
     conn, db_type = get_db_connection()
     try:
-        rows = execute_query(conn, db_type, "SELECT * FROM transport ORDER BY departure_time", fetch='all')
+        query = "SELECT * FROM transport ORDER BY departure_time ASC"
+        rows = execute_query(conn, db_type, query, fetch='all')
         return [dict(row) for row in rows]
+    except Exception as e:
+        print(f"Error getting transport: {e}")
+        return []
     finally:
         conn.close()
 
@@ -409,103 +410,145 @@ def save_transport(data):
         if 'id' in data and data['id']:
             # Update
             query = '''
-                UPDATE transport SET operator_name=?, route_from=?, route_to=?, via=?, distance_km=?, 
-                departure_time=?, arrival_time=?, days_of_operation=?, bus_type=? WHERE id=?
+                UPDATE transport SET 
+                operator_name=?, route_from=?, route_to=?, via=?, distance_km=?, 
+                departure_time=?, arrival_time=?, days_of_operation=?, bus_type=?
+                WHERE id=?
             '''
-            params = (data['operator_name'], data['route_from'], data['route_to'], data['via'], data['distance_km'],
-                      data['departure_time'], data['arrival_time'], data['days_of_operation'], data['bus_type'], data['id'])
+            params = (
+                data['operator_name'], data['route_from'], data['route_to'], data['via'],
+                data['distance_km'], data['departure_time'], data['arrival_time'],
+                data['days_of_operation'], data['bus_type'], data['id']
+            )
         else:
             # Insert
             query = '''
-                INSERT INTO transport (operator_name, route_from, route_to, via, distance_km, departure_time, arrival_time, days_of_operation, bus_type)
+                INSERT INTO transport 
+                (operator_name, route_from, route_to, via, distance_km, departure_time, arrival_time, days_of_operation, bus_type)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             '''
-            params = (data['operator_name'], data['route_from'], data['route_to'], data['via'], data['distance_km'],
-                      data['departure_time'], data['arrival_time'], data['days_of_operation'], data['bus_type'])
+            params = (
+                data['operator_name'], data['route_from'], data['route_to'], data['via'],
+                data['distance_km'], data['departure_time'], data['arrival_time'],
+                data['days_of_operation'], data['bus_type']
+            )
         
         execute_query(conn, db_type, query, params, commit=True)
         return True
+    except Exception as e:
+        print(f"Error saving transport: {e}")
+        return False
     finally:
         conn.close()
 
-def delete_transport(id):
+def delete_transport(transport_id):
     conn, db_type = get_db_connection()
     try:
-        execute_query(conn, db_type, "DELETE FROM transport WHERE id = ?", (id,), commit=True)
+        execute_query(conn, db_type, "DELETE FROM transport WHERE id=?", (transport_id,), commit=True)
         return True
+    except Exception as e:
+        print(f"Error deleting transport: {e}")
+        return False
     finally:
         conn.close()
 
-# --- Places Helpers ---
 def get_all_places():
     conn, db_type = get_db_connection()
     try:
-        rows = execute_query(conn, db_type, "SELECT * FROM places ORDER BY created_at DESC", fetch='all')
+        query = "SELECT * FROM places ORDER BY name_en ASC"
+        rows = execute_query(conn, db_type, query, fetch='all')
         return [dict(row) for row in rows]
+    except Exception as e:
+        print(f"Error getting places: {e}")
+        return []
     finally:
         conn.close()
 
 def save_place(data):
     conn, db_type = get_db_connection()
     try:
+        # Check if updating
         if 'id' in data and data['id']:
-             query = '''
-                UPDATE places SET name_en=?, name_hi=?, category=?, category_hi=?, area=?, area_hi=?, 
-                description_en=?, description_hi=?, tags=?, image_url=? WHERE id=?
+            query = '''
+                UPDATE places SET 
+                name_en=?, name_hi=?, category=?, area=?, description_en=?, tags=?, image_url=?
+                WHERE id=?
             '''
-             params = (data['name_en'], data['name_hi'], data['category'], data['category_hi'], data['area'], data['area_hi'],
-                      data['description_en'], data['description_hi'], data['tags'], data['image_url'], data['id'])
+            params = (
+                data['name_en'], data.get('name_hi'), data['category'], data['area'],
+                data.get('description_en'), str(data.get('tags')), data.get('image_url'),
+                data['id']
+            )
         else:
             query = '''
-                INSERT INTO places (name_en, name_hi, category, category_hi, area, area_hi, description_en, description_hi, tags, image_url)
+                INSERT INTO places 
+                (name_en, name_hi, category, category_hi, area, area_hi, description_en, description_hi, tags, image_url)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             '''
-            params = (data['name_en'], data['name_hi'], data['category'], data['category_hi'], data['area'], data['area_hi'],
-                      data['description_en'], data['description_hi'], data['tags'], data['image_url'])
-        
+            params = (
+                data['name_en'], data.get('name_hi'), data['category'], data.get('category_hi'),
+                data['area'], data.get('area_hi'), data.get('description_en'), 
+                data.get('description_hi'), str(data.get('tags')), data.get('image_url')
+            )
+            
         execute_query(conn, db_type, query, params, commit=True)
         return True
+    except Exception as e:
+        print(f"Error saving place: {e}")
+        return False
     finally:
         conn.close()
 
-def delete_place(id):
+def delete_place(place_id):
     conn, db_type = get_db_connection()
     try:
-        execute_query(conn, db_type, "DELETE FROM places WHERE id = ?", (id,), commit=True)
+        execute_query(conn, db_type, "DELETE FROM places WHERE id=?", (place_id,), commit=True)
         return True
+    except Exception as e:
+        print(f"Error deleting place: {e}")
+        return False
     finally:
         conn.close()
 
-# --- User/Analytics Helpers ---
 def get_all_users():
     conn, db_type = get_db_connection()
     try:
         rows = execute_query(conn, db_type, "SELECT * FROM users ORDER BY last_active_at DESC", fetch='all')
         return [dict(row) for row in rows]
+    except Exception as e:
+        print(f"Error getting users: {e}")
+        return []
     finally:
         conn.close()
 
-def delete_user(id):
+def delete_user(user_id):
     conn, db_type = get_db_connection()
     try:
-        execute_query(conn, db_type, "DELETE FROM users WHERE id = ?", (id,), commit=True)
+        execute_query(conn, db_type, "DELETE FROM users WHERE id=?", (user_id,), commit=True)
         return True
+    except Exception as e:
+        print(f"Error deleting user: {e}")
+        return False
     finally:
         conn.close()
 
 def get_analytics_stats():
     conn, db_type = get_db_connection()
     try:
-        users = execute_query(conn, db_type, "SELECT COUNT(*) as count FROM users", fetch='one')['count']
-        events = execute_query(conn, db_type, "SELECT COUNT(*) as count FROM analytics_events", fetch='one')['count']
-        today_events = execute_query(conn, db_type, "SELECT COUNT(*) as count FROM analytics_events WHERE timestamp >= date('now')", fetch='one')['count']
+        # Basic stats
+        stats = {}
         
-        return {
-            'total_users': users,
-            'total_events': events,
-            'today_events': today_events
-        }
-    except:
-        return {'total_users': 0, 'total_events': 0, 'today_events': 0}
+        # User count
+        row = execute_query(conn, db_type, "SELECT COUNT(*) as c FROM users", fetch='one')
+        stats['total_users'] = row['c'] if row else 0
+        
+        # Article count
+        row = execute_query(conn, db_type, "SELECT COUNT(*) as c FROM articles", fetch='one')
+        stats['total_articles'] = row['c'] if row else 0
+        
+        return stats
+    except Exception as e:
+        print(f"Error getting stats: {e}")
+        return {}
     finally:
         conn.close()

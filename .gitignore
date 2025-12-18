@@ -1,7 +1,1 @@
-.env
-news.db
-__pycache__/
-*.pyc
-*.pyo
-.DS_Store
-.vscode/
+shivpurilocal/
