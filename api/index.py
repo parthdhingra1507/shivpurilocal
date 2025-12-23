@@ -106,36 +106,36 @@ def sync_user():
         print(f"Sync Exception: {e}", file=sys.stderr)
         return jsonify({'error': str(e)}), 500
 
-# --- Migration Logic ---
-@app.route('/api/admin/migrate_schema', methods=['GET'])
-def migrate_schema():
-    # Basic security check
-    auth_key = request.headers.get('X-Admin-Key')
-    if auth_key != 'shivpuri2025':
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    conn, db_type = get_db_connection()
-    if not conn:
-        return jsonify({'error': 'No DB connection'}), 500
-
-    results = []
-    try:
-        commands = [
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS utm_source TEXT;",
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS utm_medium TEXT;",
-            "ALTER TABLE users ADD COLUMN IF NOT EXISTS utm_campaign TEXT;"
-        ]
-        
-        for cmd in commands:
-            execute_query(conn, db_type, cmd, commit=True)
-            results.append(f"Executed: {cmd}")
-            
-        return jsonify({'status': 'success', 'results': results})
-    except Exception as e:
-        return jsonify({'error': str(e), 'results': results}), 500
-    finally:
-        if conn:
-            conn.close()
+# --- Migration Logic (Disabled after initial run) ---
+# @app.route('/api/admin/migrate_schema', methods=['GET'])
+# def migrate_schema():
+#     # Basic security check
+#     auth_key = request.headers.get('X-Admin-Key')
+#     if auth_key != 'shivpuri2025':
+#         return jsonify({'error': 'Unauthorized'}), 401
+#
+#     conn, db_type = get_db_connection()
+#     if not conn:
+#         return jsonify({'error': 'No DB connection'}), 500
+#
+#     results = []
+#     try:
+#         commands = [
+#             "ALTER TABLE users ADD COLUMN IF NOT EXISTS utm_source TEXT;",
+#             "ALTER TABLE users ADD COLUMN IF NOT EXISTS utm_medium TEXT;",
+#             "ALTER TABLE users ADD COLUMN IF NOT EXISTS utm_campaign TEXT;"
+#         ]
+#         
+#         for cmd in commands:
+#             execute_query(conn, db_type, cmd, commit=True)
+#             results.append(f"Executed: {cmd}")
+#             
+#         return jsonify({'status': 'success', 'results': results})
+#     except Exception as e:
+#         return jsonify({'error': str(e), 'results': results}), 500
+#     finally:
+#         if conn:
+#             conn.close()
 
 # -----------------------------------------------
 
