@@ -76,11 +76,17 @@ function getSessionId() {
 
 async function logAnalyticsEvent(eventType, metadata = {}) {
     // Only log if not localhost (unless testing)
-    const isLocal = window.location.hostname === 'localhost';
-    const API_URL = isLocal ? '/api/analytics/log' : 'https://shivpurilocal-backend.onrender.com/api/analytics/log';
+    // Use relative path for Vercel
+    const API_URL = '/api/analytics/log';
 
     try {
-        const currentUser = firebase.auth().currentUser;
+        const currentUser = (typeof firebase !== 'undefined') ? firebase.auth().currentUser : null;
+
+        let utm = {};
+        try {
+            const storedUtm = localStorage.getItem('utm_params');
+            if (storedUtm) utm = JSON.parse(storedUtm);
+        } catch (e) { }
 
         await fetch(API_URL, {
             method: 'POST',
@@ -89,10 +95,13 @@ async function logAnalyticsEvent(eventType, metadata = {}) {
                 eventType: eventType,
                 userId: currentUser ? currentUser.uid : null,
                 sessionId: getSessionId(),
+                utm_source: utm.utm_source || null,
+                utm_medium: utm.utm_medium || null,
+                utm_campaign: utm.utm_campaign || null,
                 metadata: JSON.stringify({
                     url: window.location.pathname,
                     referrer: document.referrer,
-                    lang: currentLang,
+                    lang: typeof currentLang !== 'undefined' ? currentLang : 'en',
                     ...metadata
                 })
             })

@@ -106,36 +106,102 @@ def sync_user():
         print(f"Sync Exception: {e}", file=sys.stderr)
         return jsonify({'error': str(e)}), 500
 
-# --- Migration Logic (Disabled after initial run) ---
-# @app.route('/api/admin/migrate_schema', methods=['GET'])
-# def migrate_schema():
-#     # Basic security check
-#     auth_key = request.headers.get('X-Admin-Key')
-#     if auth_key != 'shivpuri2025':
-#         return jsonify({'error': 'Unauthorized'}), 401
-#
-#     conn, db_type = get_db_connection()
-#     if not conn:
-#         return jsonify({'error': 'No DB connection'}), 500
-#
-#     results = []
-#     try:
-#         commands = [
-#             "ALTER TABLE users ADD COLUMN IF NOT EXISTS utm_source TEXT;",
-#             "ALTER TABLE users ADD COLUMN IF NOT EXISTS utm_medium TEXT;",
-#             "ALTER TABLE users ADD COLUMN IF NOT EXISTS utm_campaign TEXT;"
-#         ]
-#         
-#         for cmd in commands:
-#             execute_query(conn, db_type, cmd, commit=True)
-#             results.append(f"Executed: {cmd}")
-#             
-#         return jsonify({'status': 'success', 'results': results})
-#     except Exception as e:
-#         return jsonify({'error': str(e), 'results': results}), 500
-#     finally:
-#         if conn:
-#             conn.close()
+# --- Analytics Logic ---
+
+def log_event(event_data):
+    conn, db_type = get_db_connection()
+    if not conn:
+        print("No DB connection available for analytics", file=sys.stderr)
+        return False
+        
+    try:
+        # Check if table exists (lazy check via error is messy, better to just try insert)
+        query = '''
+            INSERT INTO analytics_events (user_id, event_type, metadata, session_id, utm_source, utm_medium, utm_campaign)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        '''
+        return execute_query(conn, db_type, query, (
+            event_data.get('userId'),
+            event_data.get('eventType'),
+            event_data.get('metadata'),
+            event_data.get('sessionId'),
+            event_data.get('utm_source'),
+            event_data.get('utm_medium'),
+            event_data.get('utm_campaign')
+        ), commit=True)
+    except Exception as e:
+        print(f"Analytics logging failed: {e}", file=sys.stderr)
+        return False
+    finally:
+        if conn:
+            conn.close()
+
+@app.route('/api/analytics/log', methods=['POST'])
+def log_analytics():
+    try:
+        data = request.json
+        if not data or not data.get('eventType'):
+             return jsonify({'error': 'Missing eventType'}), 400
+             
+        # Async-like fire and forget (we wait, but client doesn't care much)
+        success = log_event(data)
+        
+        return jsonify({'status': 'logged', 'success': success})
+            
+    except Exception as e:
+        print(f"Analytics Exception: {e}", file=sys.stderr)
+        # Don't fail the request, just return error
+        return jsonify({'error': str(e)}), 500
+
+# --- Migration Logic (Re-enabled for Analytics Table) ---
+@app.route('/api/admin/migrate_schema', methods=['GET'])
+def migrate_schema():
+    # Basic security check
+    auth_key = request.headers.get('X-Admin-Key')
+    if auth_key != 'shivpuri2025':
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    conn, db_type = get_db_connection()
+    if not conn:
+        return jsonify({'error': 'No DB connection'}), 500
+
+    results = []
+    try:
+        # Postgres-specific table creation (Vercel uses Postgres)
+        # Using SERIAL PRIMARY KEY for ID
+        create_events = '''
+            CREATE TABLE IF NOT EXISTS analytics_events (
+                id SERIAL PRIMARY KEY,
+                user_id TEXT,
+                event_type TEXT NOT NULL,
+                metadata TEXT,
+                session_id TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                utm_source TEXT,
+                utm_medium TEXT,
+                utm_campaign TEXT
+            )
+        '''
+        execute_query(conn, db_type, create_events, commit=True)
+        results.append("Ensured analytics_events table exists")
+        
+        # Also ensure columns exist if table was already there without them
+        alter_cmds = [
+            "ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS utm_source TEXT;",
+            "ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS utm_medium TEXT;",
+            "ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS utm_campaign TEXT;"
+        ]
+        
+        for cmd in alter_cmds:
+             execute_query(conn, db_type, cmd, commit=True)
+             results.append(f"Executed: {cmd}")
+
+        return jsonify({'status': 'success', 'results': results})
+    except Exception as e:
+        return jsonify({'error': str(e), 'results': results}), 500
+    finally:
+        if conn:
+            conn.close()
 
 # -----------------------------------------------
 
