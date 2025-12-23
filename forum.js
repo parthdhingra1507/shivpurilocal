@@ -155,7 +155,7 @@ const ForumApp = {
 
     // Sync user with SQL DB
     async syncUserWithDB(user) {
-        // Use relative URL for both local and Vercel deployment
+        // Use relative URL - requires backend server running on same port or proxy
         const API_URL = '/api/user/sync';
 
         try {
@@ -171,15 +171,18 @@ const ForumApp = {
                 })
             });
 
+            if (!res.ok) {
+                const text = await res.text();
+                console.error(`[Forum] Sync failed (Status: ${res.status}). Response:`, text.substring(0, 200));
+                if (res.status === 404) {
+                    console.warn('[Forum] Backend API not found. Are you running "python app.py"?');
+                }
+                return;
+            }
+
             const data = await res.json();
             console.log('[Forum] Sync result:', data);
 
-            if (res.ok) {
-                // Optional: ensure we know it worked
-                // this.showToast('Account synced'); 
-            } else {
-                console.error('[Forum] Sync failed:', data);
-            }
         } catch (error) {
             console.error('User sync error:', error);
         }
