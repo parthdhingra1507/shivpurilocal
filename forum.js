@@ -155,8 +155,10 @@ const ForumApp = {
 
     // Sync user with SQL DB
     async syncUserWithDB(user) {
-        // Use relative URL - requires backend server running on same port or proxy
-        const API_URL = '/api/user/sync';
+        // Use absolute URL for stability in production, fallback to relative for local
+        const API_URL = window.location.hostname === 'localhost'
+            ? 'http://localhost:3000/api/user/sync'
+            : '/api/user/sync';
 
         try {
             console.log('[Forum] Syncing user to DB...', user.email);
