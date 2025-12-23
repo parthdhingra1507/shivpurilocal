@@ -5,7 +5,7 @@
     <meta name="theme-color" content="#FAFAFA">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Prevent caching -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -22,6 +22,10 @@
 
     <link rel="stylesheet" href="style.css?v=20251218-2327">
     <script src="sw-register.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 
 <body class="page-food">
@@ -40,22 +44,24 @@
                     <a href="/forum">Forum</a>
                 </nav>
                 <div class="header-actions">
+                    <div class="nav-auth-container"></div>
                     <button id="lang-toggle" class="lang-btn">हिंदी</button>
                     <button id="dark-toggle" class="theme-btn">🌙</button>
                 </div>
             </div>
-        </header>            <section class="hero-section">
-                <h2 id="hero-title" data-i18n="cat_food_title">Food & Dining</h2>
-                <p id="hero-desc" data-i18n="cat_food_desc">Find the best restaurants and cafes in Shivpuri.</p>
-            </section>
+        </header>
+        <section class="hero-section">
+            <h2 id="hero-title" data-i18n="cat_food_title">Food & Dining</h2>
+            <p id="hero-desc" data-i18n="cat_food_desc">Find the best restaurants and cafes in Shivpuri.</p>
+        </section>
 
-            <section class="food-container">
-                <div id="schedule-grid" class="schedule-grid">
-                    <!-- Food Cards -->
-                </div>
-                <!-- Hidden load more for compatibility -->
-                <div id="load-more-container" style="display: none;"><button id="load-more-btn"></button></div>
-            </section>
+        <section class="food-container">
+            <div id="schedule-grid" class="schedule-grid">
+                <!-- Food Cards -->
+            </div>
+            <!-- Hidden load more for compatibility -->
+            <div id="load-more-container" style="display: none;"><button id="load-more-btn"></button></div>
+        </section>
         </main>
 
         <footer class="main-footer">
@@ -67,12 +73,34 @@
     <script src="i18n.js?v=20251218-2327"></script>
     <script src="router.js?v=20251218-2327"></script>
     <script src="common.js?v=20251218-2327"></script>
+    <script src="auth.js"></script>
 
     <!-- Page Specific Logic -->
     <script src="news.js?v=20251218-2327"></script>
     <script src="transport.js?v=20251218-2327"></script>
     <script src="places.js?v=20251218-2327"></script>
     <script src="food.js?v=20251218-2327"></script>
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content login-modal-content">
+            <button class="modal-close" id="close-login-modal">×</button>
+            <h2 data-i18n="login_title">Join the Community</h2>
+            <p data-i18n="login_desc">Sign in to post and participate in discussions</p>
+            <div class="login-options">
+                <button id="google-login-btn" class="login-btn google-btn">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                    Continue with Google
+                </button>
+                <div class="login-divider">
+                    <span>or</span>
+                </div>
+                <button id="guest-login-btn" class="login-btn guest-btn">
+                    👤 Continue as Guest
+                </button>
+            </div>
+            <p class="login-note">Guest posts will be marked as "Guest User"</p>
+        </div>
+    </div>
 </body>
 
 </html>
