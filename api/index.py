@@ -11,6 +11,15 @@ except Exception as e:
     from flask import Flask, jsonify
     import traceback
     
+    # Print debug info to Vercel logs
+    print(f"Error importing app: {e}", file=sys.stderr)
+    print(f"CWD: {os.getcwd()}", file=sys.stderr)
+    try:
+        print(f"Files in CWD: {os.listdir('.')}", file=sys.stderr)
+        print(f"Files in parent: {os.listdir('..')}", file=sys.stderr)
+    except:
+        pass
+        
     app = Flask(__name__)
     
     @app.route('/', defaults={'path': ''})
@@ -21,7 +30,7 @@ except Exception as e:
             'details': str(e),
             'trace': traceback.format_exc(),
             'cwd': os.getcwd(),
-            'files': str(os.listdir('.'))
+            'contents': str(os.listdir('.'))
         }), 500
 
 # Vercel looks for 'app' variable
