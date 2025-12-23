@@ -184,3 +184,32 @@ window.addEventListener('load', () => {
 
     console.log('[Swipe Nav] Initialized - Swipe left/right to navigate');
 })();
+
+// ===================================
+// UTM TRACKING
+// ===================================
+(function captureUTMParams() {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const utmFields = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+        const captured = {};
+        let hasUtm = false;
+
+        utmFields.forEach(field => {
+            if (params.has(field)) {
+                captured[field] = params.get(field);
+                hasUtm = true;
+            }
+        });
+
+        // If UTM params found, store them (overwrite previous session if new ones found)
+        if (hasUtm) {
+            // Add timestamp
+            captured['utm_timestamp'] = new Date().toISOString();
+            localStorage.setItem('utm_params', JSON.stringify(captured));
+            console.log('[UTM] Captured:', captured);
+        }
+    } catch (e) {
+        console.error('Error capturing UTM:', e);
+    }
+})();
