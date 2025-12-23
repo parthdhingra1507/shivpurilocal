@@ -103,7 +103,10 @@ def init_db():
                 display_name TEXT,
                 role TEXT DEFAULT 'user',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                last_active_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                last_active_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                utm_source TEXT,
+                utm_medium TEXT,
+                utm_campaign TEXT
             )
         '''
         execute_query(conn, db_type, create_users, commit=True)

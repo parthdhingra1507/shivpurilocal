@@ -58,17 +58,23 @@ def upsert_user(user_data):
     try:
         # Postgres UPSERT syntax
         query = '''
-            INSERT INTO users (id, email, display_name, last_active_at)
-            VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+            INSERT INTO users (id, email, display_name, last_active_at, utm_source, utm_medium, utm_campaign)
+            VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 display_name = excluded.display_name,
                 email = excluded.email,
-                last_active_at = CURRENT_TIMESTAMP
+                last_active_at = CURRENT_TIMESTAMP,
+                utm_source = COALESCE(excluded.utm_source, users.utm_source),
+                utm_medium = COALESCE(excluded.utm_medium, users.utm_medium),
+                utm_campaign = COALESCE(excluded.utm_campaign, users.utm_campaign)
         '''
         return execute_query(conn, db_type, query, (
             user_data.get('uid'),
             user_data.get('email'),
-            user_data.get('displayName')
+            user_data.get('displayName'),
+            user_data.get('utm_source'),
+            user_data.get('utm_medium'),
+            user_data.get('utm_campaign')
         ), commit=True)
     finally:
         if conn:
