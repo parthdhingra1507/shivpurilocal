@@ -13,7 +13,10 @@ if (darkToggle) {
         html.classList.toggle('dark-mode');
         const isDark = html.classList.contains('dark-mode');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        darkToggle.textContent = isDark ? '☀️' : '🌙';
+        if (darkToggle) darkToggle.textContent = isDark ? '☀️' : '🌙';
+
+        // Log event
+        logAnalyticsEvent('theme_toggle', { theme: isDark ? 'dark' : 'light' });
     });
 }
 
@@ -22,6 +25,8 @@ const langToggle = document.getElementById('lang-toggle');
 if (langToggle && window.i18n) {
     langToggle.addEventListener('click', () => {
         window.i18n.toggle();
+        // Log event
+        logAnalyticsEvent('language_toggle', { lang: window.i18n.lang });
     });
 }
 
@@ -74,6 +79,15 @@ function getSessionId() {
     return sid;
 }
 
+function getDeviceId() {
+    let did = localStorage.getItem('analytics_did');
+    if (!did) {
+        did = 'dev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('analytics_did', did);
+    }
+    return did;
+}
+
 async function logAnalyticsEvent(eventType, metadata = {}) {
     // Only log if not localhost (unless testing)
     // Use relative path for Vercel
@@ -95,6 +109,7 @@ async function logAnalyticsEvent(eventType, metadata = {}) {
                 eventType: eventType,
                 userId: currentUser ? currentUser.uid : null,
                 sessionId: getSessionId(),
+                deviceId: getDeviceId(),
                 utm_source: utm.utm_source || null,
                 utm_medium: utm.utm_medium || null,
                 utm_campaign: utm.utm_campaign || null,

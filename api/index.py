@@ -120,8 +120,8 @@ def log_event(event_data):
     try:
         # Check if table exists (lazy check via error is messy, better to just try insert)
         query = '''
-            INSERT INTO analytics_events (user_id, event_type, metadata, session_id, utm_source, utm_medium, utm_campaign)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO analytics_events (user_id, event_type, metadata, session_id, utm_source, utm_medium, utm_campaign, device_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         '''
         return execute_query(conn, db_type, query, (
             event_data.get('userId'),
@@ -130,7 +130,8 @@ def log_event(event_data):
             event_data.get('sessionId'),
             event_data.get('utm_source'),
             event_data.get('utm_medium'),
-            event_data.get('utm_campaign')
+            event_data.get('utm_campaign'),
+            event_data.get('deviceId')
         ), commit=True)
     except Exception as e:
         print(f"Analytics logging failed: {e}", file=sys.stderr)
@@ -178,6 +179,10 @@ def get_analytics_stats():
         # 2. Total Page Views
         views_row = execute_query(conn, db_type, "SELECT COUNT(*) as c FROM analytics_events WHERE event_type = 'page_view'", fetch='one')
         stats['total_views'] = views_row['c'] if views_row else 0
+
+        # 2b. Unique Devices (Modern tracking)
+        device_row = execute_query(conn, db_type, "SELECT COUNT(DISTINCT device_id) as c FROM analytics_events", fetch='one')
+        stats['unique_devices'] = device_row['c'] if device_row else 0
         
         # 3. Campaign Performance
         camp_query = '''
@@ -224,54 +229,56 @@ def get_analytics_stats():
             conn.close()
 
 # --- Migration Logic (Disabled after initial run) ---
-# @app.route('/api/admin/migrate_schema', methods=['GET'])
-# def migrate_schema():
-#     # Basic security check
-#     auth_key = request.headers.get('X-Admin-Key')
-#     if auth_key != 'shivpuri2025':
-#         return jsonify({'error': 'Unauthorized'}), 401
-#
-#     conn, db_type = get_db_connection()
-#     if not conn:
-#         return jsonify({'error': 'No DB connection'}), 500
-#
-#     results = []
-#     try:
-#         # Postgres-specific table creation (Vercel uses Postgres)
-#         # Using SERIAL PRIMARY KEY for ID
-#         create_events = '''
-#             CREATE TABLE IF NOT EXISTS analytics_events (
-#                 id SERIAL PRIMARY KEY,
-#                 user_id TEXT,
-#                 event_type TEXT NOT NULL,
-#                 metadata TEXT,
-#                 session_id TEXT,
-#                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-#                 utm_source TEXT,
-#                 utm_medium TEXT,
-#                 utm_campaign TEXT
-#             )
-#         '''
-#         execute_query(conn, db_type, create_events, commit=True)
-#         results.append("Ensured analytics_events table exists")
-#         
-#         # Also ensure columns exist if table was already there without them
-#         alter_cmds = [
-#             "ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS utm_source TEXT;",
-#             "ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS utm_medium TEXT;",
-#             "ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS utm_campaign TEXT;"
-#         ]
-#         
-#         for cmd in alter_cmds:
-#              execute_query(conn, db_type, cmd, commit=True)
-#              results.append(f"Executed: {cmd}")
-#
-#         return jsonify({'status': 'success', 'results': results})
-#     except Exception as e:
-#         return jsonify({'error': str(e), 'results': results}), 500
-#     finally:
-#         if conn:
-#             conn.close()
+@app.route('/api/admin/migrate_schema', methods=['GET'])
+def migrate_schema():
+    # Basic security check
+    auth_key = request.headers.get('X-Admin-Key')
+    if auth_key != 'shivpuri2025':
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    conn, db_type = get_db_connection()
+    if not conn:
+        return jsonify({'error': 'No DB connection'}), 500
+
+    results = []
+    try:
+        # Postgres-specific table creation (Vercel uses Postgres)
+        # Using SERIAL PRIMARY KEY for ID
+        create_events = '''
+            CREATE TABLE IF NOT EXISTS analytics_events (
+                id SERIAL PRIMARY KEY,
+                user_id TEXT,
+                event_type TEXT NOT NULL,
+                metadata TEXT,
+                session_id TEXT,
+                device_id TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                utm_source TEXT,
+                utm_medium TEXT,
+                utm_campaign TEXT
+            )
+        '''
+        execute_query(conn, db_type, create_events, commit=True)
+        results.append("Ensured analytics_events table exists")
+        
+        # Also ensure columns exist if table was already there without them
+        alter_cmds = [
+            "ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS utm_source TEXT;",
+            "ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS utm_medium TEXT;",
+            "ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS utm_campaign TEXT;",
+            "ALTER TABLE analytics_events ADD COLUMN IF NOT EXISTS device_id TEXT;"
+        ]
+        
+        for cmd in alter_cmds:
+             execute_query(conn, db_type, cmd, commit=True)
+             results.append(f"Executed: {cmd}")
+
+        return jsonify({'status': 'success', 'results': results})
+    except Exception as e:
+        return jsonify({'error': str(e), 'results': results}), 500
+    finally:
+        if conn:
+            conn.close()
 
 # -----------------------------------------------
 
