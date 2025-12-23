@@ -155,10 +155,8 @@ const ForumApp = {
 
     // Sync user with SQL DB
     async syncUserWithDB(user) {
-        // Use absolute URL for stability in production, fallback to relative for local
-        const API_URL = window.location.hostname === 'localhost'
-            ? 'http://localhost:3000/api/user/sync'
-            : '/api/user/sync';
+        // Use relative URL - handled by Vercel rewrites in production, proxy/service in local
+        const API_URL = '/api/user/sync';
 
         try {
             console.log('[Forum] Syncing user to DB...', user.email);
