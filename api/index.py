@@ -2,30 +2,28 @@ import sys
 import os
 
 # Add parent directory to path so we can import app
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Vercel serverless handler
 try:
     from app import app
 except Exception as e:
-    import json
+    # Error handling for import failure
+    from flask import Flask, jsonify
     import traceback
-    import sys
     
-    # Pure WSGI fallback app (no dependencies)
-    def app(environ, start_response):
-        status = '500 Internal Server Error'
-        headers = [('Content-type', 'application/json')]
-        start_response(status, headers)
-        
-        error_info = {
-            'error': 'Application Import Failed (Pure Python Fallback)', 
+    app = Flask(__name__)
+    
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def catch_all(path):
+        return jsonify({
+            'error': 'Application Import Failed', 
             'details': str(e),
             'trace': traceback.format_exc(),
-            'sys_path': sys.path,
-            'cwd': os.getcwd()
-        }
-        return [json.dumps(error_info).encode('utf-8')]
+            'cwd': os.getcwd(),
+            'files': str(os.listdir('.'))
+        }), 500
 
-def handler(request, context):
-    return app(request.environ, context)
+# Vercel looks for 'app' variable
+# No need for handler() function if 'app' is a WSGI application
+
