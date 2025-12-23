@@ -90,7 +90,6 @@ function getDeviceId() {
 
 async function logAnalyticsEvent(eventType, metadata = {}) {
     // Only log if not localhost (unless testing)
-    // Use relative path for Vercel
     const API_URL = '/api/analytics/log';
 
     try {
@@ -101,6 +100,31 @@ async function logAnalyticsEvent(eventType, metadata = {}) {
             const storedUtm = localStorage.getItem('utm_params');
             if (storedUtm) utm = JSON.parse(storedUtm);
         } catch (e) { }
+
+        // Capture rich browser/environment data
+        const browserData = {
+            url: window.location.href,
+            path: window.location.pathname,
+            referrer: document.referrer,
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            screenWidth: window.screen.width,
+            screenHeight: window.screen.height,
+            viewportWidth: window.innerWidth,
+            viewportHeight: window.innerHeight,
+            colorDepth: window.screen.colorDepth,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            platform: navigator.platform,
+            cpuCores: navigator.hardwareConcurrency || 'unknown',
+            memory: navigator.deviceMemory || 'unknown', // in GB
+            connection: navigator.connection ? {
+                type: navigator.connection.effectiveType,
+                downlink: navigator.connection.downlink,
+                rtt: navigator.connection.rtt
+            } : 'unknown',
+            isStandalone: window.matchMedia('(display-mode: standalone)').matches, // PWA check
+            timestamp: new Date().toISOString()
+        };
 
         await fetch(API_URL, {
             method: 'POST',
@@ -114,16 +138,15 @@ async function logAnalyticsEvent(eventType, metadata = {}) {
                 utm_medium: utm.utm_medium || null,
                 utm_campaign: utm.utm_campaign || null,
                 metadata: JSON.stringify({
-                    url: window.location.pathname,
-                    referrer: document.referrer,
-                    lang: typeof currentLang !== 'undefined' ? currentLang : 'en',
+                    ...browserData,
+                    appLang: typeof currentLang !== 'undefined' ? currentLang : 'en',
                     ...metadata
                 })
             })
         });
     } catch (e) {
         // Silent fail for analytics
-        if (isLocal) console.error('Analytics error:', e);
+        if (typeof isLocal !== 'undefined' && isLocal) console.error('Analytics error:', e);
     }
 }
 
