@@ -25,7 +25,7 @@ def get_db_connection():
         # Note: SQLite won't work well in Vercel functions as they are ephemeral
         return None, 'none'
 
-def execute_query(conn, db_type, query, params=(), commit=False):
+def execute_query(conn, db_type, query, params=(), commit=False, fetch='all'):
     if not conn:
         return False
         
@@ -40,6 +40,9 @@ def execute_query(conn, db_type, query, params=(), commit=False):
         if commit:
             conn.commit()
             return True
+            
+        if fetch == 'one':
+            return cur.fetchone()
         return cur.fetchall()
     except Exception as e:
         print(f"DB Error: {e} | Query: {query}", file=sys.stderr)
@@ -152,6 +155,73 @@ def log_analytics():
         print(f"Analytics Exception: {e}", file=sys.stderr)
         # Don't fail the request, just return error
         return jsonify({'error': str(e)}), 500
+
+# --- Analytics Stats Endpoint ---
+@app.route('/api/analytics/stats', methods=['GET'])
+def get_analytics_stats():
+    # Security check
+    auth_key = request.headers.get('X-Admin-Key')
+    if auth_key != 'shivpuri2025':
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    conn, db_type = get_db_connection()
+    if not conn:
+        return jsonify({'error': 'No DB connection'}), 500
+
+    try:
+        stats = {}
+        
+        # 1. Total Users
+        users_row = execute_query(conn, db_type, "SELECT COUNT(*) as c FROM users", fetch='one')
+        stats['total_users'] = users_row['c'] if users_row else 0
+        
+        # 2. Total Page Views
+        views_row = execute_query(conn, db_type, "SELECT COUNT(*) as c FROM analytics_events WHERE event_type = 'page_view'", fetch='one')
+        stats['total_views'] = views_row['c'] if views_row else 0
+        
+        # 3. Campaign Performance
+        camp_query = '''
+            SELECT utm_campaign, COUNT(*) as count 
+            FROM analytics_events 
+            WHERE utm_campaign IS NOT NULL 
+            GROUP BY utm_campaign 
+            ORDER BY count DESC 
+            LIMIT 5
+        '''
+        camp_rows = execute_query(conn, db_type, camp_query, fetch='all')
+        stats['campaigns'] = [dict(row) for row in camp_rows] if camp_rows else []
+        
+        # 4. Source Breakdown
+        source_query = '''
+             SELECT utm_source, COUNT(*) as count
+             FROM analytics_events
+             WHERE utm_source IS NOT NULL
+             GROUP BY utm_source
+             ORDER BY count DESC
+             LIMIT 5
+        '''
+        source_rows = execute_query(conn, db_type, source_query, fetch='all')
+        stats['sources'] = [dict(row) for row in source_rows] if source_rows else []
+        
+        # 5. Recent Users
+        recent_users_query = '''
+            SELECT email, display_name, created_at, utm_source, utm_campaign 
+            FROM users 
+            ORDER BY created_at DESC 
+            LIMIT 10
+        '''
+        recent_rows = execute_query(conn, db_type, recent_users_query, fetch='all')
+        # Handle datetime serialization if needed, or rely on jsonify default (usually works for standard types)
+        stats['recent_users'] = [dict(row) for row in recent_rows] if recent_rows else []
+
+        return jsonify({'status': 'success', 'data': stats})
+        
+    except Exception as e:
+        print(f"Stats error: {e}", file=sys.stderr)
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
 
 # --- Migration Logic (Disabled after initial run) ---
 # @app.route('/api/admin/migrate_schema', methods=['GET'])
