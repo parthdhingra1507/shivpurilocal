@@ -22,11 +22,54 @@ const NewsApp = {
         return `${Math.floor(diff / 86400)} ${isHi ? 'दिन पहले' : 'days ago'}`;
     },
 
+    sponsoredItems: [
+        {
+            title: {
+                en: "Traditional Joint Pain Relief from local Shivpuri herbs",
+                hi: "शिवपुरी की पारंपरिक जड़ी-बूटियों से जोड़ों के दर्द में पाएं राहत"
+            },
+            source: {
+                en: "Local Wellness",
+                hi: "स्थानीय स्वास्थ्य"
+            },
+            url: "https://shivpurilocal.in/wellness",
+            image: "https://images.unsplash.com/photo-1512290923902-8a9f81dc2069?q=80&w=800&auto=format&fit=crop",
+            isSponsored: true
+        },
+        {
+            title: {
+                en: "Mukhyamantri Pension Scheme - New Registration Drive in Shivpuri",
+                hi: "मुख्यमंत्री पेंशन योजना - शिवपुरी में नए पंजीकरण शुरू"
+            },
+            source: {
+                en: "Govt Updates",
+                hi: "सरकारी अपडेट"
+            },
+            url: "https://shivpurilocal.in/govt-updates",
+            image: "https://images.unsplash.com/photo-1605705664878-6617a61d87f7?q=80&w=800&auto=format&fit=crop",
+            isSponsored: true
+        },
+        {
+            title: {
+                en: "Ancient Shiv Temple Special Darshan Timings this Sunday",
+                hi: "प्राचीन शिव मंदिर - इस रविवार विशेष दर्शन का समय"
+            },
+            source: {
+                en: "Spiritual",
+                hi: "आध्यात्मिक"
+            },
+            url: "https://shivpurilocal.in/spiritual",
+            image: "https://images.unsplash.com/photo-1544026354-996414fd3738?q=80&w=800&auto=format&fit=crop",
+            isSponsored: true
+        }
+    ],
+
     renderNews(articles) {
         const grid = document.getElementById('news-grid');
         if (!grid) return;
 
         const isHi = window.i18n ? window.i18n.lang === 'hi' : false;
+        const currentLang = window.i18n ? window.i18n.lang : 'en';
 
         if (!articles || articles.length === 0) {
             grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--gray-600); padding: 2rem;">
@@ -37,13 +80,24 @@ const NewsApp = {
 
         grid.innerHTML = '';
 
-        articles.forEach(news => {
-            const card = document.createElement('article');
-            card.className = 'news-card';
+        // Merge sponsored items into the feed
+        const combinedFeed = [...articles];
+        this.sponsoredItems.forEach((sp, index) => {
+            const pos = (index + 1) * 3; // Inject every 3rd item
+            if (pos <= combinedFeed.length) {
+                combinedFeed.splice(pos, 0, sp);
+            } else {
+                combinedFeed.push(sp);
+            }
+        });
 
-            const title = news.title || '';
-            const time = this.getRelativeTime(news.publishedAt);
-            const source = news.source || (isHi ? 'समाचार' : 'News');
+        combinedFeed.forEach(news => {
+            const card = document.createElement('article');
+            card.className = news.isSponsored ? 'news-card sponsored-card' : 'news-card';
+
+            const title = news.isSponsored ? news.title[currentLang] : (news.title || '');
+            const time = news.isSponsored ? (isHi ? 'प्रायोजित' : 'Sponsored') : this.getRelativeTime(news.publishedAt);
+            const source = news.isSponsored ? news.source[currentLang] : (news.source || (isHi ? 'समाचार' : 'News'));
             const url = news.url || '#';
 
             const shareText = isHi ? 'साझा करें' : 'Share';
@@ -52,7 +106,15 @@ const NewsApp = {
             const whatsappMsg = `📰 *${title}*\n\n🔗 ${url}\n\nvia shivpurilocal.in`;
             const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMsg)}`;
 
+            const assetHtml = news.isSponsored ? `
+                <div class="news-image-container">
+                    <img src="${news.image}" alt="sponsored" class="news-image">
+                    <span class="sponsored-badge">${isHi ? 'प्रायोजित' : 'Sponsored'}</span>
+                </div>
+            ` : '';
+
             card.innerHTML = `
+                ${assetHtml}
                 <div class="news-body">
                     <div class="news-meta">
                         <span class="news-source">${source}</span>
